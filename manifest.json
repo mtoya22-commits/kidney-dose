@@ -1,0 +1,25 @@
+{
+  "name": "腎機能別投与量チェッカー",
+  "short_name": "腎機能投与量",
+  "description": "JSNP第39版準拠の薬剤投与量チェッカー",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f5f0",
+  "theme_color": "#1e6b78",
+  "lang": "ja",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
