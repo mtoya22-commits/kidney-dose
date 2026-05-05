@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -22,132 +23,141 @@
 
 /* ===== Design Tokens ===== */
 :root {
-  /* ベース色: ink-on-paper */
-  --bg: #f7f5f0;          /* warm paper */
-  --bg-elev: #ffffff;
-  --bg-sunken: #efece5;
-  --ink: #14181f;         /* near-black, slightly warm */
-  --ink-2: #3a4250;
-  --ink-3: #6c7686;
-  --ink-4: #9aa3b1;
-  --rule: #e3ddd0;        /* hairline */
-  --rule-2: #d0c9b8;
+/* ベース色: ink-on-paper */
+–bg: #f7f5f0;          /* warm paper */
+–bg-elev: #ffffff;
+–bg-sunken: #efece5;
+–ink: #14181f;         /* near-black, slightly warm */
+–ink-2: #3a4250;
+–ink-3: #6c7686;
+–ink-4: #9aa3b1;
+–rule: #e3ddd0;        /* hairline */
+–rule-2: #d0c9b8;
 
-  /* Brand: muted teal (medical, calm) */
-  --brand: #1e6b78;
-  --brand-2: #145660;
-  --brand-soft: #e3eef0;
-  --brand-tint: #f0f7f8;
+/* Brand: muted teal (medical, calm) */
+–brand: #1e6b78;
+–brand-2: #145660;
+–brand-soft: #e3eef0;
+–brand-tint: #f0f7f8;
 
-  /* Status colors: clinical, color-blind safe */
-  --ok: #2d6a4f;          /* deep green */
-  --ok-bg: #e8f0eb;
-  --ok-rule: #b5cdc0;
+/* Status colors: clinical, color-blind safe */
+–ok: #2d6a4f;          /* deep green */
+–ok-bg: #e8f0eb;
+–ok-rule: #b5cdc0;
 
-  --cau: #b8651c;         /* burnt amber */
-  --cau-bg: #fbf0e1;
-  --cau-rule: #e8c89b;
+–cau: #b8651c;         /* burnt amber */
+–cau-bg: #fbf0e1;
+–cau-rule: #e8c89b;
 
-  --war: #a83232;         /* deep red */
-  --war-bg: #f7e5e2;
-  --war-rule: #e0a8a0;
+–war: #a83232;         /* deep red */
+–war-bg: #f7e5e2;
+–war-rule: #e0a8a0;
 
-  --proh: #6a1a1a;        /* oxblood */
-  --proh-bg: #efd9d6;
-  --proh-rule: #c98a82;
+–proh: #6a1a1a;        /* oxblood */
+–proh-bg: #efd9d6;
+–proh-rule: #c98a82;
 
-  --dial: #4a3470;        /* deep violet */
-  --dial-bg: #ebe4f2;
-  --dial-rule: #b9a8d2;
+–dial: #4a3470;        /* deep violet */
+–dial-bg: #ebe4f2;
+–dial-rule: #b9a8d2;
 
-  /* Typography */
-  --font-display: 'Noto Serif JP', 'Times New Roman', serif;
-  --font-body: 'Inter', 'Hiragino Sans', 'Yu Gothic UI', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+/* Typography */
+–font-display: ‘Noto Serif JP’, ‘Times New Roman’, serif;
+–font-body: ‘Inter’, ‘Hiragino Sans’, ‘Yu Gothic UI’, system-ui, sans-serif;
+–font-mono: ‘JetBrains Mono’, ‘SF Mono’, Menlo, monospace;
 
-  /* Geometry */
-  --r-sm: 4px;
-  --r: 6px;
-  --r-lg: 10px;
-  --shadow-1: 0 1px 0 rgba(20,24,31,.04), 0 1px 2px rgba(20,24,31,.06);
-  --shadow-2: 0 2px 4px rgba(20,24,31,.06), 0 4px 12px rgba(20,24,31,.08);
-  --shadow-pop: 0 8px 28px rgba(20,24,31,.18);
+/* Geometry */
+–r-sm: 4px;
+–r: 6px;
+–r-lg: 10px;
+–shadow-1: 0 1px 0 rgba(20,24,31,.04), 0 1px 2px rgba(20,24,31,.06);
+–shadow-2: 0 2px 4px rgba(20,24,31,.06), 0 4px 12px rgba(20,24,31,.08);
+–shadow-pop: 0 8px 28px rgba(20,24,31,.18);
 
-  /* Motion */
-  --ease: cubic-bezier(.2,.7,.2,1);
+/* Motion */
+–ease: cubic-bezier(.2,.7,.2,1);
 }
 
-/* ダークモード: 自動(OS追従) または手動(data-theme="dark") */
+/* ダークモード: 自動(OS追従) または手動(data-theme=“dark”) */
+/* “Clinical Dark” - 深いネイビーベースに信頼感のあるシアンアクセント */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #11141a;
-    --bg-elev: #1a1f28;
-    --bg-sunken: #0c0f14;
-    --ink: #ebe6da;
-    --ink-2: #c0bbb0;
-    --ink-3: #8e8a82;
-    --ink-4: #62605a;
-    --rule: #2a2f38;
-    --rule-2: #3a4150;
-    --brand: #5dadbb;
-    --brand-2: #7cc4d2;
-    --brand-soft: #16323a;
-    --brand-tint: #0e2127;
-    --ok: #6fc090; --ok-bg: #1a2e22; --ok-rule: #2f5a44;
-    --cau: #e0a060; --cau-bg: #2e2418; --cau-rule: #5a4528;
-    --war: #e08070; --war-bg: #2e1a18; --war-rule: #5a302a;
-    --proh: #d06060; --proh-bg: #2a1414; --proh-rule: #5a2828;
-    --dial: #b09cd0; --dial-bg: #221c30; --dial-rule: #443560;
-  }
+:root:not([data-theme=“light”]) {
+–bg: #0B1220;          /* 深いネイビー（集中できる背景） */
+–bg-elev: #121A2B;     /* カード背景 */
+–bg-sunken: #070D18;   /* より深い沈み込み */
+–ink: #E8ECF4;         /* 主要テキスト */
+–ink-2: #B8C0D0;       /* セカンダリテキスト */
+–ink-3: #6B7280;       /* ヒント・補足 */
+–ink-4: #4A5160;       /* 極弱テキスト */
+–rule: #1E2638;        /* 罫線 */
+–rule-2: #2A3447;      /* やや強い罫線 */
+
+```
+/* アクセント: 信頼感のあるシアン */
+--brand: #00D4FF;
+--brand-2: #5EE0FF;
+--brand-soft: #0E3340;
+--brand-tint: #0B2230;
+
+/* ステータスカラー: スクショ準拠 */
+--ok: #34D399;          --ok-bg: #0F2820;     --ok-rule: #1F4A38;
+--cau: #F5A623;         --cau-bg: #2A1F0C;    --cau-rule: #5A3F18;
+--war: #FF6B6B;         --war-bg: #2A1316;    --war-rule: #5A2A2E;
+--proh: #FF4D4D;        --proh-bg: #2A0E11;   --proh-rule: #5A1F23;
+--dial: #A78BFA;        --dial-bg: #1F1A30;   --dial-rule: #3F3460;
+```
+
+}
 }
 /* 手動ダークモード (OS設定を上書き) */
-:root[data-theme="dark"] {
-  --bg: #11141a;
-  --bg-elev: #1a1f28;
-  --bg-sunken: #0c0f14;
-  --ink: #ebe6da;
-  --ink-2: #c0bbb0;
-  --ink-3: #8e8a82;
-  --ink-4: #62605a;
-  --rule: #2a2f38;
-  --rule-2: #3a4150;
-  --brand: #5dadbb;
-  --brand-2: #7cc4d2;
-  --brand-soft: #16323a;
-  --brand-tint: #0e2127;
-  --ok: #6fc090; --ok-bg: #1a2e22; --ok-rule: #2f5a44;
-  --cau: #e0a060; --cau-bg: #2e2418; --cau-rule: #5a4528;
-  --war: #e08070; --war-bg: #2e1a18; --war-rule: #5a302a;
-  --proh: #d06060; --proh-bg: #2a1414; --proh-rule: #5a2828;
-  --dial: #b09cd0; --dial-bg: #221c30; --dial-rule: #443560;
+:root[data-theme=“dark”] {
+–bg: #0B1220;
+–bg-elev: #121A2B;
+–bg-sunken: #070D18;
+–ink: #E8ECF4;
+–ink-2: #B8C0D0;
+–ink-3: #6B7280;
+–ink-4: #4A5160;
+–rule: #1E2638;
+–rule-2: #2A3447;
+–brand: #00D4FF;
+–brand-2: #5EE0FF;
+–brand-soft: #0E3340;
+–brand-tint: #0B2230;
+–ok: #34D399;          –ok-bg: #0F2820;     –ok-rule: #1F4A38;
+–cau: #F5A623;         –cau-bg: #2A1F0C;    –cau-rule: #5A3F18;
+–war: #FF6B6B;         –war-bg: #2A1316;    –war-rule: #5A2A2E;
+–proh: #FF4D4D;        –proh-bg: #2A0E11;   –proh-rule: #5A1F23;
+–dial: #A78BFA;        –dial-bg: #1F1A30;   –dial-rule: #3F3460;
 }
 
 /* ===== Reset + Base ===== */
 *, *::before, *::after { box-sizing: border-box; }
-* { margin: 0; padding: 0; }
+
+- { margin: 0; padding: 0; }
 
 html, body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.5;
-  font-feature-settings: 'palt' 1, 'kern' 1, 'liga' 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+background: var(–bg);
+color: var(–ink);
+font-family: var(–font-body);
+font-size: 14px;
+line-height: 1.5;
+font-feature-settings: ‘palt’ 1, ‘kern’ 1, ‘liga’ 1;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  min-height: 100vh;
-  /* subtle paper texture */
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(20,24,31,.03) 1px, transparent 0);
-  background-size: 24px 24px;
+min-height: 100vh;
+/* subtle paper texture */
+background-image:
+radial-gradient(circle at 1px 1px, rgba(20,24,31,.03) 1px, transparent 0);
+background-size: 24px 24px;
 }
 
 button, input, select, textarea {
-  font: inherit;
-  color: inherit;
+font: inherit;
+color: inherit;
 }
 
 button { cursor: pointer; background: none; border: none; }
@@ -156,2116 +166,2326 @@ input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
 
-::selection { background: var(--brand); color: #fff; }
+::selection { background: var(–brand); color: #fff; }
 
 /* ===== Layout ===== */
 .app {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 16px 80px;
+max-width: 720px;
+margin: 0 auto;
+padding: 0 16px 80px;
 }
 
 /* ===== Usage stats ===== */
 .usage-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+display: flex;
+flex-direction: column;
+gap: 12px;
 }
 .usage-intro {
-  font-size: 13px;
-  color: var(--ink-2);
-  line-height: 1.6;
+font-size: 13px;
+color: var(–ink-2);
+line-height: 1.6;
 }
 .usage-privacy {
-  background: var(--brand-tint);
-  border: 1px solid var(--brand-soft);
-  border-radius: var(--r);
-  padding: 10px 14px;
-  font-size: 12px;
-  color: var(--ink-2);
-  line-height: 1.6;
+background: var(–brand-tint);
+border: 1px solid var(–brand-soft);
+border-radius: var(–r);
+padding: 10px 14px;
+font-size: 12px;
+color: var(–ink-2);
+line-height: 1.6;
 }
 .usage-privacy strong {
-  display: block;
-  font-size: 12px;
-  color: var(--brand-2);
-  margin-bottom: 4px;
+display: block;
+font-size: 12px;
+color: var(–brand-2);
+margin-bottom: 4px;
 }
 .usage-privacy ul {
-  margin: 0;
-  padding-left: 18px;
+margin: 0;
+padding-left: 18px;
 }
 .usage-privacy li {
-  margin: 1px 0;
+margin: 1px 0;
 }
 .usage-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  background: var(--bg-sunken);
-  border-radius: var(--r);
-  padding: 10px;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 8px;
+background: var(–bg-sunken);
+border-radius: var(–r);
+padding: 10px;
 }
 .usage-stat {
-  text-align: center;
+text-align: center;
 }
 .usage-stat-num {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--brand);
-  font-variant-numeric: tabular-nums;
+font-family: var(–font-display);
+font-size: 22px;
+font-weight: 600;
+color: var(–brand);
+font-variant-numeric: tabular-nums;
 }
 .usage-stat-lb {
-  font-size: 10px;
-  color: var(--ink-3);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-top: 2px;
+font-size: 10px;
+color: var(–ink-3);
+letter-spacing: 0.04em;
+text-transform: uppercase;
+margin-top: 2px;
 }
 .usage-section-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  margin-top: 4px;
-  margin-bottom: 4px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: var(–ink-3);
+margin-top: 4px;
+margin-bottom: 4px;
 }
 .usage-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+display: flex;
+flex-direction: column;
+gap: 4px;
 }
 .usage-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 10px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: background .12s;
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 7px 10px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-sm);
+cursor: pointer;
+transition: background .12s;
 }
-.usage-item:hover { background: var(--brand-tint); }
+.usage-item:hover { background: var(–brand-tint); }
 .usage-rank {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ink-3);
-  width: 18px;
-  text-align: right;
+font-family: var(–font-mono);
+font-size: 11px;
+font-weight: 700;
+color: var(–ink-3);
+width: 18px;
+text-align: right;
 }
 .usage-bar-wrap { flex: 1; min-width: 0; }
 .usage-name {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--ink);
+font-size: 12.5px;
+font-weight: 600;
+color: var(–ink);
 }
 .usage-bar {
-  margin-top: 3px;
-  height: 4px;
-  background: var(--bg-sunken);
-  border-radius: 2px;
-  overflow: hidden;
+margin-top: 3px;
+height: 4px;
+background: var(–bg-sunken);
+border-radius: 2px;
+overflow: hidden;
 }
 .usage-bar-fill {
-  height: 100%;
-  background: var(--brand);
-  border-radius: 2px;
-  transition: width .3s var(--ease);
+height: 100%;
+background: var(–brand);
+border-radius: 2px;
+transition: width .3s var(–ease);
 }
 .usage-count {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--brand);
-  min-width: 24px;
-  text-align: right;
+font-family: var(–font-mono);
+font-variant-numeric: tabular-nums;
+font-size: 11.5px;
+font-weight: 700;
+color: var(–brand);
+min-width: 24px;
+text-align: right;
 }
 .usage-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
+display: flex;
+gap: 8px;
+margin-top: 8px;
 }
 
 /* ===== Initial splash (PWA起動時の白フラッシュ防止) ===== */
 .splash {
-  position: fixed; inset: 0;
-  z-index: 8000;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;
-  transition: opacity .4s ease, visibility 0s linear .4s;
+position: fixed; inset: 0;
+z-index: 8000;
+background: var(–bg);
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 1;
+transition: opacity .4s ease, visibility 0s linear .4s;
 }
-.splash[data-hidden="true"] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+.splash[data-hidden=“true”] {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
 }
 .splash-mark {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  background: var(--brand);
-  position: relative;
-  animation: splashPulse 1.2s ease-in-out infinite;
+width: 56px; height: 56px;
+border-radius: 50%;
+background: var(–brand);
+position: relative;
+animation: splashPulse 1.2s ease-in-out infinite;
 }
 .splash-mark::before, .splash-mark::after {
-  content: '';
-  position: absolute;
-  background: #fff;
-  border-radius: 4px;
+content: ‘’;
+position: absolute;
+background: #fff;
+border-radius: 4px;
 }
 .splash-mark::before {
-  width: 6px; height: 28px;
-  top: 14px; left: 25px;
+width: 6px; height: 28px;
+top: 14px; left: 25px;
 }
 .splash-mark::after {
-  width: 28px; height: 6px;
-  top: 25px; left: 14px;
+width: 28px; height: 6px;
+top: 25px; left: 14px;
 }
 @keyframes splashPulse {
-  0%, 100% { transform: scale(1); opacity: .9; }
-  50% { transform: scale(1.06); opacity: 1; }
+0%, 100% { transform: scale(1); opacity: .9; }
+50% { transform: scale(1.06); opacity: 1; }
 }
 
 /* ===== PIN Lock Screen ===== */
 .pin-overlay {
-  position: fixed; inset: 0;
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: linear-gradient(160deg, #0d1419 0%, #142028 50%, #0d1419 100%);
+position: fixed; inset: 0;
+z-index: 9999;
+display: none;
+align-items: center;
+justify-content: center;
+padding: 20px;
+background: linear-gradient(160deg, #0d1419 0%, #142028 50%, #0d1419 100%);
 }
 
-.pin-overlay[style*="flex"] { display: flex !important; }
+.pin-overlay[style*=“flex”] { display: flex !important; }
 
 .pin-card {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: 28px 20px 20px;
+width: 100%;
+max-width: 360px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 0;
+padding: 28px 20px 20px;
 }
 
 .pin-mark {
-  font-size: 38px;
-  color: #5dadbb;
-  margin-bottom: 10px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 8px rgba(93,173,187,.3));
+font-size: 38px;
+color: #5dadbb;
+margin-bottom: 10px;
+line-height: 1;
+filter: drop-shadow(0 2px 8px rgba(93,173,187,.3));
 }
 
 .pin-title {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 18px;
-  font-weight: 500;
-  color: #ebe6da;
-  letter-spacing: 0.04em;
-  margin: 0;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 18px;
+font-weight: 500;
+color: #ebe6da;
+letter-spacing: 0.04em;
+margin: 0;
 }
 
 .pin-sub {
-  font-size: 11px;
-  color: #8e9ca5;
-  letter-spacing: 0.06em;
-  margin: 4px 0 24px;
-  text-align: center;
+font-size: 11px;
+color: #8e9ca5;
+letter-spacing: 0.06em;
+margin: 4px 0 24px;
+text-align: center;
 }
 
 .pin-dots {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  min-height: 14px;
+display: flex;
+gap: 12px;
+margin-bottom: 16px;
+min-height: 14px;
 }
 .pin-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,.45);
-  background: transparent;
-  transition: background .12s, border-color .12s;
+width: 10px;
+height: 10px;
+border-radius: 50%;
+border: 1.5px solid rgba(255,255,255,.45);
+background: transparent;
+transition: background .12s, border-color .12s;
 }
 .pin-dot.filled {
-  background: #5dadbb;
-  border-color: #5dadbb;
-  box-shadow: 0 0 6px rgba(93,173,187,.5);
+background: #5dadbb;
+border-color: #5dadbb;
+box-shadow: 0 0 6px rgba(93,173,187,.5);
 }
 
 .pin-err {
-  color: #e08070;
-  font-size: 11px;
-  height: 16px;
-  margin-bottom: 14px;
-  text-align: center;
-  letter-spacing: 0.02em;
+color: #e08070;
+font-size: 11px;
+height: 16px;
+margin-bottom: 14px;
+text-align: center;
+letter-spacing: 0.02em;
 }
 
 .pin-keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 64px);
-  gap: 10px;
-  margin-bottom: 16px;
+display: grid;
+grid-template-columns: repeat(3, 64px);
+gap: 10px;
+margin-bottom: 16px;
 }
 .pin-key {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.07);
-  color: #ebe6da;
-  font-family: 'Noto Serif JP', serif;
-  font-size: 22px;
-  font-weight: 400;
-  border: 1px solid rgba(255,255,255,.06);
-  transition: all .1s ease;
-  -webkit-tap-highlight-color: transparent;
-  cursor: pointer;
+width: 64px;
+height: 64px;
+border-radius: 50%;
+background: rgba(255,255,255,.07);
+color: #ebe6da;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 22px;
+font-weight: 400;
+border: 1px solid rgba(255,255,255,.06);
+transition: all .1s ease;
+-webkit-tap-highlight-color: transparent;
+cursor: pointer;
 }
 .pin-key:hover { background: rgba(255,255,255,.12); }
 .pin-key:active {
-  background: rgba(93,173,187,.3);
-  transform: scale(.94);
+background: rgba(93,173,187,.3);
+transform: scale(.94);
 }
-.pin-key--util {
-  font-family: 'Inter', system-ui;
-  font-size: 18px;
-  background: transparent;
-  color: #8e9ca5;
+.pin-key–util {
+font-family: ‘Inter’, system-ui;
+font-size: 18px;
+background: transparent;
+color: #8e9ca5;
 }
-.pin-key--ok {
-  font-family: 'Inter', system-ui;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  background: rgba(93,173,187,.25);
-  color: #ebe6da;
-  border-color: rgba(93,173,187,.4);
+.pin-key–ok {
+font-family: ‘Inter’, system-ui;
+font-size: 13px;
+font-weight: 600;
+letter-spacing: 0.06em;
+background: rgba(93,173,187,.25);
+color: #ebe6da;
+border-color: rgba(93,173,187,.4);
 }
-.pin-key--ok:hover { background: rgba(93,173,187,.4); }
+.pin-key–ok:hover { background: rgba(93,173,187,.4); }
 
 .pin-len-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 18px;
+display: flex;
+gap: 8px;
+margin-bottom: 18px;
 }
 .pin-len-btn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,.15);
-  color: #8e9ca5;
-  font-size: 11px;
-  padding: 4px 14px;
-  border-radius: 99px;
-  cursor: pointer;
-  transition: all .12s;
-  letter-spacing: 0.04em;
+background: transparent;
+border: 1px solid rgba(255,255,255,.15);
+color: #8e9ca5;
+font-size: 11px;
+padding: 4px 14px;
+border-radius: 99px;
+cursor: pointer;
+transition: all .12s;
+letter-spacing: 0.04em;
 }
-.pin-len-btn[data-active="true"] {
-  background: rgba(255,255,255,.12);
-  color: #ebe6da;
-  border-color: rgba(255,255,255,.3);
+.pin-len-btn[data-active=“true”] {
+background: rgba(255,255,255,.12);
+color: #ebe6da;
+border-color: rgba(255,255,255,.3);
 }
 
 .pin-hint {
-  font-size: 10px;
-  color: #62707a;
-  text-align: center;
-  letter-spacing: 0.04em;
-  margin: 0;
+font-size: 10px;
+color: #62707a;
+text-align: center;
+letter-spacing: 0.04em;
+margin: 0;
 }
 
 @keyframes pinShake {
-  0%,100% { transform: translateX(0); }
-  20%,60% { transform: translateX(-7px); }
-  40%,80% { transform: translateX(7px); }
+0%,100% { transform: translateX(0); }
+20%,60% { transform: translateX(-7px); }
+40%,80% { transform: translateX(7px); }
 }
 .pin-dots.shake { animation: pinShake .4s ease; }
 
 /* ===== Header ===== */
 .app-header {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--bg);
-  border-bottom: 1px solid var(--rule);
-  padding: 14px 16px 12px;
-  margin-bottom: 0;
-  backdrop-filter: saturate(1.2) blur(8px);
-  -webkit-backdrop-filter: saturate(1.2) blur(8px);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
+position: sticky; top: 0; z-index: 100;
+background: var(–bg);
+border-bottom: 1px solid var(–rule);
+padding: 14px 16px 12px;
+margin-bottom: 0;
+backdrop-filter: saturate(1.2) blur(8px);
+-webkit-backdrop-filter: saturate(1.2) blur(8px);
+background: color-mix(in srgb, var(–bg) 85%, transparent);
 }
 .app-header-inner {
-  max-width: 720px; margin: 0 auto;
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap;
+max-width: 720px; margin: 0 auto;
+display: flex; align-items: baseline; justify-content: space-between;
+gap: 12px; flex-wrap: wrap;
 }
 .app-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 17px;
-  letter-spacing: 0.01em;
-  color: var(--ink);
-  display: flex; align-items: baseline; gap: 8px;
+font-family: var(–font-display);
+font-weight: 600;
+font-size: 17px;
+letter-spacing: 0.01em;
+color: var(–ink);
+display: flex; align-items: baseline; gap: 8px;
 }
 .app-title::before {
-  content: '';
-  display: inline-block;
-  width: 6px; height: 6px;
-  background: var(--brand);
-  border-radius: 50%;
-  align-self: center;
-  flex-shrink: 0;
+content: ‘’;
+display: inline-block;
+width: 6px; height: 6px;
+background: var(–brand);
+border-radius: 50%;
+align-self: center;
+flex-shrink: 0;
 }
 .app-meta {
-  font-size: 11px;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+font-size: 11px;
+color: var(–ink-3);
+font-variant-numeric: tabular-nums;
+letter-spacing: 0.02em;
 }
 
 /* ===== Header tools (theme, menu) ===== */
 .header-tools {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+display: flex;
+align-items: center;
+gap: 6px;
 }
 .tool-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--rule-2);
-  color: var(--ink-2);
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .15s var(--ease);
-  font-feature-settings: 'liga' 0;
+width: 32px;
+height: 32px;
+border-radius: 50%;
+background: transparent;
+border: 1px solid var(–rule-2);
+color: var(–ink-2);
+font-size: 14px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: all .15s var(–ease);
+font-feature-settings: ‘liga’ 0;
 }
 .tool-btn:hover {
-  background: var(--bg-elev);
-  border-color: var(--ink-3);
-  color: var(--ink);
+background: var(–bg-elev);
+border-color: var(–ink-3);
+color: var(–ink);
 }
 .tool-btn[aria-label]::after {
-  content: attr(data-label);
-  position: absolute;
-  bottom: -22px;
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .15s;
+content: attr(data-label);
+position: absolute;
+bottom: -22px;
+background: var(–ink);
+color: var(–bg);
+font-size: 10px;
+padding: 2px 6px;
+border-radius: 3px;
+white-space: nowrap;
+opacity: 0;
+pointer-events: none;
+transition: opacity .15s;
 }
 
 /* ===== Section ===== */
 section { margin-top: 16px; }
 .section-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--ink-3);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: flex; align-items: center; gap: 8px;
-  justify-content: space-between;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.14em;
+color: var(–ink-3);
+text-transform: uppercase;
+margin-bottom: 8px;
+display: flex; align-items: center; gap: 8px;
+justify-content: space-between;
 }
 .section-label > span:first-child {
-  display: flex; align-items: center; gap: 8px;
+display: flex; align-items: center; gap: 8px;
 }
 .section-label > span:first-child::before {
-  content: '';
-  flex-shrink: 0;
-  display: inline-block;
-  width: 14px; height: 1px;
-  background: var(--ink-3);
+content: ‘’;
+flex-shrink: 0;
+display: inline-block;
+width: 14px; height: 1px;
+background: var(–ink-3);
 }
 
 /* 単純な span ではなく直接テキストを表示する section-label への対応 */
 .section-label::before {
-  content: '';
-  flex-shrink: 0;
-  display: inline-block;
-  width: 14px; height: 1px;
-  background: var(--ink-3);
+content: ‘’;
+flex-shrink: 0;
+display: inline-block;
+width: 14px; height: 1px;
+background: var(–ink-3);
 }
 
 /* 「複数まとめて選択」ボタン (section-label内) */
 .bulk-btn {
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--brand-2);
-  background: var(--brand-tint);
-  border: 1px solid var(--brand-soft);
-  padding: 4px 12px;
-  border-radius: 99px;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all .12s;
-  text-transform: none;
+margin-left: auto;
+font-size: 11px;
+font-weight: 500;
+color: var(–brand-2);
+background: var(–brand-tint);
+border: 1px solid var(–brand-soft);
+padding: 4px 12px;
+border-radius: 99px;
+letter-spacing: 0.02em;
+cursor: pointer;
+transition: all .12s;
+text-transform: none;
 }
 .bulk-btn:hover {
-  background: var(--brand-soft);
-  border-color: var(--brand);
+background: var(–brand-soft);
+border-color: var(–brand);
 }
 /* span を入れた場合は wrapper の擬似要素を使うので親の擬似要素を抑制 */
 .section-label:has(> span)::before {
-  display: none;
+display: none;
 }
 
 .bulk-btn {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--brand);
-  padding: 4px 10px;
-  border: 1px solid var(--brand);
-  border-radius: 99px;
-  background: transparent;
-  cursor: pointer;
-  text-transform: none;
-  transition: all .12s;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.04em;
+color: var(–brand);
+padding: 4px 10px;
+border: 1px solid var(–brand);
+border-radius: 99px;
+background: transparent;
+cursor: pointer;
+text-transform: none;
+transition: all .12s;
 }
 .bulk-btn:hover {
-  background: var(--brand);
-  color: var(--bg-elev);
+background: var(–brand);
+color: var(–bg-elev);
 }
 
 /* ===== Bulk match modal content ===== */
 .bulk-content { display: flex; flex-direction: column; gap: 12px; }
 .bulk-textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 10px 12px;
-  background: var(--bg-elev);
-  border: 1.5px solid var(--rule-2);
-  border-radius: var(--r);
-  font-size: 16px;
-  font-family: var(--font-body);
-  color: var(--ink);
-  resize: vertical;
-  line-height: 1.6;
+width: 100%;
+min-height: 120px;
+padding: 10px 12px;
+background: var(–bg-elev);
+border: 1.5px solid var(–rule-2);
+border-radius: var(–r);
+font-size: 16px;
+font-family: var(–font-body);
+color: var(–ink);
+resize: vertical;
+line-height: 1.6;
 }
 .bulk-textarea:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-soft);
+outline: none;
+border-color: var(–brand);
+box-shadow: 0 0 0 3px var(–brand-soft);
 }
 .bulk-hint {
-  font-size: 11px;
-  color: var(--ink-3);
-  line-height: 1.5;
+font-size: 11px;
+color: var(–ink-3);
+line-height: 1.5;
 }
 .bulk-result {
-  display: flex; flex-direction: column; gap: 8px;
+display: flex; flex-direction: column; gap: 8px;
 }
 .bulk-section-title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+margin-bottom: 4px;
 }
 .bulk-matched-list, .bulk-unmatched-list {
-  display: flex; flex-wrap: wrap; gap: 6px;
+display: flex; flex-wrap: wrap; gap: 6px;
 }
 .bulk-match-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px;
-  border-radius: 99px;
-  font-size: 12px;
-  background: var(--ok-bg);
-  color: var(--ok);
-  border: 1px solid var(--ok-rule);
+display: inline-flex; align-items: center; gap: 6px;
+padding: 4px 10px;
+border-radius: 99px;
+font-size: 12px;
+background: var(–ok-bg);
+color: var(–ok);
+border: 1px solid var(–ok-rule);
 }
 .bulk-match-chip-source {
-  font-size: 9.5px;
-  opacity: .6;
-  margin-left: 4px;
-  font-style: italic;
+font-size: 9.5px;
+opacity: .6;
+margin-left: 4px;
+font-style: italic;
 }
 .bulk-unmatch-chip {
-  padding: 4px 10px;
-  font-size: 12px;
-  background: var(--war-bg);
-  color: var(--war);
-  border: 1px solid var(--war-rule);
-  border-radius: 99px;
+padding: 4px 10px;
+font-size: 12px;
+background: var(–war-bg);
+color: var(–war);
+border: 1px solid var(–war-rule);
+border-radius: 99px;
 }
 
 /* Ambiguous (複数候補) */
 .bulk-ambiguous-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+display: flex;
+flex-direction: column;
+gap: 8px;
 }
 .bulk-ambig-item {
-  background: var(--cau-bg);
-  border: 1px solid var(--cau-rule);
-  border-radius: var(--r);
-  padding: 8px 10px;
+background: var(–cau-bg);
+border: 1px solid var(–cau-rule);
+border-radius: var(–r);
+padding: 8px 10px;
 }
 .bulk-ambig-source {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--cau);
-  margin-bottom: 6px;
-  letter-spacing: 0.02em;
+font-size: 11px;
+font-weight: 600;
+color: var(–cau);
+margin-bottom: 6px;
+letter-spacing: 0.02em;
 }
 .bulk-ambig-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
 }
 .bulk-ambig-btn {
-  padding: 4px 10px;
-  font-size: 11.5px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule-2);
-  border-radius: 99px;
-  color: var(--ink);
-  cursor: pointer;
-  transition: all .12s;
-  font-weight: 500;
+padding: 4px 10px;
+font-size: 11.5px;
+background: var(–bg-elev);
+border: 1px solid var(–rule-2);
+border-radius: 99px;
+color: var(–ink);
+cursor: pointer;
+transition: all .12s;
+font-weight: 500;
 }
 .bulk-ambig-btn:hover {
-  border-color: var(--brand);
-  color: var(--brand);
+border-color: var(–brand);
+color: var(–brand);
 }
 .bulk-ambig-btn.is-active {
-  background: var(--brand);
-  color: var(--bg-elev);
-  border-color: var(--brand);
-  font-weight: 600;
+background: var(–brand);
+color: var(–bg-elev);
+border-color: var(–brand);
+font-weight: 600;
 }
 .bulk-ambig-skip {
-  color: var(--ink-3);
-  font-style: italic;
+color: var(–ink-3);
+font-style: italic;
 }
 .bulk-actions {
-  display: flex; gap: 8px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+display: flex; gap: 8px;
+margin-top: 8px;
+flex-wrap: wrap;
 }
 .bulk-action-btn {
-  flex: 1;
-  min-width: 100px;
-  padding: 9px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 99px;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  border: 1px solid;
-  transition: all .12s;
+flex: 1;
+min-width: 100px;
+padding: 9px 12px;
+font-size: 12px;
+font-weight: 600;
+border-radius: 99px;
+cursor: pointer;
+letter-spacing: 0.04em;
+border: 1px solid;
+transition: all .12s;
 }
-.bulk-action-btn--primary {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: var(--bg-elev);
+.bulk-action-btn–primary {
+background: var(–brand);
+border-color: var(–brand);
+color: var(–bg-elev);
 }
-.bulk-action-btn--primary:hover { background: var(--brand-2); }
-.bulk-action-btn--primary:disabled {
-  opacity: .4; cursor: not-allowed;
+.bulk-action-btn–primary:hover { background: var(–brand-2); }
+.bulk-action-btn–primary:disabled {
+opacity: .4; cursor: not-allowed;
 }
-.bulk-action-btn--secondary {
-  background: transparent;
-  border-color: var(--rule-2);
-  color: var(--ink-2);
+.bulk-action-btn–secondary {
+background: transparent;
+border-color: var(–rule-2);
+color: var(–ink-2);
 }
-.bulk-action-btn--secondary:hover {
-  border-color: var(--ink); color: var(--ink);
+.bulk-action-btn–secondary:hover {
+border-color: var(–ink); color: var(–ink);
 }
 
 /* ===== Card ===== */
 .card {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-1);
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+box-shadow: var(–shadow-1);
 }
 
 /* ===== Input panel ===== */
 .input-panel { padding: 0; }
 .input-tabs {
-  display: flex;
-  border-bottom: 1px solid var(--rule);
+display: flex;
+border-bottom: 1px solid var(–rule);
 }
 .input-tab {
-  flex: 1;
-  padding: 11px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ink-3);
-  border-bottom: 2px solid transparent;
-  transition: color .15s var(--ease), border-color .15s var(--ease);
-  letter-spacing: 0.02em;
+flex: 1;
+padding: 11px 12px;
+font-size: 12px;
+font-weight: 500;
+color: var(–ink-3);
+border-bottom: 2px solid transparent;
+transition: color .15s var(–ease), border-color .15s var(–ease);
+letter-spacing: 0.02em;
 }
-.input-tab[aria-selected="true"] {
-  color: var(--brand);
-  border-bottom-color: var(--brand);
-  font-weight: 600;
+.input-tab[aria-selected=“true”] {
+color: var(–brand);
+border-bottom-color: var(–brand);
+font-weight: 600;
 }
 .input-body { padding: 14px 14px 12px; }
 
 .field-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px 10px;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 8px 10px;
 }
-.field-grid--2 { grid-template-columns: 1fr 1fr; }
+.field-grid–2 { grid-template-columns: 1fr 1fr; }
 
 .field { display: flex; flex-direction: column; gap: 4px; }
 .field-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--ink-3);
-  text-transform: uppercase;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.06em;
+color: var(–ink-3);
+text-transform: uppercase;
 }
 .field-input, .field-select {
-  width: 100%;
-  padding: 9px 10px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule-2);
-  border-radius: var(--r);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
-  font-family: var(--font-mono);
-  color: var(--ink);
-  transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+width: 100%;
+padding: 9px 10px;
+background: var(–bg-elev);
+border: 1px solid var(–rule-2);
+border-radius: var(–r);
+font-size: 16px;
+font-variant-numeric: tabular-nums;
+font-family: var(–font-mono);
+color: var(–ink);
+transition: border-color .15s var(–ease), box-shadow .15s var(–ease);
 }
-.field-select { font-family: var(--font-body); font-size: 16px; }
+.field-select { font-family: var(–font-body); font-size: 16px; }
 .field-input:focus, .field-select:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-soft);
+outline: none;
+border-color: var(–brand);
+box-shadow: 0 0 0 3px var(–brand-soft);
 }
 .field-input:invalid:not(:placeholder-shown) {
-  border-color: var(--war-rule);
+border-color: var(–war-rule);
 }
 .field-error {
-  font-size: 10px;
-  color: var(--war);
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
+font-size: 10px;
+color: var(–war);
+margin-top: 2px;
+font-variant-numeric: tabular-nums;
 }
 
 /* Formula picker */
 .formula-row {
-  display: flex; gap: 6px;
-  margin-top: 10px;
+display: flex; gap: 6px;
+margin-top: 10px;
 }
 .formula-btn {
-  flex: 1;
-  padding: 7px 8px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--ink-3);
-  border: 1px solid var(--rule-2);
-  border-radius: var(--r);
-  background: var(--bg-elev);
-  transition: all .15s var(--ease);
-  letter-spacing: 0.02em;
+flex: 1;
+padding: 7px 8px;
+font-size: 11px;
+font-weight: 500;
+color: var(–ink-3);
+border: 1px solid var(–rule-2);
+border-radius: var(–r);
+background: var(–bg-elev);
+transition: all .15s var(–ease);
+letter-spacing: 0.02em;
 }
-.formula-btn[aria-selected="true"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg-elev);
-  font-weight: 600;
+.formula-btn[aria-selected=“true”] {
+background: var(–ink);
+border-color: var(–ink);
+color: var(–bg-elev);
+font-weight: 600;
 }
 
 .reset-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 7px;
-  font-size: 11px;
-  color: var(--ink-3);
-  border: 1px dashed var(--rule-2);
-  border-radius: var(--r);
-  background: transparent;
-  transition: color .15s, border-color .15s;
-  letter-spacing: 0.04em;
+width: 100%;
+margin-top: 10px;
+padding: 7px;
+font-size: 11px;
+color: var(–ink-3);
+border: 1px dashed var(–rule-2);
+border-radius: var(–r);
+background: transparent;
+transition: color .15s, border-color .15s;
+letter-spacing: 0.04em;
 }
-.reset-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.reset-btn:hover { color: var(–ink); border-color: var(–ink-3); }
 
 /* ===== Result display ===== */
 .result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-top: 14px;
 }
 .result-cell {
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  padding: 12px 14px;
-  background: var(--bg-elev);
-  position: relative;
-  overflow: hidden;
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+padding: 12px 14px;
+background: var(–bg-elev);
+position: relative;
+overflow: hidden;
 }
-.result-cell--egfr { border-left: 3px solid var(--brand); }
-.result-cell--ccr  { border-left: 3px solid var(--ok); }
+.result-cell–egfr { border-left: 3px solid var(–brand); }
+.result-cell–ccr  { border-left: 3px solid var(–ok); }
 
 .result-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--ink-3);
-  text-transform: uppercase;
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 8px;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.1em;
+color: var(–ink-3);
+text-transform: uppercase;
+display: flex; align-items: baseline; justify-content: space-between;
+gap: 8px;
 }
 .result-formula {
-  font-size: 9px;
-  font-weight: 400;
-  color: var(--ink-4);
-  letter-spacing: 0;
-  text-transform: none;
-  font-variant: small-caps;
+font-size: 9px;
+font-weight: 400;
+color: var(–ink-4);
+letter-spacing: 0;
+text-transform: none;
+font-variant: small-caps;
 }
 .result-value {
-  font-family: var(--font-display);
-  font-size: 36px;
-  font-weight: 500;
-  color: var(--ink);
-  line-height: 1.05;
-  margin-top: 4px;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum' 1;
+font-family: var(–font-display);
+font-size: 36px;
+font-weight: 500;
+color: var(–ink);
+line-height: 1.05;
+margin-top: 4px;
+font-variant-numeric: tabular-nums;
+font-feature-settings: ‘tnum’ 1;
 }
 .result-unit {
-  font-size: 10px;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-  margin-top: 1px;
+font-size: 10px;
+color: var(–ink-3);
+font-variant-numeric: tabular-nums;
+margin-top: 1px;
 }
 .result-stage {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  background: var(--ink);
-  color: var(--bg-elev);
-  border-radius: 99px;
+display: inline-block;
+margin-top: 6px;
+padding: 2px 8px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.04em;
+background: var(–ink);
+color: var(–bg-elev);
+border-radius: 99px;
 }
-.result-cell--egfr .result-stage { background: var(--brand); }
-.result-cell--ccr  .result-stage { background: var(--ok); }
+.result-cell–egfr .result-stage { background: var(–brand); }
+.result-cell–ccr  .result-stage { background: var(–ok); }
 .result-individualized {
-  font-size: 10px;
-  color: var(--ink-2);
-  margin-top: 6px;
-  border-top: 1px dashed var(--rule);
-  padding-top: 4px;
+font-size: 10px;
+color: var(–ink-2);
+margin-top: 6px;
+border-top: 1px dashed var(–rule);
+padding-top: 4px;
 }
 .result-individualized strong {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+font-family: var(–font-mono);
+font-weight: 600;
+font-variant-numeric: tabular-nums;
 }
 
 .result-note {
-  font-size: 10px;
-  color: var(--ink-3);
-  margin-top: 8px;
-  padding: 6px 8px;
-  background: var(--bg-sunken);
-  border-radius: var(--r-sm);
-  line-height: 1.5;
+font-size: 10px;
+color: var(–ink-3);
+margin-top: 8px;
+padding: 6px 8px;
+background: var(–bg-sunken);
+border-radius: var(–r-sm);
+line-height: 1.5;
 }
 
 /* ===== Status bar (sticky summary) ===== */
 .status-bar {
-  position: sticky;
-  top: 56px;
-  z-index: 90;
-  background: var(--ink);
-  color: var(--bg-elev);
-  border-radius: var(--r-lg);
-  padding: 10px 14px;
-  margin: 12px 0;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-  box-shadow: var(--shadow-2);
+position: sticky;
+top: 56px;
+z-index: 90;
+background: var(–ink);
+color: var(–bg-elev);
+border-radius: var(–r-lg);
+padding: 10px 14px;
+margin: 12px 0;
+display: flex; align-items: center; justify-content: space-between;
+gap: 12px;
+box-shadow: var(–shadow-2);
 }
 .status-bar[hidden] { display: none; }
 .status-values { display: flex; gap: 18px; align-items: baseline; }
 .status-cell { display: flex; flex-direction: column; gap: 2px; }
 .status-label {
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: .65;
+font-size: 9px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+opacity: .65;
 }
 .status-num {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
+font-family: var(–font-display);
+font-size: 22px;
+font-weight: 500;
+font-variant-numeric: tabular-nums;
+line-height: 1;
 }
-.status-num--sm { font-size: 16px; opacity: .92; }
+.status-num–sm { font-size: 16px; opacity: .92; }
 .status-stage {
-  background: rgba(255,255,255,.16);
-  padding: 4px 10px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+background: rgba(255,255,255,.16);
+padding: 4px 10px;
+border-radius: 99px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.04em;
 }
 
 /* ===== Selection bar ===== */
 .selection-bar {
-  background: var(--brand-tint);
-  border: 1px solid var(--brand-soft);
-  border-radius: var(--r-lg);
-  padding: 10px 12px;
-  margin: 12px 0;
+background: var(–brand-tint);
+border: 1px solid var(–brand-soft);
+border-radius: var(–r-lg);
+padding: 10px 12px;
+margin: 12px 0;
 }
 .selection-bar[hidden] { display: none; }
 .selection-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px;
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 8px;
 }
 .selection-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--brand-2);
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: var(–brand-2);
 }
 .selection-count {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 11px;
-  font-weight: 400;
-  opacity: .7;
+font-family: var(–font-mono);
+font-variant-numeric: tabular-nums;
+font-size: 11px;
+font-weight: 400;
+opacity: .7;
 }
 .btn-clear {
-  font-size: 11px;
-  color: var(--ink-3);
-  padding: 3px 10px;
-  border: 1px solid var(--rule-2);
-  border-radius: 99px;
-  transition: all .15s;
+font-size: 11px;
+color: var(–ink-3);
+padding: 3px 10px;
+border: 1px solid var(–rule-2);
+border-radius: 99px;
+transition: all .15s;
 }
-.btn-clear:hover { border-color: var(--ink); color: var(--ink); }
+.btn-clear:hover { border-color: var(–ink); color: var(–ink); }
 
 /* 選択中のステータス別集計 (#17) */
 .sel-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 8px;
-  padding: 6px 8px;
-  background: var(--bg-elev);
-  border: 1px solid var(--brand-soft);
-  border-radius: var(--r);
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
+margin-bottom: 8px;
+padding: 6px 8px;
+background: var(–bg-elev);
+border: 1px solid var(–brand-soft);
+border-radius: var(–r);
 }
 .sel-summary[hidden] { display: none; }
 .sel-summary-item {
-  font-size: 10.5px;
-  padding: 2px 8px;
+font-size: 10.5px;
+padding: 2px 8px;
 }
 .chips {
-  display: flex; flex-wrap: wrap; gap: 6px;
+display: flex; flex-wrap: wrap; gap: 6px;
 }
 .chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 10px 5px 12px;
-  background: var(--bg-elev);
-  border: 1px solid var(--brand-soft);
-  border-radius: 99px;
-  font-size: 12px;
-  color: var(--brand-2);
-  font-weight: 500;
-  transition: all .15s;
+display: inline-flex; align-items: center; gap: 6px;
+padding: 5px 10px 5px 12px;
+background: var(–bg-elev);
+border: 1px solid var(–brand-soft);
+border-radius: 99px;
+font-size: 12px;
+color: var(–brand-2);
+font-weight: 500;
+transition: all .15s;
 }
-.chip:hover { background: var(--brand-soft); }
+.chip:hover { background: var(–brand-soft); }
 .chip-x {
-  font-size: 14px; line-height: 1;
-  color: var(--ink-3);
-  margin-left: 2px;
+font-size: 14px; line-height: 1;
+color: var(–ink-3);
+margin-left: 2px;
 }
 
 /* ===== Search ===== */
 .search-wrap {
-  position: sticky; top: 56px;
-  z-index: 80;
-  margin: 14px 0 12px;
-  /* sticky時に背景透ける問題対策: 背景色を確保 */
-  background: var(--bg);
-  padding: 6px 0;
+position: sticky; top: 56px;
+z-index: 80;
+margin: 14px 0 12px;
+/* sticky時に背景透ける問題対策: 背景色を確保 */
+background: var(–bg);
+padding: 6px 0;
 }
 .search-bar {
-  position: relative;
+position: relative;
 }
 .search-icon {
-  position: absolute;
-  left: 16px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--ink-2);
-  pointer-events: none;
-  font-size: 16px;
-  font-weight: 700;
+position: absolute;
+left: 16px; top: 50%;
+transform: translateY(-50%);
+color: var(–ink-2);
+pointer-events: none;
+font-size: 16px;
+font-weight: 700;
 }
 .search-input {
-  width: 100%;
-  padding: 12px 40px 12px 42px;
-  background: var(--bg-elev);
-  border: 1.5px solid var(--ink-3);
-  border-radius: 99px;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgba(20,24,31,.08);
-  transition: all .15s var(--ease);
+width: 100%;
+padding: 12px 40px 12px 42px;
+background: var(–bg-elev);
+border: 1.5px solid var(–ink-3);
+border-radius: 99px;
+font-size: 16px;
+font-weight: 500;
+color: var(–ink);
+box-shadow: 0 1px 3px rgba(20,24,31,.08);
+transition: all .15s var(–ease);
 }
 .search-input::placeholder {
-  color: var(--ink-3);
-  font-weight: 400;
+color: var(–ink-3);
+font-weight: 400;
 }
 .search-input:hover {
-  border-color: var(--ink-2);
+border-color: var(–ink-2);
 }
 .search-input:focus {
-  outline: none;
-  border-color: var(--brand);
-  border-width: 2px;
-  padding: 11.5px 39.5px 11.5px 41.5px;
-  box-shadow: 0 0 0 4px var(--brand-soft), 0 1px 3px rgba(20,24,31,.08);
+outline: none;
+border-color: var(–brand);
+border-width: 2px;
+padding: 11.5px 39.5px 11.5px 41.5px;
+box-shadow: 0 0 0 4px var(–brand-soft), 0 1px 3px rgba(20,24,31,.08);
 }
 .search-clear {
-  position: absolute;
-  right: 12px; top: 50%;
-  transform: translateY(-50%);
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: var(--ink-3);
-  color: #fff;
-  display: none;
-  align-items: center; justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  transition: background .12s;
+position: absolute;
+right: 12px; top: 50%;
+transform: translateY(-50%);
+width: 24px; height: 24px;
+border-radius: 50%;
+background: var(–ink-3);
+color: #fff;
+display: none;
+align-items: center; justify-content: center;
+font-size: 12px;
+font-weight: 700;
+line-height: 1;
+cursor: pointer;
+transition: background .12s;
 }
 .search-clear:hover {
-  background: var(--ink);
+background: var(–ink);
 }
-.search-clear[data-visible="true"] { display: flex; }
+.search-clear[data-visible=“true”] { display: flex; }
 
 .suggest-list {
-  position: absolute;
-  top: 100%; left: 0; right: 0;
-  margin-top: 4px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-pop);
-  max-height: 320px;
-  overflow-y: auto;
-  z-index: 100;
-  display: none;
+position: absolute;
+top: 100%; left: 0; right: 0;
+margin-top: 4px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+box-shadow: var(–shadow-pop);
+max-height: 320px;
+overflow-y: auto;
+z-index: 100;
+display: none;
 }
-.suggest-list[data-visible="true"] { display: block; }
+.suggest-list[data-visible=“true”] { display: block; }
 .suggest-hint {
-  padding: 8px 14px;
-  font-size: 10px;
-  color: var(--ink-3);
-  background: var(--bg-sunken);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--rule);
+padding: 8px 14px;
+font-size: 10px;
+color: var(–ink-3);
+background: var(–bg-sunken);
+letter-spacing: 0.04em;
+text-transform: uppercase;
+border-bottom: 1px solid var(–rule);
 }
 .suggest-item {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--rule);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px;
-  cursor: pointer;
-  transition: background .12s;
+padding: 10px 14px;
+border-bottom: 1px solid var(–rule);
+display: flex; align-items: center; justify-content: space-between;
+gap: 10px;
+cursor: pointer;
+transition: background .12s;
 }
 .suggest-item:last-child { border-bottom: none; }
 .suggest-item:hover, .suggest-item:focus-visible {
-  background: var(--brand-tint);
-  outline: none;
+background: var(–brand-tint);
+outline: none;
 }
 .suggest-item-main { flex: 1; min-width: 0; }
 .suggest-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
+font-size: 14px;
+font-weight: 600;
+color: var(–ink);
 }
 .suggest-meta {
-  font-size: 10px;
-  color: var(--ink-3);
-  margin-top: 2px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+font-size: 10px;
+color: var(–ink-3);
+margin-top: 2px;
+white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .suggest-cat-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 7px;
-  margin-left: 0;
-  align-self: flex-start;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+flex-shrink: 0;
+margin-top: 7px;
+margin-left: 0;
+align-self: flex-start;
 }
-.suggest-item[aria-selected="true"]::before {
-  content: '✓';
-  color: var(--brand);
-  font-weight: 700;
-  margin-right: 4px;
+.suggest-item[aria-selected=“true”]::before {
+content: ‘✓’;
+color: var(–brand);
+font-weight: 700;
+margin-right: 4px;
 }
 
 /* ===== Legend ===== */
 .legend {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  padding: 9px 12px;
-  margin-bottom: 12px;
-  display: flex; flex-wrap: wrap;
-  gap: 4px 12px;
-  align-items: center;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+padding: 9px 12px;
+margin-bottom: 12px;
+display: flex; flex-wrap: wrap;
+gap: 4px 12px;
+align-items: center;
 }
 .legend-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  margin-right: 6px;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(–ink-3);
+margin-right: 6px;
 }
 .legend-item {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 10px;
-  color: var(--ink-2);
+display: flex; align-items: center; gap: 5px;
+font-size: 10px;
+color: var(–ink-2);
 }
 .legend-dot {
-  width: 9px; height: 9px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  border: 1px solid;
+width: 9px; height: 9px;
+border-radius: 2px;
+flex-shrink: 0;
+border: 1px solid;
 }
-.legend-dot--ok    { background: var(--ok-bg);   border-color: var(--ok); }
-.legend-dot--cau   { background: var(--cau-bg);  border-color: var(--cau); }
-.legend-dot--war   { background: var(--war-bg);  border-color: var(--war); }
-.legend-dot--proh  { background: var(--proh-bg); border-color: var(--proh); }
-.legend-dot--dial  { background: var(--dial-bg); border-color: var(--dial); }
+.legend-dot–ok    { background: var(–ok-bg);   border-color: var(–ok); }
+.legend-dot–cau   { background: var(–cau-bg);  border-color: var(–cau); }
+.legend-dot–war   { background: var(–war-bg);  border-color: var(–war); }
+.legend-dot–proh  { background: var(–proh-bg); border-color: var(–proh); }
+.legend-dot–dial  { background: var(–dial-bg); border-color: var(–dial); }
 
 /* ===== Status badge ===== */
 .badge {
-  display: inline-block;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 4px;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  border: 1px solid;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.3;
+display: inline-block;
+padding: 3px 8px;
+font-size: 11px;
+font-weight: 600;
+border-radius: 4px;
+letter-spacing: 0.02em;
+white-space: nowrap;
+border: 1px solid;
+font-variant-numeric: tabular-nums;
+line-height: 1.3;
 }
-.b-ok    { background: var(--ok-bg);   color: var(--ok);   border-color: var(--ok-rule); }
-.b-cau   { background: var(--cau-bg);  color: var(--cau);  border-color: var(--cau-rule); }
-.b-war   { background: var(--war-bg);  color: var(--war);  border-color: var(--war-rule); }
-.b-proh  { background: var(--proh-bg); color: var(--proh); border-color: var(--proh-rule); }
-.b-dial  { background: var(--dial-bg); color: var(--dial); border-color: var(--dial-rule); }
-.b-none  { background: var(--bg-sunken); color: var(--ink-3); border-color: var(--rule-2); }
+.b-ok    { background: var(–ok-bg);   color: var(–ok);   border-color: var(–ok-rule); }
+.b-cau   { background: var(–cau-bg);  color: var(–cau);  border-color: var(–cau-rule); }
+.b-war   { background: var(–war-bg);  color: var(–war);  border-color: var(–war-rule); }
+.b-proh  { background: var(–proh-bg); color: var(–proh); border-color: var(–proh-rule); }
+.b-dial  { background: var(–dial-bg); color: var(–dial); border-color: var(–dial-rule); }
+.b-none  { background: var(–bg-sunken); color: var(–ink-3); border-color: var(–rule-2); }
 
 /* Status icon (アクセシビリティ: 色覚異常対応) */
 .badge::before {
-  display: inline-block;
-  margin-right: 4px;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0;
-  opacity: .7;
+display: inline-block;
+margin-right: 4px;
+font-weight: 700;
+font-family: var(–font-mono);
+font-size: 10px;
+letter-spacing: 0;
+opacity: .7;
 }
-.b-ok::before    { content: '●'; }
-.b-cau::before   { content: '◐'; }
-.b-war::before   { content: '▲'; }
-.b-proh::before  { content: '✕'; }
-.b-dial::before  { content: '◆'; }
-.b-none::before  { content: '–'; opacity: .4; }
+.b-ok::before    { content: ‘●’; }
+.b-cau::before   { content: ‘◐’; }
+.b-war::before   { content: ‘▲’; }
+.b-proh::before  { content: ‘✕’; }
+.b-dial::before  { content: ‘◆’; }
+.b-none::before  { content: ‘–’; opacity: .4; }
 
 /* metric tag */
 .mtag {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 1px 5px;
-  border-radius: 3px;
-  vertical-align: middle;
-  margin-left: 6px;
-  font-variant: small-caps;
+display: inline-block;
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 0.04em;
+padding: 1px 5px;
+border-radius: 3px;
+vertical-align: middle;
+margin-left: 6px;
+font-variant: small-caps;
 }
-.mtag-e { background: var(--brand-soft); color: var(--brand); }
-.mtag-c { background: var(--ok-bg);      color: var(--ok); }
+.mtag-e { background: var(–brand-soft); color: var(–brand); }
+.mtag-c { background: var(–ok-bg);      color: var(–ok); }
 
 /* ===== Comparison table ===== */
 .compare-panel {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  margin-bottom: 14px;
-  overflow: hidden;
-  box-shadow: var(--shadow-1);
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+margin-bottom: 14px;
+overflow: hidden;
+box-shadow: var(–shadow-1);
 }
 .compare-panel[hidden] { display: none; }
 .compare-head {
-  background: var(--ink);
-  color: var(--bg-elev);
-  padding: 10px 14px;
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 8px;
+background: var(–ink);
+color: var(–bg-elev);
+padding: 10px 14px;
+display: flex; align-items: baseline; justify-content: space-between;
+gap: 8px;
 }
 .compare-title {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+font-family: var(–font-display);
+font-size: 14px;
+font-weight: 500;
+letter-spacing: 0.02em;
 }
 .compare-hint {
-  font-size: 10px;
-  opacity: .6;
-  font-weight: 400;
+font-size: 10px;
+opacity: .6;
+font-weight: 400;
 }
 .compare-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+scrollbar-width: thin;
 }
 .compare-table {
-  width: 100%;
-  min-width: 360px;
-  border-collapse: collapse;
-  font-size: 11px;
+width: 100%;
+min-width: 360px;
+border-collapse: collapse;
+font-size: 11px;
 }
 .compare-table thead th {
-  background: var(--bg-sunken);
-  color: var(--ink);
-  padding: 8px 8px 10px;
-  border: 1px solid var(--rule);
-  border-top: none;
-  font-weight: 600;
-  font-size: 10px;
-  white-space: nowrap;
-  vertical-align: top;
-  position: sticky; top: 0;
-  z-index: 1;
+background: var(–bg-sunken);
+color: var(–ink);
+padding: 8px 8px 10px;
+border: 1px solid var(–rule);
+border-top: none;
+font-weight: 600;
+font-size: 10px;
+white-space: nowrap;
+vertical-align: top;
+position: sticky; top: 0;
+z-index: 1;
 }
 .compare-table thead th:first-child { width: 80px; }
 .drug-th-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--brand-2);
-  line-height: 1.25;
-  cursor: pointer;
-  text-decoration: underline dotted var(--brand-2);
-  text-underline-offset: 3px;
+font-size: 12px;
+font-weight: 700;
+color: var(–brand-2);
+line-height: 1.25;
+cursor: pointer;
+text-decoration: underline dotted var(–brand-2);
+text-underline-offset: 3px;
 }
 .drug-th-brand {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--ink-2);
-  margin-top: 2px;
-  line-height: 1.3;
-  letter-spacing: 0;
-  font-feature-settings: 'palt' 1;
-  /* 併売は折返し可、ただし「・」前後では切らない */
-  word-break: keep-all;
-  overflow-wrap: break-word;
+font-size: 10px;
+font-weight: 500;
+color: var(–ink-2);
+margin-top: 2px;
+line-height: 1.3;
+letter-spacing: 0;
+font-feature-settings: ‘palt’ 1;
+/* 併売は折返し可、ただし「・」前後では切らない */
+word-break: keep-all;
+overflow-wrap: break-word;
 }
 .drug-th-cls {
-  font-size: 9px;
-  font-weight: 400;
-  color: var(--ink-3);
-  margin-top: 2px;
-  letter-spacing: 0;
+font-size: 9px;
+font-weight: 400;
+color: var(–ink-3);
+margin-top: 2px;
+letter-spacing: 0;
 }
 .drug-th-actions {
-  margin-top: 4px;
-  display: flex; gap: 4px; justify-content: center;
+margin-top: 4px;
+display: flex; gap: 4px; justify-content: center;
 }
 .drug-th-action {
-  font-size: 9px;
-  color: var(--ink-3);
-  padding: 1px 6px;
-  border: 1px solid var(--rule-2);
-  border-radius: 99px;
-  cursor: pointer;
-  transition: all .12s;
+font-size: 9px;
+color: var(–ink-3);
+padding: 1px 6px;
+border: 1px solid var(–rule-2);
+border-radius: 99px;
+cursor: pointer;
+transition: all .12s;
 }
-.drug-th-action:hover { color: var(--war); border-color: var(--war-rule); }
+.drug-th-action:hover { color: var(–war); border-color: var(–war-rule); }
+:root[data-theme=“dark”] .drug-th-action,
+:root:not([data-theme=“light”]) .drug-th-action {
+color: #ffffff;
+border-color: rgba(255,255,255,0.3);
+}
+:root[data-theme=“dark”] .drug-th-action:hover,
+:root:not([data-theme=“light”]) .drug-th-action:hover {
+color: var(–war);
+border-color: var(–war);
+}
 
 .compare-table tbody td {
-  padding: 6px 7px;
-  border: 1px solid var(--rule);
-  text-align: center;
-  vertical-align: middle;
-  transition: background-color .25s var(--ease), box-shadow .25s var(--ease);
+padding: 6px 7px;
+border: 1px solid var(–rule);
+text-align: center;
+vertical-align: middle;
+transition: background-color .25s var(–ease), box-shadow .25s var(–ease);
 }
 .compare-table tbody td:first-child {
-  font-weight: 600;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  text-align: left;
-  background: var(--bg-sunken);
-  font-size: 11px;
-  white-space: nowrap;
-  letter-spacing: 0;
+font-weight: 600;
+font-family: var(–font-mono);
+font-variant-numeric: tabular-nums;
+text-align: left;
+background: var(–bg-sunken);
+font-size: 11px;
+white-space: nowrap;
+letter-spacing: 0;
 }
 .compare-table tbody tr.is-current td {
-  background: #e0ecfa;
-  box-shadow: inset 0 1.5px 0 #1e3a8a, inset 0 -1.5px 0 #1e3a8a;
-  font-weight: 600;
+background: #e0ecfa;
+box-shadow: inset 0 1.5px 0 #1e3a8a, inset 0 -1.5px 0 #1e3a8a;
+font-weight: 600;
 }
 .compare-table tbody tr.is-current td:first-child {
-  background: #1e3a8a;
-  color: #fff;
-  box-shadow: inset 0 1.5px 0 #15296b, inset 0 -1.5px 0 #15296b;
-  letter-spacing: 0.04em;
+background: #1e3a8a;
+color: #fff;
+box-shadow: inset 0 1.5px 0 #15296b, inset 0 -1.5px 0 #15296b;
+letter-spacing: 0.04em;
 }
 .compare-table tbody tr.is-current td:first-child::before {
-  content: '▶ ';
-  font-size: 10px;
-  font-weight: 700;
+content: ’▶ ’;
+font-size: 10px;
+font-weight: 700;
 }
 /* バッジ自体は色を変えず、わずかに浮かせる */
 .compare-table tbody tr.is-current .badge {
-  box-shadow: 0 1px 2px rgba(0,0,0,.1);
+box-shadow: 0 1px 2px rgba(0,0,0,.1);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .compare-table tbody tr.is-current td {
-    background: #1a2540;
-    box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
-  }
-  :root:not([data-theme="light"]) .compare-table tbody tr.is-current td:first-child {
-    background: #3b5cb8;
-    color: #fff;
-  }
+:root:not([data-theme=“light”]) .compare-table tbody tr.is-current td {
+background: #1a2540;
+box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
 }
-:root[data-theme="dark"] .compare-table tbody tr.is-current td {
-  background: #1a2540;
-  box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
+:root:not([data-theme=“light”]) .compare-table tbody tr.is-current td:first-child {
+background: #3b5cb8;
+color: #fff;
 }
-:root[data-theme="dark"] .compare-table tbody tr.is-current td:first-child {
-  background: #3b5cb8;
-  color: #fff;
+}
+:root[data-theme=“dark”] .compare-table tbody tr.is-current td {
+background: #1a2540;
+box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
+}
+:root[data-theme=“dark”] .compare-table tbody tr.is-current td:first-child {
+background: #3b5cb8;
+color: #fff;
 }
 
 .compare-note {
-  padding: 8px 14px;
-  font-size: 10px;
-  color: var(--ink-3);
-  background: var(--bg-sunken);
-  border-top: 1px solid var(--rule);
-  line-height: 1.6;
+padding: 8px 14px;
+font-size: 10px;
+color: var(–ink-3);
+background: var(–bg-sunken);
+border-top: 1px solid var(–rule);
+line-height: 1.6;
 }
 
 /* ===== Drug card ===== */
 .drug-list { display: flex; flex-direction: column; gap: 6px; }
 .cat-heading {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--ink-2);
-  padding: 14px 0 6px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 6px;
-  cursor: pointer;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.06em;
+color: var(–ink-2);
+padding: 14px 0 6px;
+display: flex; align-items: center; justify-content: space-between;
+border-bottom: 1px solid var(–rule);
+margin-bottom: 6px;
+cursor: pointer;
 }
 .cat-heading-action {
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--brand);
-  letter-spacing: 0.02em;
+font-size: 10px;
+font-weight: 400;
+color: var(–brand);
+letter-spacing: 0.02em;
 }
 
 .drug-card {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  transition: border-color .15s var(--ease);
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
+overflow: hidden;
+transition: border-color .15s var(–ease);
 }
-.drug-card[data-selected="true"] {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 1px var(--brand);
+.drug-card[data-selected=“true”] {
+border-color: var(–brand);
+box-shadow: 0 0 0 1px var(–brand);
 }
 
 .drug-card-head {
-  padding: 11px 13px;
-  display: flex; align-items: flex-start; gap: 10px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background .1s;
+padding: 11px 13px;
+display: flex; align-items: flex-start; gap: 10px;
+cursor: pointer;
+-webkit-tap-highlight-color: transparent;
+transition: background .1s;
 }
-.drug-card-head:hover { background: var(--bg-sunken); }
+.drug-card-head:hover { background: var(–bg-sunken); }
 .drug-card-head:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: -2px;
+outline: 2px solid var(–brand);
+outline-offset: -2px;
 }
 
 .drug-check {
-  width: 20px; height: 20px;
-  border-radius: 4px;
-  border: 1.5px solid var(--rule-2);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-  background: var(--bg-elev);
-  color: var(--bg-elev);
-  font-size: 12px;
-  font-weight: 700;
-  transition: all .15s var(--ease);
+width: 20px; height: 20px;
+border-radius: 4px;
+border: 1.5px solid var(–rule-2);
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+margin-top: 2px;
+background: var(–bg-elev);
+color: var(–bg-elev);
+font-size: 12px;
+font-weight: 700;
+transition: all .15s var(–ease);
 }
-.drug-card[data-selected="true"] .drug-check {
-  background: var(--brand);
-  border-color: var(--brand);
+.drug-card[data-selected=“true”] .drug-check {
+background: var(–brand);
+border-color: var(–brand);
 }
 
 .drug-info { flex: 1; min-width: 0; }
 .drug-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: 0;
-  display: flex; align-items: baseline; flex-wrap: wrap;
+font-size: 14px;
+font-weight: 600;
+color: var(–ink);
+letter-spacing: 0;
+display: flex; align-items: baseline; flex-wrap: wrap;
 }
 .drug-meta {
-  font-size: 10.5px;
-  color: var(--ink-3);
-  margin-top: 2px;
-  letter-spacing: 0;
-  line-height: 1.4;
+font-size: 10.5px;
+color: var(–ink-3);
+margin-top: 2px;
+letter-spacing: 0;
+line-height: 1.4;
 }
 .drug-status { flex-shrink: 0; align-self: center; }
 .drug-chevron {
-  flex-shrink: 0;
-  align-self: center;
-  font-size: 10px;
-  color: var(--ink-3);
-  transition: transform .2s var(--ease);
+flex-shrink: 0;
+align-self: center;
+font-size: 10px;
+color: var(–ink-3);
+transition: transform .2s var(–ease);
 }
-.drug-card[data-open="true"] .drug-chevron { transform: rotate(180deg); }
+.drug-card[data-open=“true”] .drug-chevron { transform: rotate(180deg); }
 
 .drug-card-body {
-  border-top: 1px solid var(--rule);
-  background: var(--bg-sunken);
-  padding: 12px 14px;
-  display: none;
+border-top: 1px solid var(–rule);
+background: var(–bg-sunken);
+padding: 12px 14px;
+display: none;
 }
-.drug-card[data-open="true"] .drug-card-body { display: block; }
+.drug-card[data-open=“true”] .drug-card-body { display: block; }
 
 .dose-current {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--brand);
-  border-radius: var(--r);
-  padding: 9px 12px;
-  font-size: 12.5px;
-  line-height: 1.6;
-  margin-bottom: 10px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-left: 3px solid var(–brand);
+border-radius: var(–r);
+padding: 9px 12px;
+font-size: 12.5px;
+line-height: 1.6;
+margin-bottom: 10px;
 }
 .dose-current-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--brand);
-  margin-bottom: 3px;
-  display: block;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(–brand);
+margin-bottom: 3px;
+display: block;
 }
 
 .dose-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11.5px;
-  background: var(--bg-elev);
-  border-radius: var(--r);
-  overflow: hidden;
-  border: 1px solid var(--rule);
+width: 100%;
+border-collapse: collapse;
+font-size: 11.5px;
+background: var(–bg-elev);
+border-radius: var(–r);
+overflow: hidden;
+border: 1px solid var(–rule);
 }
 .dose-table thead th {
-  background: var(--bg-sunken);
-  color: var(--ink-2);
-  padding: 6px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-align: left;
-  border-bottom: 1px solid var(--rule);
+background: var(–bg-sunken);
+color: var(–ink-2);
+padding: 6px 8px;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+text-align: left;
+border-bottom: 1px solid var(–rule);
 }
 .dose-table tbody td {
-  padding: 6px 8px;
-  border-top: 1px solid var(--rule);
-  vertical-align: middle;
-  transition: background-color .25s var(--ease), box-shadow .25s var(--ease);
+padding: 6px 8px;
+border-top: 1px solid var(–rule);
+vertical-align: middle;
+transition: background-color .25s var(–ease), box-shadow .25s var(–ease);
 }
 .dose-table tbody td:first-child {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  white-space: nowrap;
-  width: 90px;
-  font-size: 11px;
-  letter-spacing: 0;
+font-family: var(–font-mono);
+font-variant-numeric: tabular-nums;
+font-weight: 600;
+white-space: nowrap;
+width: 90px;
+font-size: 11px;
+letter-spacing: 0;
 }
 .dose-table tr.is-current td {
-  background: #e0ecfa;
-  font-weight: 600;
-  box-shadow: inset 0 1.5px 0 #1e3a8a, inset 0 -1.5px 0 #1e3a8a;
+background: #e0ecfa;
+font-weight: 600;
+box-shadow: inset 0 1.5px 0 #1e3a8a, inset 0 -1.5px 0 #1e3a8a;
 }
 .dose-table tr.is-current td:first-child {
-  background: #1e3a8a;
-  color: #fff;
+background: #1e3a8a;
+color: #fff;
 }
 .dose-table tr.is-current td:first-child::after {
-  content: ' ◀';
-  color: #fff;
-  font-weight: 700;
+content: ’ ◀’;
+color: #fff;
+font-weight: 700;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .dose-table tr.is-current td {
-    background: #1a2540;
-    box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
-  }
-  :root:not([data-theme="light"]) .dose-table tr.is-current td:first-child {
-    background: #3b5cb8;
-    color: #fff;
-  }
+:root:not([data-theme=“light”]) .dose-table tr.is-current td {
+background: #1a2540;
+box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
 }
-:root[data-theme="dark"] .dose-table tr.is-current td {
-  background: #1a2540;
-  box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
+:root:not([data-theme=“light”]) .dose-table tr.is-current td:first-child {
+background: #3b5cb8;
+color: #fff;
 }
-:root[data-theme="dark"] .dose-table tr.is-current td:first-child {
-  background: #3b5cb8;
-  color: #fff;
+}
+:root[data-theme=“dark”] .dose-table tr.is-current td {
+background: #1a2540;
+box-shadow: inset 0 1.5px 0 #5a78c8, inset 0 -1.5px 0 #5a78c8;
+}
+:root[data-theme=“dark”] .dose-table tr.is-current td:first-child {
+background: #3b5cb8;
+color: #fff;
 }
 
 .drug-note {
-  font-size: 11px;
-  color: var(--ink-2);
-  margin-top: 8px;
-  padding-left: 14px;
-  border-left: 2px solid var(--rule-2);
-  line-height: 1.6;
+font-size: 11px;
+color: var(–ink-2);
+margin-top: 8px;
+padding-left: 14px;
+border-left: 2px solid var(–rule-2);
+line-height: 1.6;
 }
-.drug-note strong { color: var(--ink); }
+.drug-note strong { color: var(–ink); }
 
 .drug-source {
-  font-size: 9.5px;
-  color: var(--ink-4);
-  margin-top: 6px;
-  font-style: italic;
-  letter-spacing: 0.02em;
+font-size: 9.5px;
+color: var(–ink-4);
+margin-top: 6px;
+font-style: italic;
+letter-spacing: 0.02em;
 }
 
 /* ===== In-app browser hint banner ===== */
 .inapp-banner {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 800;
-  background: var(--ink);
-  color: var(--bg);
-  padding: 12px 14px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  box-shadow: 0 -4px 16px rgba(0,0,0,.25);
-  animation: slideUp .25s var(--ease);
+position: fixed;
+bottom: 0; left: 0; right: 0;
+z-index: 800;
+background: var(–ink);
+color: var(–bg);
+padding: 12px 14px;
+display: flex;
+gap: 10px;
+align-items: flex-start;
+box-shadow: 0 -4px 16px rgba(0,0,0,.25);
+animation: slideUp .25s var(–ease);
 }
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+from { transform: translateY(100%); }
+to { transform: translateY(0); }
 }
 .inapp-banner-body { flex: 1; min-width: 0; }
 .inapp-banner-title {
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 3px;
-  letter-spacing: 0.02em;
+font-size: 12px;
+font-weight: 700;
+margin-bottom: 3px;
+letter-spacing: 0.02em;
 }
 .inapp-banner-text {
-  font-size: 11px;
-  line-height: 1.55;
-  opacity: .85;
+font-size: 11px;
+line-height: 1.55;
+opacity: .85;
 }
 .inapp-banner-close {
-  background: rgba(255,255,255,.16);
-  color: var(--bg);
-  border: none;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+background: rgba(255,255,255,.16);
+color: var(–bg);
+border: none;
+width: 28px; height: 28px;
+border-radius: 50%;
+font-size: 13px;
+font-weight: 700;
+cursor: pointer;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
 }
 .inapp-banner-close:hover { background: rgba(255,255,255,.28); }
 
 /* ===== Safety alerts ===== */
 .safety-panel {
-  background: var(--bg-elev);
-  border: 1px solid var(--war-rule);
-  border-radius: var(--r-lg);
-  margin-bottom: 12px;
-  overflow: hidden;
+background: var(–bg-elev);
+border: 1px solid var(–war-rule);
+border-radius: var(–r-lg);
+margin-bottom: 12px;
+overflow: hidden;
 }
 .safety-panel-head {
-  background: var(--war);
-  color: #fff;
-  padding: 9px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+background: var(–war);
+color: #fff;
+padding: 9px 14px;
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 0.04em;
 }
 .safety-panel-body {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+padding: 10px;
+display: flex;
+flex-direction: column;
+gap: 8px;
 }
 .safety-alert {
-  padding: 10px 12px;
-  border-radius: var(--r);
-  border: 1px solid;
+padding: 10px 12px;
+border-radius: var(–r);
+border: 1px solid;
 }
-.safety-alert--high {
-  background: var(--proh-bg);
-  border-color: var(--proh-rule);
+.safety-alert–high {
+background: var(–proh-bg);
+border-color: var(–proh-rule);
 }
-.safety-alert--medium {
-  background: var(--cau-bg);
-  border-color: var(--cau-rule);
+.safety-alert–medium {
+background: var(–cau-bg);
+border-color: var(–cau-rule);
 }
 .safety-alert-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  margin-bottom: 4px;
+font-size: 12.5px;
+font-weight: 700;
+margin-bottom: 4px;
 }
-.safety-alert--high .safety-alert-title { color: var(--proh); }
-.safety-alert--medium .safety-alert-title { color: var(--cau); }
+.safety-alert–high .safety-alert-title { color: var(–proh); }
+.safety-alert–medium .safety-alert-title { color: var(–cau); }
 .safety-alert-body {
-  font-size: 11.5px;
-  line-height: 1.55;
-  color: var(--ink);
+font-size: 11.5px;
+line-height: 1.55;
+color: var(–ink);
 }
 .safety-alert-meta {
-  font-size: 10.5px;
-  color: var(--ink-2);
-  margin-top: 4px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+font-size: 10.5px;
+color: var(–ink-2);
+margin-top: 4px;
+font-weight: 500;
+letter-spacing: 0.02em;
 }
 .safety-alert-note {
-  font-size: 10.5px;
-  color: var(--ink-3);
-  margin-top: 3px;
-  font-style: italic;
+font-size: 10.5px;
+color: var(–ink-3);
+margin-top: 3px;
+font-style: italic;
 }
 
 .safety-highrisk {
-  background: var(--bg-sunken);
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
-  padding: 0;
+background: var(–bg-sunken);
+border: 1px solid var(–rule);
+border-radius: var(–r);
+padding: 0;
 }
 .safety-highrisk > summary {
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--ink-2);
-  letter-spacing: 0.02em;
-  list-style: none;
+padding: 8px 12px;
+font-size: 11px;
+font-weight: 600;
+cursor: pointer;
+color: var(–ink-2);
+letter-spacing: 0.02em;
+list-style: none;
 }
 .safety-highrisk > summary::before {
-  content: '▶ ';
-  font-size: 9px;
-  margin-right: 4px;
-  color: var(--ink-3);
+content: ’▶ ’;
+font-size: 9px;
+margin-right: 4px;
+color: var(–ink-3);
 }
-.safety-highrisk[open] > summary::before { content: '▼ '; }
+.safety-highrisk[open] > summary::before { content: ’▼ ’; }
 .safety-highrisk-body {
-  padding: 0 12px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+padding: 0 12px 10px;
+display: flex;
+flex-direction: column;
+gap: 6px;
 }
 .safety-highrisk-item {
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-sm);
-  padding: 6px 10px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-sm);
+padding: 6px 10px;
 }
 .safety-highrisk-name {
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+font-size: 12px;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 6px;
 }
 .safety-tier {
-  display: inline-block;
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+display: inline-block;
+padding: 1px 6px;
+border-radius: 3px;
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 0.04em;
 }
-.safety-tier--high {
-  background: var(--proh-bg);
-  color: var(--proh);
+.safety-tier–high {
+background: var(–proh-bg);
+color: var(–proh);
 }
-.safety-tier--medium {
-  background: var(--cau-bg);
-  color: var(--cau);
+.safety-tier–medium {
+background: var(–cau-bg);
+color: var(–cau);
 }
 .safety-highrisk-reason {
-  font-size: 10.5px;
-  color: var(--ink-2);
-  margin-top: 2px;
-  line-height: 1.5;
+font-size: 10.5px;
+color: var(–ink-2);
+margin-top: 2px;
+line-height: 1.5;
 }
 
 /* ===== AUC visualization ===== */
 .auc-block {
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
+margin-top: 10px;
+padding: 10px 12px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r);
 }
 .auc-block-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ink-2);
-  margin-bottom: 8px;
-  letter-spacing: 0.02em;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+font-size: 11px;
+font-weight: 700;
+color: var(–ink-2);
+margin-bottom: 8px;
+letter-spacing: 0.02em;
+display: flex;
+align-items: center;
+justify-content: space-between;
 }
 .auc-max {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--war);
-  font-variant-numeric: tabular-nums;
+font-family: var(–font-mono);
+font-size: 10.5px;
+color: var(–war);
+font-variant-numeric: tabular-nums;
 }
 .auc-block-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+display: flex;
+flex-direction: column;
+gap: 4px;
 }
 .auc-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 18px;
-  background: var(--bg-sunken);
-  border-radius: var(--r-sm);
-  overflow: hidden;
+position: relative;
+display: flex;
+align-items: center;
+height: 18px;
+background: var(–bg-sunken);
+border-radius: var(–r-sm);
+overflow: hidden;
 }
 .auc-bar-fill {
-  display: block;
-  height: 100%;
-  border-radius: var(--r-sm);
-  transition: width .3s var(--ease);
+display: block;
+height: 100%;
+border-radius: var(–r-sm);
+transition: width .3s var(–ease);
 }
 .auc-bar-label {
-  position: absolute;
-  right: 8px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+position: absolute;
+right: 8px;
+font-family: var(–font-mono);
+font-size: 10.5px;
+font-weight: 700;
+color: var(–ink);
+font-variant-numeric: tabular-nums;
 }
 .auc-block-hint {
-  font-size: 10px;
-  color: var(--ink-3);
-  margin-top: 6px;
-  line-height: 1.5;
-  font-style: italic;
+font-size: 10px;
+color: var(–ink-3);
+margin-top: 6px;
+line-height: 1.5;
+font-style: italic;
 }
 
 /* ===== Drug detail nav (modal上部) ===== */
 .detail-nav {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+display: flex;
+gap: 6px;
+margin-bottom: 10px;
 }
 .detail-nav-btn {
-  flex: 1;
-  padding: 8px 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-  border: 1px solid var(--rule-2);
-  border-radius: var(--r);
-  background: var(--bg-elev);
-  color: var(--ink);
-  cursor: pointer;
-  transition: all .12s;
-  letter-spacing: 0.02em;
-  text-align: center;
+flex: 1;
+padding: 8px 10px;
+font-size: 11.5px;
+font-weight: 600;
+border: 1px solid var(–rule-2);
+border-radius: var(–r);
+background: var(–bg-elev);
+color: var(–ink);
+cursor: pointer;
+transition: all .12s;
+letter-spacing: 0.02em;
+text-align: center;
 }
 .detail-nav-btn:hover {
-  border-color: var(--brand);
-  color: var(--brand);
+border-color: var(–brand);
+color: var(–brand);
 }
 .detail-nav-btn.is-selected {
-  background: var(--brand);
-  color: var(--bg-elev);
-  border-color: var(--brand);
+background: var(–brand);
+color: var(–bg-elev);
+border-color: var(–brand);
 }
 
 /* Warning factors */
 .wf-block {
-  margin-top: 8px;
-  padding: 9px 12px;
-  background: var(--cau-bg);
-  border: 1px solid var(--cau-rule);
-  border-left: 3px solid var(--cau);
-  border-radius: var(--r);
+margin-top: 8px;
+padding: 9px 12px;
+background: var(–cau-bg);
+border: 1px solid var(–cau-rule);
+border-left: 3px solid var(–cau);
+border-radius: var(–r);
 }
 .wf-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cau);
-  margin-bottom: 4px;
+font-size: 11px;
+font-weight: 700;
+color: var(–cau);
+margin-bottom: 4px;
 }
 .wf-list {
-  margin: 0; padding-left: 16px;
-  font-size: 11px; color: var(--ink-2);
-  line-height: 1.6;
+margin: 0; padding-left: 16px;
+font-size: 11px; color: var(–ink-2);
+line-height: 1.6;
 }
 
 /* Alternative suggestions */
 .alt-suggest {
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: var(--bg-elev);
-  border: 1px solid var(--cau-rule);
-  border-radius: var(--r);
+margin-top: 10px;
+padding: 10px 12px;
+background: var(–bg-elev);
+border: 1px solid var(–cau-rule);
+border-radius: var(–r);
 }
 .alt-suggest-head {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--cau);
-  margin-bottom: 6px;
-  letter-spacing: 0.02em;
+font-size: 11px;
+font-weight: 700;
+color: var(–cau);
+margin-bottom: 6px;
+letter-spacing: 0.02em;
 }
 .alt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .alt-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px;
-  background: var(--bg-sunken);
-  border: 1px solid var(--rule-2);
-  border-radius: 99px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--ink);
-  cursor: pointer;
-  transition: all .12s;
+display: inline-flex; align-items: center; gap: 6px;
+padding: 4px 10px;
+background: var(–bg-sunken);
+border: 1px solid var(–rule-2);
+border-radius: 99px;
+font-size: 11.5px;
+font-weight: 500;
+color: var(–ink);
+cursor: pointer;
+transition: all .12s;
 }
-.alt-chip:hover { background: var(--brand-soft); border-color: var(--brand); }
+.alt-chip:hover { background: var(–brand-soft); border-color: var(–brand); }
 .alt-chip .badge {
-  font-size: 9px;
-  padding: 1px 5px;
-  border: none;
+font-size: 9px;
+padding: 1px 5px;
+border: none;
 }
 
 /* ===== Group browser ===== */
 .group-browser {
-  margin-top: 24px;
-  padding: 14px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-lg);
+margin-top: 24px;
+padding: 14px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-radius: var(–r-lg);
 }
 .group-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+gap: 6px;
+}
+@media (max-width: 340px) {
+.group-buttons { grid-template-columns: repeat(4, 1fr); }
 }
 .group-btn {
-  padding: 6px 12px;
-  font-size: 11.5px;
-  font-weight: 500;
-  border: 1px solid;
-  border-radius: 99px;
-  transition: all .15s var(--ease);
-  letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 2px;
+padding: 8px 4px 7px;
+background: var(–bg-sunken);
+border: 1px solid var(–rule);
+border-radius: 10px;
+transition: all .15s var(–ease);
+font-weight: 600;
+font-size: 11px;
+min-height: 58px;
+cursor: pointer;
+position: relative;
+overflow: hidden;
+}
+.group-btn::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: currentColor;
+opacity: 0.7;
+}
+.group-btn:hover {
+transform: translateY(-1px);
+border-color: currentColor;
+box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+.group-btn-icon {
+font-size: 17px;
+line-height: 1;
+filter: drop-shadow(0 0 6px currentColor);
+opacity: 0.95;
+}
+.group-btn-label {
+font-size: 10px;
+font-weight: 600;
+color: var(–ink);
+letter-spacing: 0;
+text-align: center;
+line-height: 1.2;
 }
 .group-btn-count {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 9.5px;
-  font-weight: 600;
-  padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 99px;
-  letter-spacing: 0;
-  opacity: 0.85;
+font-family: var(–font-mono);
+font-variant-numeric: tabular-nums;
+font-size: 9.5px;
+font-weight: 700;
+padding: 0px 5px;
+background: rgba(0, 0, 0, 0.08);
+color: currentColor;
+border-radius: 99px;
+letter-spacing: 0;
+opacity: 0.85;
+margin-top: 1px;
 }
-:root[data-theme="dark"] .group-btn-count,
-:root:not([data-theme="light"]) .group-btn-count {
-  background: rgba(0, 0, 0, 0.25);
+:root[data-theme=“dark”] .group-btn-count,
+:root:not([data-theme=“light”]) .group-btn-count {
+background: rgba(255, 255, 255, 0.12);
+color: #ffffff;
+opacity: 1;
 }
-.group-btn[aria-expanded="true"] {
-  font-weight: 700;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(20,24,31,.12);
+:root[data-theme=“dark”] .group-btn-label,
+:root:not([data-theme=“light”]) .group-btn-label {
+color: #ffffff;
+}
+.group-btn[aria-expanded=“true”] {
+border-color: currentColor;
+background: var(–brand-tint);
+transform: translateY(-1px);
+box-shadow: 0 4px 14px rgba(0,212,255,.25);
+}
+:root[data-theme=“dark”] .group-btn[aria-expanded=“true”],
+:root:not([data-theme=“light”]) .group-btn[aria-expanded=“true”] {
+background: var(–brand-soft);
 }
 .group-sub-area {
-  margin-top: 10px;
-  padding: 10px;
-  background: var(--bg-sunken);
-  border-radius: var(--r);
-  border: 1px solid var(--rule);
-  display: none;
+margin-top: 10px;
+padding: 10px;
+background: var(–bg-sunken);
+border-radius: var(–r);
+border: 1px solid var(–rule);
+display: none;
 }
-.group-sub-area[data-visible="true"] { display: block; }
+.group-sub-area[data-visible=“true”] { display: block; }
 .group-sub-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px;
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 8px;
 }
 .group-sub-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.04em;
 }
 .group-sub-close {
-  font-size: 14px;
-  color: var(--ink-3);
-  width: 24px; height: 24px;
-  border-radius: 50%;
+font-size: 14px;
+color: var(–ink-3);
+width: 24px; height: 24px;
+border-radius: 50%;
 }
-.group-sub-close:hover { background: var(--rule); color: var(--ink); }
+.group-sub-close:hover { background: var(–rule); color: var(–ink); }
 .group-sub-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* ===== Modal ===== */
 .modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(20,24,31,.5);
-  z-index: 900;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: none;
-  animation: fadeIn .2s var(--ease);
+position: fixed; inset: 0;
+background: rgba(20,24,31,.5);
+z-index: 900;
+backdrop-filter: blur(4px);
+-webkit-backdrop-filter: blur(4px);
+display: none;
+animation: fadeIn .2s var(–ease);
 }
-.modal-overlay[data-visible="true"] { display: block; }
+.modal-overlay[data-visible=“true”] { display: block; }
 
 .modal-box {
-  position: fixed;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(94vw, 540px);
-  max-height: 86vh;
-  background: var(--bg-elev);
-  border-radius: var(--r-lg);
-  z-index: 901;
-  box-shadow: var(--shadow-pop);
-  overflow: hidden;
-  display: none;
-  flex-direction: column;
-  animation: slideUp .25s var(--ease);
+position: fixed;
+left: 50%; top: 50%;
+transform: translate(-50%, -50%);
+width: min(94vw, 540px);
+max-height: 86vh;
+background: var(–bg-elev);
+border-radius: var(–r-lg);
+z-index: 901;
+box-shadow: var(–shadow-pop);
+overflow: hidden;
+display: none;
+flex-direction: column;
+animation: slideUp .25s var(–ease);
 }
-.modal-box[data-visible="true"] { display: flex; }
+.modal-box[data-visible=“true”] { display: flex; }
 .modal-head {
-  background: var(--ink);
-  color: var(--bg-elev);
-  padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-  gap: 10px;
+background: var(–ink);
+color: var(–bg-elev);
+padding: 12px 16px;
+display: flex; align-items: center; justify-content: space-between;
+flex-shrink: 0;
+gap: 10px;
 }
 .modal-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+font-family: var(–font-display);
+font-size: 15px;
+font-weight: 500;
+letter-spacing: 0.02em;
 }
 .modal-close {
-  background: rgba(255,255,255,.16);
-  color: var(--bg-elev);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 99px;
-  letter-spacing: 0.04em;
+background: rgba(255,255,255,.16);
+color: var(–bg-elev);
+font-size: 12px;
+font-weight: 600;
+padding: 4px 12px;
+border-radius: 99px;
+letter-spacing: 0.04em;
 }
 .modal-close:hover { background: rgba(255,255,255,.28); }
 .modal-body {
-  padding: 16px;
-  overflow-y: auto;
-  flex: 1;
+padding: 16px;
+overflow-y: auto;
+flex: 1;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+from { opacity: 0; }
+to { opacity: 1; }
 }
 @keyframes slideUp {
-  from { transform: translate(-50%, -45%); opacity: 0; }
-  to { transform: translate(-50%, -50%); opacity: 1; }
+from { transform: translate(-50%, -45%); opacity: 0; }
+to { transform: translate(-50%, -50%); opacity: 1; }
 }
 
 /* ===== Toast ===== */
 .toast-host {
-  position: fixed;
-  bottom: 20px; left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex; flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  pointer-events: none;
+position: fixed;
+bottom: 20px; left: 50%;
+transform: translateX(-50%);
+z-index: 1000;
+display: flex; flex-direction: column;
+gap: 8px;
+align-items: center;
+pointer-events: none;
 }
 .toast {
-  background: var(--ink);
-  color: var(--bg-elev);
-  padding: 10px 16px;
-  border-radius: 99px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: var(--shadow-pop);
-  animation: toastIn .2s var(--ease);
-  pointer-events: auto;
-  letter-spacing: 0.02em;
+background: var(–ink);
+color: var(–bg-elev);
+padding: 10px 16px;
+border-radius: 99px;
+font-size: 13px;
+font-weight: 500;
+box-shadow: var(–shadow-pop);
+animation: toastIn .2s var(–ease);
+pointer-events: auto;
+letter-spacing: 0.02em;
 }
 @keyframes toastIn {
-  from { transform: translateY(8px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+from { transform: translateY(8px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
 }
-.toast-out { animation: toastOut .2s var(--ease) forwards; }
+.toast-out { animation: toastOut .2s var(–ease) forwards; }
 @keyframes toastOut {
-  to { transform: translateY(8px); opacity: 0; }
+to { transform: translateY(8px); opacity: 0; }
 }
 
 /* ===== Empty / no-result ===== */
 .no-result {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--ink-3);
-  font-size: 13px;
+text-align: center;
+padding: 40px 20px;
+color: var(–ink-3);
+font-size: 13px;
 }
 .no-result-em {
-  font-family: var(--font-display);
-  font-size: 18px;
-  color: var(--ink-2);
-  display: block;
-  margin-bottom: 4px;
+font-family: var(–font-display);
+font-size: 18px;
+color: var(–ink-2);
+display: block;
+margin-bottom: 4px;
 }
 
 .hint {
-  text-align: center;
-  padding: 20px 12px;
-  color: var(--ink-3);
-  font-size: 12px;
+text-align: center;
+padding: 20px 12px;
+color: var(–ink-3);
+font-size: 12px;
 }
 .hint-em {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--ink-2);
-  display: block;
-  margin-bottom: 6px;
-  letter-spacing: 0.02em;
+font-family: var(–font-display);
+font-size: 22px;
+color: var(–ink-2);
+display: block;
+margin-bottom: 6px;
+letter-spacing: 0.02em;
 }
 
 /* ===== Disclaimer ===== */
 .disclaimer {
-  margin-top: 28px;
-  padding: 12px 14px;
-  background: var(--bg-elev);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--cau);
-  border-radius: var(--r-lg);
-  font-size: 11px;
-  color: var(--ink-2);
-  line-height: 1.7;
+margin-top: 28px;
+padding: 12px 14px;
+background: var(–bg-elev);
+border: 1px solid var(–rule);
+border-left: 3px solid var(–cau);
+border-radius: var(–r-lg);
+font-size: 11px;
+color: var(–ink-2);
+line-height: 1.7;
 }
-.disclaimer strong { color: var(--cau); }
+.disclaimer strong { color: var(–cau); }
 
 /* ===== Footer ===== */
 .app-footer {
-  text-align: center;
-  margin: 16px 0 24px;
-  font-size: 10px;
-  color: var(--ink-4);
+text-align: center;
+margin: 16px 0 24px;
+font-size: 10px;
+color: var(–ink-4);
 }
 .app-footer button {
-  font-size: 11px;
-  color: var(--ink-3);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+font-size: 11px;
+color: var(–ink-3);
+text-decoration: underline;
+text-underline-offset: 2px;
 }
 
 /* ===== Accessibility ===== */
 :focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
+outline: 2px solid var(–brand);
+outline-offset: 2px;
 }
 .sr-only {
-  position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
+position: absolute;
+width: 1px; height: 1px;
+padding: 0; margin: -1px;
+overflow: hidden; clip: rect(0,0,0,0);
+white-space: nowrap; border: 0;
 }
 
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+*, *::before, *::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
 }
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
-  .field-grid { grid-template-columns: 1fr 1fr; }
-  .field-grid .field--span2 { grid-column: span 2; }
-  .result-grid { grid-template-columns: 1fr; }
-  .status-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .app-title { font-size: 15px; }
-  .app-meta { font-size: 10px; }
-  .result-value { font-size: 30px; }
-  .status-num { font-size: 18px; }
+.field-grid { grid-template-columns: 1fr 1fr; }
+.field-grid .field–span2 { grid-column: span 2; }
+.result-grid { grid-template-columns: 1fr; }
+.status-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
+.app-title { font-size: 15px; }
+.app-meta { font-size: 10px; }
+.result-value { font-size: 30px; }
+.status-num { font-size: 18px; }
+}
+
+/* ========================================
+ダークモード強化スタイル (v1.2.0)
+“Clinical Dark” - ネイビーベース + シアンアクセント
+======================================== */
+
+/* ヘッダのダークモード調整 */
+:root[data-theme=“dark”] .app-header,
+:root:not([data-theme=“light”]) .app-header {
+background: linear-gradient(180deg, var(–bg-elev) 0%, var(–bg) 100%);
+border-bottom: 1px solid var(–rule-2);
+box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* アプリタイトルにシアンの淡い輝き */
+:root[data-theme=“dark”] .app-title,
+:root:not([data-theme=“light”]) .app-title {
+text-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+}
+
+/* カード全般の浮き上がり感 */
+:root[data-theme=“dark”] .input-card,
+:root[data-theme=“dark”] .compare-panel,
+:root[data-theme=“dark”] .selection-bar,
+:root[data-theme=“dark”] .group-browser,
+:root:not([data-theme=“light”]) .input-card,
+:root:not([data-theme=“light”]) .compare-panel,
+:root:not([data-theme=“light”]) .selection-bar,
+:root:not([data-theme=“light”]) .group-browser {
+box-shadow:
+0 1px 0 rgba(255, 255, 255, 0.04) inset,
+0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* 検索バーのアクセント強化 */
+:root[data-theme=“dark”] .search-input,
+:root:not([data-theme=“light”]) .search-input {
+background: var(–bg-sunken);
+border: 1.5px solid var(–rule-2);
+box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+:root[data-theme=“dark”] .search-input:focus,
+:root:not([data-theme=“light”]) .search-input:focus {
+border-color: var(–brand);
+box-shadow:
+inset 0 1px 3px rgba(0, 0, 0, 0.4),
+0 0 0 3px rgba(0, 212, 255, 0.18),
+0 0 16px rgba(0, 212, 255, 0.15);
+}
+
+/* 主要ボタンにシアンの輝き */
+:root[data-theme=“dark”] .bulk-btn,
+:root:not([data-theme=“light”]) .bulk-btn {
+border-color: var(–brand);
+color: var(–brand);
+background: var(–brand-soft);
+}
+:root[data-theme=“dark”] .bulk-btn:hover,
+:root:not([data-theme=“light”]) .bulk-btn:hover {
+background: var(–brand);
+color: var(–bg);
+box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+}
+
+/* チップ（選択中薬剤）のダーク調整 */
+:root[data-theme=“dark”] .chip,
+:root:not([data-theme=“light”]) .chip {
+background: var(–bg-sunken);
+border: 1px solid var(–rule-2);
+color: var(–ink);
+}
+:root[data-theme=“dark”] .chip:hover,
+:root:not([data-theme=“light”]) .chip:hover {
+border-color: var(–brand);
+color: var(–brand);
+}
+
+/* サジェスト項目のホバー */
+:root[data-theme=“dark”] .suggest-item:hover,
+:root:not([data-theme=“light”]) .suggest-item:hover {
+background: var(–brand-soft);
+}
+
+/* 比較表のダーク調整 */
+:root[data-theme=“dark”] .compare-table thead th,
+:root:not([data-theme=“light”]) .compare-table thead th {
+background: var(–bg-sunken);
+color: var(–ink-2);
+border-color: var(–rule-2);
+}
+:root[data-theme=“dark”] .compare-table tbody td,
+:root:not([data-theme=“light”]) .compare-table tbody td {
+border-color: var(–rule);
+}
+:root[data-theme=“dark”] .compare-table tbody td:first-child,
+:root:not([data-theme=“light”]) .compare-table tbody td:first-child {
+background: var(–bg-sunken);
+}
+
+/* 比較表のハイライト行をシアンに */
+:root[data-theme=“dark”] .compare-table tbody tr.is-current td,
+:root:not([data-theme=“light”]) .compare-table tbody tr.is-current td {
+background: var(–brand-tint) !important;
+box-shadow: inset 0 1.5px 0 var(–brand), inset 0 -1.5px 0 var(–brand);
+}
+
+/* ステータスバッジの輝き */
+:root[data-theme=“dark”] .badge,
+:root:not([data-theme=“light”]) .badge {
+font-weight: 700;
+text-shadow: 0 0 8px currentColor;
+}
+
+/* ツールボタン（テーマ切替・履歴）の調整 */
+:root[data-theme=“dark”] .tool-btn,
+:root:not([data-theme=“light”]) .tool-btn {
+background: var(–bg-sunken);
+border: 1px solid var(–rule-2);
+color: var(–ink-2);
+}
+:root[data-theme=“dark”] .tool-btn:hover,
+:root:not([data-theme=“light”]) .tool-btn:hover {
+border-color: var(–brand);
+color: var(–brand);
+box-shadow: 0 0 12px rgba(0, 212, 255, 0.25);
+}
+
+/* result-cell (eGFR/CCr表示) のダーク強化 */
+:root[data-theme=“dark”] .result-cell,
+:root:not([data-theme=“light”]) .result-cell {
+background: var(–bg-sunken);
+border: 1px solid var(–rule-2);
+}
+:root[data-theme=“dark”] .result-value,
+:root:not([data-theme=“light”]) .result-value {
+color: var(–brand);
+text-shadow: 0 0 16px rgba(0, 212, 255, 0.3);
+}
+
+/* モーダルのダーク調整 */
+:root[data-theme=“dark”] .modal,
+:root:not([data-theme=“light”]) .modal {
+background: var(–bg-elev);
+border: 1px solid var(–rule-2);
+box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+:root[data-theme=“dark”] .modal-header,
+:root:not([data-theme=“light”]) .modal-header {
+background: var(–bg-sunken);
+border-bottom: 1px solid var(–rule-2);
 }
 
 </style>
@@ -2273,53 +2493,59 @@ section { margin-top: 16px; }
 <body>
 
 <!-- ============ スプラッシュ ============ -->
+
 <div class="splash" id="splash"><div class="splash-mark"></div></div>
 
 <!-- ============ PIN ロック画面 ============ -->
+
 <div id="pin-overlay" class="pin-overlay" style="display:none">
   <div class="pin-card">
     <div class="pin-mark">⚕</div>
     <h2 class="pin-title">腎機能別投与量</h2>
     <p class="pin-sub">PINを入力してください</p>
 
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="pin-dot-0"></div>
-      <div class="pin-dot" id="pin-dot-1"></div>
-      <div class="pin-dot" id="pin-dot-2"></div>
-      <div class="pin-dot" id="pin-dot-3"></div>
-      <div class="pin-dot" id="pin-dot-4"></div>
-      <div class="pin-dot" id="pin-dot-5"></div>
-      <div class="pin-dot" id="pin-dot-6" style="display:none"></div>
-      <div class="pin-dot" id="pin-dot-7" style="display:none"></div>
-    </div>
+```
+<div class="pin-dots" id="pin-dots">
+  <div class="pin-dot" id="pin-dot-0"></div>
+  <div class="pin-dot" id="pin-dot-1"></div>
+  <div class="pin-dot" id="pin-dot-2"></div>
+  <div class="pin-dot" id="pin-dot-3"></div>
+  <div class="pin-dot" id="pin-dot-4"></div>
+  <div class="pin-dot" id="pin-dot-5"></div>
+  <div class="pin-dot" id="pin-dot-6" style="display:none"></div>
+  <div class="pin-dot" id="pin-dot-7" style="display:none"></div>
+</div>
 
-    <div class="pin-err" id="pin-err"></div>
+<div class="pin-err" id="pin-err"></div>
 
-    <div class="pin-keypad">
-      <button class="pin-key" data-pin-key="1" type="button">1</button>
-      <button class="pin-key" data-pin-key="2" type="button">2</button>
-      <button class="pin-key" data-pin-key="3" type="button">3</button>
-      <button class="pin-key" data-pin-key="4" type="button">4</button>
-      <button class="pin-key" data-pin-key="5" type="button">5</button>
-      <button class="pin-key" data-pin-key="6" type="button">6</button>
-      <button class="pin-key" data-pin-key="7" type="button">7</button>
-      <button class="pin-key" data-pin-key="8" type="button">8</button>
-      <button class="pin-key" data-pin-key="9" type="button">9</button>
-      <button class="pin-key pin-key--util" data-pin-key="del" type="button" aria-label="削除">⌫</button>
-      <button class="pin-key" data-pin-key="0" type="button">0</button>
-      <button class="pin-key pin-key--ok" data-pin-key="ok" type="button">OK</button>
-    </div>
+<div class="pin-keypad">
+  <button class="pin-key" data-pin-key="1" type="button">1</button>
+  <button class="pin-key" data-pin-key="2" type="button">2</button>
+  <button class="pin-key" data-pin-key="3" type="button">3</button>
+  <button class="pin-key" data-pin-key="4" type="button">4</button>
+  <button class="pin-key" data-pin-key="5" type="button">5</button>
+  <button class="pin-key" data-pin-key="6" type="button">6</button>
+  <button class="pin-key" data-pin-key="7" type="button">7</button>
+  <button class="pin-key" data-pin-key="8" type="button">8</button>
+  <button class="pin-key" data-pin-key="9" type="button">9</button>
+  <button class="pin-key pin-key--util" data-pin-key="del" type="button" aria-label="削除">⌫</button>
+  <button class="pin-key" data-pin-key="0" type="button">0</button>
+  <button class="pin-key pin-key--ok" data-pin-key="ok" type="button">OK</button>
+</div>
 
-    <div class="pin-len-row">
-      <button class="pin-len-btn" id="plen-4" data-active="false" type="button">4桁</button>
-      <button class="pin-len-btn" id="plen-6" data-active="true" type="button">6桁</button>
-    </div>
+<div class="pin-len-row">
+  <button class="pin-len-btn" id="plen-4" data-active="false" type="button">4桁</button>
+  <button class="pin-len-btn" id="plen-6" data-active="true" type="button">6桁</button>
+</div>
 
-    <p class="pin-hint">教えてもらった人だけが利用可能です</p>
+<p class="pin-hint">教えてもらった人だけが利用可能です</p>
+```
+
   </div>
 </div>
 
 <!-- ============ Header ============ -->
+
 <header class="app-header" role="banner">
   <div class="app-header-inner">
     <h1 class="app-title">腎機能別投与量</h1>
@@ -2336,6 +2562,7 @@ section { margin-top: 16px; }
 <main class="app">
 
   <!-- ============ 入力パネル ============ -->
+
   <section aria-labelledby="lbl-input">
     <div class="section-label" id="lbl-input">腎機能入力</div>
     <div class="card input-panel">
@@ -2350,150 +2577,154 @@ section { margin-top: 16px; }
         </button>
       </div>
 
-      <!-- 計算モード -->
-      <div class="input-body" data-input-panel="calc" id="panel-calc"
-           role="tabpanel" aria-labelledby="tab-calc">
-        <div class="field-grid">
-          <div class="field">
-            <label class="field-label" for="in-age">年齢 (歳)</label>
-            <input class="field-input" id="in-age" type="number"
-                   inputmode="numeric" placeholder="65" min="1" max="120"
-                   aria-describedby="err-age">
-            <span class="field-error" id="err-age"></span>
+```
+  <!-- 計算モード -->
+  <div class="input-body" data-input-panel="calc" id="panel-calc"
+       role="tabpanel" aria-labelledby="tab-calc">
+    <div class="field-grid">
+      <div class="field">
+        <label class="field-label" for="in-age">年齢 (歳)</label>
+        <input class="field-input" id="in-age" type="number"
+               inputmode="numeric" placeholder="65" min="1" max="120"
+               aria-describedby="err-age">
+        <span class="field-error" id="err-age"></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="in-height">身長 (cm)</label>
+        <input class="field-input" id="in-height" type="number"
+               inputmode="decimal" placeholder="165" min="50" max="250"
+               aria-describedby="err-height">
+        <span class="field-error" id="err-height"></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="in-weight">体重 (kg)</label>
+        <input class="field-input" id="in-weight" type="number"
+               inputmode="decimal" placeholder="60" min="1" max="300"
+               aria-describedby="err-weight">
+        <span class="field-error" id="err-weight"></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="in-scr">血清Cr (mg/dL)</label>
+        <input class="field-input" id="in-scr" type="number"
+               inputmode="decimal" step="0.01" placeholder="1.2" min="0.01" max="30"
+               aria-describedby="err-scr">
+        <span class="field-error" id="err-scr"></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="in-sex">性別</label>
+        <select class="field-select" id="in-sex">
+          <option value="male">男性</option>
+          <option value="female">女性</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="in-dialysis">透析</label>
+        <select class="field-select" id="in-dialysis">
+          <option value="no">なし</option>
+          <option value="hd">HD</option>
+          <option value="pd">PD</option>
+        </select>
+      </div>
+    </div>
+
+    <span class="field-error" id="err-bmi" style="display:block;text-align:center;margin-top:6px"></span>
+
+    <div class="formula-row" role="radiogroup" aria-label="eGFR算出式">
+      <button class="formula-btn" data-formula="mdrd"
+              role="radio" aria-selected="true">MDRD式（推奨）</button>
+      <button class="formula-btn" data-formula="ckdepi"
+              role="radio" aria-selected="false">CKD-EPI 2021</button>
+    </div>
+    <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
+      ※ CKD-EPI 2021はrace coefficientを廃止した式。日本人への適用は議論があり、JSNP第39版はMDRD式を採用。
+    </p>
+
+    <div class="formula-row" role="radiogroup" aria-label="CCr計算用体重" style="margin-top:8px">
+      <button class="formula-btn" data-bw="auto" role="radio" aria-selected="true">自動</button>
+      <button class="formula-btn" data-bw="tbw" role="radio" aria-selected="false">実体重</button>
+      <button class="formula-btn" data-bw="adjbw" role="radio" aria-selected="false">補正</button>
+    </div>
+    <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
+      ※ 通常は<strong>実体重</strong>でOK。体重が明らかに多い/少ない患者でCCrが実態と乖離する場合に<strong>補正</strong>を選択。
+    </p>
+
+    <button class="reset-btn" id="calc-reset" type="button">↻ 入力値をリセット</button>
+
+    <div id="calc-result" hidden>
+      <div class="result-grid">
+        <div class="result-cell result-cell--egfr">
+          <div class="result-label">
+            <span>eGFR</span>
+            <span class="result-formula" id="egfr-formula">(MDRD)</span>
           </div>
-          <div class="field">
-            <label class="field-label" for="in-height">身長 (cm)</label>
-            <input class="field-input" id="in-height" type="number"
-                   inputmode="decimal" placeholder="165" min="50" max="250"
-                   aria-describedby="err-height">
-            <span class="field-error" id="err-height"></span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="in-weight">体重 (kg)</label>
-            <input class="field-input" id="in-weight" type="number"
-                   inputmode="decimal" placeholder="60" min="1" max="300"
-                   aria-describedby="err-weight">
-            <span class="field-error" id="err-weight"></span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="in-scr">血清Cr (mg/dL)</label>
-            <input class="field-input" id="in-scr" type="number"
-                   inputmode="decimal" step="0.01" placeholder="1.2" min="0.01" max="30"
-                   aria-describedby="err-scr">
-            <span class="field-error" id="err-scr"></span>
-          </div>
-          <div class="field">
-            <label class="field-label" for="in-sex">性別</label>
-            <select class="field-select" id="in-sex">
-              <option value="male">男性</option>
-              <option value="female">女性</option>
-            </select>
-          </div>
-          <div class="field">
-            <label class="field-label" for="in-dialysis">透析</label>
-            <select class="field-select" id="in-dialysis">
-              <option value="no">なし</option>
-              <option value="hd">HD</option>
-              <option value="pd">PD</option>
-            </select>
-          </div>
+          <div class="result-value" id="egfr-val">—</div>
+          <div class="result-unit">mL/min/1.73m² (標準化)</div>
+          <div class="result-stage" id="egfr-stage">—</div>
+          <div class="result-individualized" id="egfr-individualized"></div>
         </div>
-
-        <span class="field-error" id="err-bmi" style="display:block;text-align:center;margin-top:6px"></span>
-
-        <div class="formula-row" role="radiogroup" aria-label="eGFR算出式">
-          <button class="formula-btn" data-formula="mdrd"
-                  role="radio" aria-selected="true">MDRD式（推奨）</button>
-          <button class="formula-btn" data-formula="ckdepi"
-                  role="radio" aria-selected="false">CKD-EPI 2021</button>
-        </div>
-        <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
-          ※ CKD-EPI 2021はrace coefficientを廃止した式。日本人への適用は議論があり、JSNP第39版はMDRD式を採用。
-        </p>
-
-        <div class="formula-row" role="radiogroup" aria-label="CCr計算用体重" style="margin-top:8px">
-          <button class="formula-btn" data-bw="auto" role="radio" aria-selected="true">自動</button>
-          <button class="formula-btn" data-bw="tbw" role="radio" aria-selected="false">実体重</button>
-          <button class="formula-btn" data-bw="adjbw" role="radio" aria-selected="false">補正</button>
-        </div>
-        <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
-          ※ 通常は<strong>実体重</strong>でOK。体重が明らかに多い/少ない患者でCCrが実態と乖離する場合に<strong>補正</strong>を選択。
-        </p>
-
-        <button class="reset-btn" id="calc-reset" type="button">↻ 入力値をリセット</button>
-
-        <div id="calc-result" hidden>
-          <div class="result-grid">
-            <div class="result-cell result-cell--egfr">
-              <div class="result-label">
-                <span>eGFR</span>
-                <span class="result-formula" id="egfr-formula">(MDRD)</span>
-              </div>
-              <div class="result-value" id="egfr-val">—</div>
-              <div class="result-unit">mL/min/1.73m² (標準化)</div>
-              <div class="result-stage" id="egfr-stage">—</div>
-              <div class="result-individualized" id="egfr-individualized"></div>
-            </div>
-            <div class="result-cell result-cell--ccr">
-              <div class="result-label">
-                <span>CCr</span>
-                <span class="result-formula">(Cockcroft-Gault)</span>
-              </div>
-              <div class="result-value" id="ccr-val">—</div>
-              <div class="result-unit">mL/min (個別化)</div>
-              <div class="result-stage" id="ccr-stage">—</div>
-            </div>
+        <div class="result-cell result-cell--ccr">
+          <div class="result-label">
+            <span>CCr</span>
+            <span class="result-formula">(Cockcroft-Gault)</span>
           </div>
-          <div class="result-note" id="ibw-note" style="display:block"></div>
+          <div class="result-value" id="ccr-val">—</div>
+          <div class="result-unit">mL/min (個別化)</div>
+          <div class="result-stage" id="ccr-stage">—</div>
         </div>
       </div>
+      <div class="result-note" id="ibw-note" style="display:block"></div>
+    </div>
+  </div>
 
-      <!-- 直接入力モード -->
-      <div class="input-body" data-input-panel="direct" id="panel-direct"
-           role="tabpanel" aria-labelledby="tab-direct" hidden>
-        <div class="field-grid field-grid--2">
-          <div class="field">
-            <label class="field-label" for="din-egfr">eGFR (mL/min/1.73m²)</label>
-            <input class="field-input" id="din-egfr" type="number"
-                   inputmode="decimal" placeholder="45" min="0" max="200">
-          </div>
-          <div class="field">
-            <label class="field-label" for="din-ccr">CCr (mL/min)</label>
-            <input class="field-input" id="din-ccr" type="number"
-                   inputmode="decimal" placeholder="40" min="0" max="200">
-          </div>
-          <div class="field field--span2">
-            <label class="field-label" for="din-dialysis">透析</label>
-            <select class="field-select" id="din-dialysis">
-              <option value="no">なし</option>
-              <option value="hd">HD</option>
-              <option value="pd">PD</option>
-            </select>
-          </div>
+  <!-- 直接入力モード -->
+  <div class="input-body" data-input-panel="direct" id="panel-direct"
+       role="tabpanel" aria-labelledby="tab-direct" hidden>
+    <div class="field-grid field-grid--2">
+      <div class="field">
+        <label class="field-label" for="din-egfr">eGFR (mL/min/1.73m²)</label>
+        <input class="field-input" id="din-egfr" type="number"
+               inputmode="decimal" placeholder="45" min="0" max="200">
+      </div>
+      <div class="field">
+        <label class="field-label" for="din-ccr">CCr (mL/min)</label>
+        <input class="field-input" id="din-ccr" type="number"
+               inputmode="decimal" placeholder="40" min="0" max="200">
+      </div>
+      <div class="field field--span2">
+        <label class="field-label" for="din-dialysis">透析</label>
+        <select class="field-select" id="din-dialysis">
+          <option value="no">なし</option>
+          <option value="hd">HD</option>
+          <option value="pd">PD</option>
+        </select>
+      </div>
+    </div>
+    <button class="reset-btn" id="direct-reset" type="button">↻ 入力値をリセット</button>
+
+    <div id="direct-result" hidden>
+      <div class="result-grid" style="margin-top:14px">
+        <div class="result-cell result-cell--egfr">
+          <div class="result-label"><span>eGFR</span></div>
+          <div class="result-value" id="din-egfr-val">—</div>
+          <div class="result-unit">mL/min/1.73m²</div>
+          <div class="result-stage" id="din-egfr-stage">—</div>
         </div>
-        <button class="reset-btn" id="direct-reset" type="button">↻ 入力値をリセット</button>
-
-        <div id="direct-result" hidden>
-          <div class="result-grid" style="margin-top:14px">
-            <div class="result-cell result-cell--egfr">
-              <div class="result-label"><span>eGFR</span></div>
-              <div class="result-value" id="din-egfr-val">—</div>
-              <div class="result-unit">mL/min/1.73m²</div>
-              <div class="result-stage" id="din-egfr-stage">—</div>
-            </div>
-            <div class="result-cell result-cell--ccr">
-              <div class="result-label"><span>CCr</span></div>
-              <div class="result-value" id="din-ccr-val">—</div>
-              <div class="result-unit">mL/min</div>
-              <div class="result-stage" id="din-ccr-stage">—</div>
-            </div>
-          </div>
+        <div class="result-cell result-cell--ccr">
+          <div class="result-label"><span>CCr</span></div>
+          <div class="result-value" id="din-ccr-val">—</div>
+          <div class="result-unit">mL/min</div>
+          <div class="result-stage" id="din-ccr-stage">—</div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+```
+
   </section>
 
   <!-- ============ Status Bar (sticky) ============ -->
+
   <div class="status-bar" id="status-bar" role="status" aria-live="polite" hidden>
     <div class="status-values">
       <div class="status-cell">
@@ -2509,6 +2740,7 @@ section { margin-top: 16px; }
   </div>
 
   <!-- ============ 選択中バー ============ -->
+
   <div class="selection-bar" id="selection-bar" hidden>
     <div class="selection-head">
       <div class="selection-title">選択中 <span class="selection-count" id="sel-count"></span></div>
@@ -2519,10 +2751,12 @@ section { margin-top: 16px; }
   </div>
 
   <!-- ============ 比較パネル ============ -->
+
   <section class="card compare-panel" id="compare-panel"
            aria-label="選択薬剤の腎機能別用量比較" hidden></section>
 
   <!-- ============ 検索 ============ -->
+
   <section aria-labelledby="lbl-search">
     <div class="section-label" id="lbl-search">
       <span>薬剤検索</span>
@@ -2546,6 +2780,7 @@ section { margin-top: 16px; }
   </section>
 
   <!-- ============ 凡例 ============ -->
+
   <div class="legend" role="region" aria-label="ステータス凡例">
     <span class="legend-label">ステータス</span>
     <div class="legend-item"><span class="legend-dot legend-dot--ok"></span>通常投与可</div>
@@ -2556,9 +2791,11 @@ section { margin-top: 16px; }
   </div>
 
   <!-- ============ 検索結果リスト ============ -->
+
   <div id="drug-list" class="drug-list" aria-live="polite"></div>
 
   <!-- ============ 薬効群ブラウザ ============ -->
+
   <section class="group-browser" aria-labelledby="lbl-group">
     <div class="section-label" id="lbl-group">薬効群から比較する</div>
     <div class="group-buttons" id="group-top-btns"></div>
@@ -2573,6 +2810,7 @@ section { margin-top: 16px; }
   </section>
 
   <!-- ============ 免責 ============ -->
+
   <div class="disclaimer">
     <strong>⚠️ 注意:</strong> 本ツールはJSNP腎機能別薬剤投与量の目安 <strong>第39版（2026年改訂）</strong>に基づく個人学習・参照用途のみです。実際の投与判断は必ず添付文書・最新版JSNP・担当医師との連携の上で行ってください。本ツールの情報のみで投与決定を行わないでください。
   </div>
@@ -2583,6 +2821,7 @@ section { margin-top: 16px; }
 </main>
 
 <!-- ============ モーダル ============ -->
+
 <div class="modal-overlay" id="modal-overlay" data-visible="false"></div>
 <div class="modal-box" id="modal-box" data-visible="false"
      role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -5688,59 +5927,152 @@ const GRP_DEF = [
 // ===== data/alt-map.js =====
 // 代替薬マッピング
 const ALT_MAP = {
-  // 糖尿病薬 - ビグアナイド
+  // ===== 糖尿病薬 =====
   metformin:      {label:'メトホルミンが使えない場合（腎機能による調節不要な薬剤へ）',
                    alts:['teneligliptin','linagliptin','trelagliptin','pioglitazone','imeglimin']},
-  // 糖尿病薬 - SGLT2
   empagliflozin:  {label:'SGLT2阻害薬（血糖降下目的）が使えない場合',
                    alts:['teneligliptin','linagliptin','sitagliptin','pioglitazone']},
   dapagliflozin:  {label:'SGLT2阻害薬（血糖降下目的）が使えない場合',
                    alts:['teneligliptin','linagliptin','sitagliptin','pioglitazone']},
-  // 糖尿病薬 - SU
+  canagliflozin:  {label:'SGLT2阻害薬（カナグリフロジン）が使えない場合',
+                   alts:['teneligliptin','linagliptin','sitagliptin','pioglitazone']},
+  ipragliflozin:  {label:'SGLT2阻害薬が使えない場合',
+                   alts:['teneligliptin','linagliptin','sitagliptin']},
   glimepiride:    {label:'SU薬が使えない場合（低血糖リスク回避）',
                    alts:['teneligliptin','linagliptin','sitagliptin','pioglitazone']},
-  // NSAIDs
+  glibenclamide:  {label:'グリベンクラミドは長時間作用で腎機能低下時に低血糖遷延のリスク。短時間作用型または別系統へ',
+                   alts:['teneligliptin','linagliptin','glimepiride']},
+  // DPP-4阻害薬
+  sitagliptin:    {label:'シタグリプチンを腎機能低下時に減量回避したい場合（肝排泄型へ）',
+                   alts:['linagliptin','teneligliptin','trelagliptin']},
+  alogliptin:     {label:'アログリプチンを腎機能低下時に減量回避したい場合',
+                   alts:['linagliptin','teneligliptin']},
+  vildagliptin:   {label:'ビルダグリプチンを減量する場合',
+                   alts:['linagliptin','teneligliptin']},
+  saxagliptin:    {label:'サキサグリプチンを減量する場合',
+                   alts:['linagliptin','teneligliptin']},
+  anagliptin:     {label:'アナグリプチンを減量する場合',
+                   alts:['linagliptin','teneligliptin']},
+  omarigliptin:   {label:'オマリグリプチンを減量する場合',
+                   alts:['linagliptin','trelagliptin']},
+
+  // ===== 鎮痛薬 =====
   loxoprofen:     {label:'ロキソプロフェンが使えない場合',alts:['acetaminophen','celecoxib']},
   celecoxib:      {label:'NSAIDsが使えない場合',alts:['acetaminophen','tramadol']},
-  // 神経障害性疼痛
-  pregabalin:     {label:'プレガバリンが使えない/減量の場合',alts:['mirogabalin']},
-  // MRA
+  diclofenac:     {label:'ジクロフェナクが使えない場合',alts:['acetaminophen','celecoxib']},
+  pregabalin:     {label:'プレガバリンが使えない/減量の場合',alts:['mirogabalin','duloxetine']},
+  mirogabalin:    {label:'ミロガバリンを減量する場合',alts:['duloxetine','tramadol']},
+  duloxetine:     {label:'デュロキセチンを減量する場合',alts:['mirogabalin','pregabalin']},
+  tramadol:       {label:'トラマドールが使えない場合',alts:['acetaminophen']},
+
+  // ===== 循環器系 =====
   spironolactone: {label:'スピロノラクトンが使えない場合',alts:['eplerenone','esaxerenone','furosemide']},
   eplerenone:     {label:'エプレレノンが使えない場合',alts:['esaxerenone','furosemide']},
   esaxerenone:    {label:'エサキセレノンが使えない場合',alts:['furosemide','amlodipine']},
-  // ARB/ACE
-  enalapril:      {label:'ACE阻害薬を減量する場合',alts:['telmisartan','amlodipine']},
+  finerenone:     {label:'フィネレノンが使えない場合',alts:['esaxerenone','spironolactone']},
+  enalapril:      {label:'エナラプリルを減量する場合',alts:['telmisartan','amlodipine']},
+  imidapril:      {label:'イミダプリルを減量する場合',alts:['telmisartan','amlodipine']},
+  perindopril:    {label:'ペリンドプリルを減量する場合',alts:['telmisartan','amlodipine']},
   candesartan:    {label:'カンデサルタンを減量する場合',alts:['telmisartan','olmesartan','amlodipine']},
-  // スタチン
-  rosuvastatin:   {label:'ロスバスタチンを減量する場合',alts:['atorvastatin','pravastatin']},
+  losartan:       {label:'ロサルタンを減量する場合',alts:['telmisartan','olmesartan']},
+  valsartan:      {label:'バルサルタンを減量する場合',alts:['telmisartan','olmesartan']},
+  olmesartan:     {label:'オルメサルタンを減量する場合',alts:['telmisartan','amlodipine']},
+  azilsartan:     {label:'アジルサルタンを減量する場合',alts:['telmisartan','amlodipine']},
+  irbesartan:     {label:'イルベサルタンを減量する場合',alts:['telmisartan','amlodipine']},
+  sacubitril_valsartan: {label:'エンレストを減量する場合',alts:['telmisartan','enalapril']},
+  atenolol:       {label:'アテノロールは腎排泄型。代替へ',alts:['bisoprolol','carvedilol']},
+  bisoprolol:     {label:'ビソプロロールが使えない場合',alts:['carvedilol']},
+  tolvaptan:      {label:'トルバプタンが使えない場合',alts:['furosemide','spironolactone']},
+  ivabradine:     {label:'イバブラジンが使えない場合',alts:['bisoprolol','carvedilol']},
+
+  // ===== スタチン =====
+  rosuvastatin:   {label:'ロスバスタチンを減量する場合',alts:['atorvastatin','pravastatin','pitavastatin']},
+  pitavastatin:   {label:'ピタバスタチンを減量する場合',alts:['atorvastatin','pravastatin']},
+  pravastatin:    {label:'プラバスタチンを減量する場合',alts:['atorvastatin']},
+  fluvastatin:    {label:'フルバスタチンを減量する場合',alts:['atorvastatin','pravastatin']},
   fenofibrate:    {label:'フェノフィブラートが使えない場合',alts:['rosuvastatin','atorvastatin','ezetimibe']},
   bezafibrate:    {label:'ベザフィブラートが使えない場合',alts:['rosuvastatin','atorvastatin','ezetimibe']},
-  // DOAC
+  pemafibrate:    {label:'ペマフィブラートを減量する場合',alts:['ezetimibe','rosuvastatin']},
+
+  // ===== 抗凝固・抗血小板 =====
   dabigatran:     {label:'ダビガトランが使えない場合',alts:['apixaban','rivaroxaban','edoxaban']},
   rivaroxaban:    {label:'リバーロキサバンが使えない場合',alts:['apixaban','edoxaban']},
   edoxaban:       {label:'エドキサバンが使えない場合',alts:['apixaban']},
-  // 痛風
+  apixaban:       {label:'アピキサバンを減量する場合',alts:['edoxaban','warfarin']},
+  warfarin:       {label:'ワルファリンが使えない場合（DOACへ切替）',alts:['apixaban','edoxaban']},
+
+  // ===== 痛風・尿酸 =====
   allopurinol:    {label:'アロプリノールを減量する場合',alts:['febuxostat']},
+  febuxostat:     {label:'フェブキソスタットが使えない場合',alts:['allopurinol']},
   colchicine:     {label:'コルヒチンが使えない場合',alts:['acetaminophen']},
-  // 抗菌薬
+
+  // ===== 抗菌薬 =====
   st_compound:    {label:'ST合剤が使えない場合',alts:['minocycline','azithromycin','fosfomycin']},
-  // ビスホスホネート
+  levofloxacin:   {label:'レボフロキサシンを減量する場合',alts:['azithromycin','minocycline']},
+  clarithromycin: {label:'クラリスロマイシンが使えない場合',alts:['azithromycin']},
+  cefcapene:      {label:'セフカペンを減量する場合',alts:['amoxicillin','azithromycin']},
+  cefditoren:     {label:'セフジトレンを減量する場合',alts:['amoxicillin','azithromycin']},
+  cefdinir:       {label:'セフジニルを減量する場合',alts:['amoxicillin','azithromycin']},
+  cefpodoxime:    {label:'セフポドキシムを減量する場合',alts:['amoxicillin','azithromycin']},
+  amoxicillin:    {label:'アモキシシリンを減量する場合',alts:['azithromycin','clarithromycin']},
+  valaciclovir:   {label:'バラシクロビルを減量する場合',alts:['famciclovir','aciclovir']},
+  aciclovir:      {label:'アシクロビルを減量する場合',alts:['famciclovir','valaciclovir']},
+  famciclovir:    {label:'ファムシクロビルを減量する場合',alts:['valaciclovir']},
+  oseltamivir:    {label:'オセルタミビルを減量する場合',alts:['baloxavir','laninamivir']},
+  baloxavir:      {label:'バロキサビルが使えない場合',alts:['oseltamivir','laninamivir']},
+
+  // ===== ビスホスホネート =====
   alendronate:    {label:'アレンドロン酸が使えない場合',alts:['raloxifene','denosumab']},
   risedronate:    {label:'リセドロン酸が使えない場合',alts:['raloxifene','denosumab']},
   minodronate:    {label:'ミノドロン酸が使えない場合',alts:['raloxifene','denosumab']},
-  // 免疫抑制
+
+  // ===== 免疫抑制 =====
   methotrexate:   {label:'MTXが使えない場合',alts:['hydroxychloroquine']},
-  // 泌尿器
+
+  // ===== 泌尿器 =====
   silodosin:      {label:'シロドシンが使えない場合',alts:['tamsulosin']},
-  solifenacin:    {label:'ソリフェナシンを減量する場合',alts:['mirabegron']},
-  // 抗ウイルス
-  valaciclovir:   {label:'バラシクロビルを減量する場合',alts:['famciclovir','aciclovir']},
-  // IBD
+  tamsulosin:     {label:'タムスロシンが使えない場合',alts:['silodosin']},
+  solifenacin:    {label:'ソリフェナシンを減量する場合',alts:['mirabegron','vibegron']},
+  imidafenacin:   {label:'イミダフェナシンを減量する場合',alts:['mirabegron','vibegron']},
+  mirabegron:     {label:'ミラベグロンを減量する場合',alts:['vibegron']},
+
+  // ===== 中枢神経 =====
+  alprazolam:     {label:'アルプラゾラムを減量する場合',alts:['etizolam','clotiazepam']},
+  bromazepam:     {label:'ブロマゼパムが使えない場合',alts:['etizolam','clotiazepam']},
+  zolpidem:       {label:'ゾルピデムが使えない場合',alts:['suvorexant','lemborexant']},
+  paroxetine:     {label:'パロキセチンを減量する場合',alts:['sertraline','escitalopram']},
+  sertraline:     {label:'セルトラリンが使えない場合',alts:['escitalopram','duloxetine']},
+  escitalopram:   {label:'エスシタロプラムを減量する場合',alts:['sertraline','duloxetine']},
+  mirtazapine:    {label:'ミルタザピンを減量する場合',alts:['sertraline','escitalopram']},
+  venlafaxine:    {label:'ベンラファキシンを減量する場合',alts:['duloxetine','sertraline']},
+
+  // ===== 抗てんかん薬 =====
+  levetiracetam:  {label:'レベチラセタムを減量する場合',alts:['valproate','lamotrigine']},
+  gabapentin:     {label:'ガバペンチンが使えない場合',alts:['pregabalin','mirogabalin']},
+  topiramate:     {label:'トピラマートを減量する場合',alts:['valproate','lamotrigine']},
+
+  // ===== 認知症・パーキンソン =====
+  memantine:      {label:'メマンチンを減量する場合',alts:['donepezil','galantamine']},
+  pramipexole:    {label:'プラミペキソールを減量する場合',alts:['ropinirole']},
+  ropinirole:     {label:'ロピニロールを減量する場合',alts:['pramipexole']},
+
+  // ===== 消化管 =====
+  famotidine:     {label:'ファモチジンを減量する場合（PPIへ切替）',alts:['vonoprazan','esomeprazole','rabeprazole']},
+  nizatidine:     {label:'ニザチジンを減量する場合',alts:['vonoprazan','esomeprazole']},
+  esomeprazole:   {label:'エソメプラゾールが使えない場合',alts:['vonoprazan','rabeprazole','lansoprazole']},
+
+  // ===== アレルギー =====
+  cetirizine:     {label:'セチリジンを減量する場合',alts:['fexofenadine','desloratadine','rupatadine']},
+  levocetirizine: {label:'レボセチリジンを減量する場合',alts:['fexofenadine','desloratadine']},
+  bilastine:      {label:'ビラスチンを減量する場合',alts:['fexofenadine','desloratadine']},
+  rupatadine:     {label:'ルパタジンを減量する場合',alts:['fexofenadine','desloratadine']},
+  olopatadine:    {label:'オロパタジンを減量する場合',alts:['fexofenadine','desloratadine']},
+
+  // ===== IBD =====
   mesalazine_pentasa: {label:'メサラジン（ペンタサ）が使えない場合',alts:['sulfasalazine']},
   mesalazine_asacol:  {label:'メサラジン（アサコール）が使えない場合',alts:['sulfasalazine']},
   mesalazine_lialda:  {label:'メサラジン（リアルダ）が使えない場合',alts:['sulfasalazine']},
 };
-
 
 
 // ===== data/version.js =====
@@ -5750,7 +6082,7 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.1.0',
+  app: '1.2.0',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
@@ -8169,13 +8501,21 @@ function buildGroupBrowser() {
   for (const grp of GRP_DEF) {
     const drugCount = DRUGS.filter(d => grp.cats.includes(d.cat)).length;
     if (drugCount === 0) continue;
+
+    // ラベルから絵文字とテキストを分離 (例: "🍬 糖尿病薬" → "🍬" + "糖尿病薬")
+    const m = grp.label.match(/^(\S+)\s*(.*)$/);
+    const icon = m ? m[1] : '';
+    const labelText = m ? m[2] : grp.label;
+
     const btn = document.createElement('button');
     btn.className = 'group-btn';
-    btn.innerHTML = `${escapeHtml(grp.label)}<span class="group-btn-count">${drugCount}</span>`;
+    btn.innerHTML = `
+      <span class="group-btn-icon">${escapeHtml(icon)}</span>
+      <span class="group-btn-label">${escapeHtml(labelText)}</span>
+      <span class="group-btn-count">${drugCount}</span>
+    `;
     btn.dataset.grpId = grp.id;
     btn.style.color = grp.color;
-    btn.style.borderColor = grp.color + '60';
-    btn.style.background = grp.bg;
     btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', () => toggleGroupSub(grp, btn));
     top.appendChild(btn);
@@ -8318,418 +8658,350 @@ function openBulkModal() {
 かろな
 めとぐる
 リリカOD75mg"></textarea>
-      <div id="bulk-result-area"></div>
-      <div class="bulk-actions">
-        <button class="bulk-action-btn bulk-action-btn--secondary" id="bulk-cancel">キャンセル</button>
-        <button class="bulk-action-btn bulk-action-btn--primary" id="bulk-apply" disabled>選択に追加</button>
-      </div>
-    </div>`;
-  openModal('複数まとめて選択', initialBody);
 
-  // 状態: 自動マッチ済み + ユーザーが曖昧から選んだもの
-  let autoMatched = [];   // [{drug, source, score}]
-  const userPicked = new Map(); // source(line) → drugId
+```
+  <div id="bulk-result-area"></div>
+  <div class="bulk-actions">
+    <button class="bulk-action-btn bulk-action-btn--secondary" id="bulk-cancel">キャンセル</button>
+    <button class="bulk-action-btn bulk-action-btn--primary" id="bulk-apply" disabled>選択に追加</button>
+  </div>
+</div>`;
+```
 
-  const inputEl = document.getElementById('bulk-input');
-  const resultEl = document.getElementById('bulk-result-area');
-  const applyBtn = document.getElementById('bulk-apply');
-  const cancelBtn = document.getElementById('bulk-cancel');
+openModal(‘複数まとめて選択’, initialBody);
 
-  function getFinalDrugs() {
-    // 自動マッチ + ユーザー選択を統合（ID重複排除）
-    const finalIds = new Set();
-    const final = [];
-    for (const m of autoMatched) {
-      if (!finalIds.has(m.drug.id)) {
-        finalIds.add(m.drug.id);
-        final.push(m.drug);
-      }
-    }
-    for (const drugId of userPicked.values()) {
-      if (drugId && !finalIds.has(drugId)) {
-        finalIds.add(drugId);
-        const d = findDrug(drugId);
-        if (d) final.push(d);
-      }
-    }
-    return final;
-  }
+// 状態: 自動マッチ済み + ユーザーが曖昧から選んだもの
+let autoMatched = [];   // [{drug, source, score}]
+const userPicked = new Map(); // source(line) → drugId
 
-  function refresh() {
-    userPicked.clear();
-    const { matched, ambiguous, unmatched } = bulkMatch(inputEl.value);
-    autoMatched = matched;
-    renderResult(ambiguous, unmatched);
-  }
+const inputEl = document.getElementById(‘bulk-input’);
+const resultEl = document.getElementById(‘bulk-result-area’);
+const applyBtn = document.getElementById(‘bulk-apply’);
+const cancelBtn = document.getElementById(‘bulk-cancel’);
 
-  function renderResult(ambiguous, unmatched) {
-    if (!autoMatched.length && !ambiguous.length && !unmatched.length) {
-      resultEl.innerHTML = '';
-      updateApplyBtn();
-      return;
-    }
-    let html = '<div class="bulk-result">';
-    if (autoMatched.length) {
-      html += `<div>
-        <div class="bulk-section-title" style="color:var(--ok)">✓ マッチ ${autoMatched.length}件</div>
-        <div class="bulk-matched-list">${autoMatched.map(m =>
-          `<span class="bulk-match-chip">${escapeHtml(m.drug.name)}<span class="bulk-match-chip-source">← ${escapeHtml(m.source.slice(0,18))}</span></span>`
-        ).join('')}</div>
-      </div>`;
-    }
-    if (ambiguous.length) {
-      html += `<div style="margin-top:12px">
-        <div class="bulk-section-title" style="color:var(--cau)">? 候補が複数あります — 選択してください</div>
-        <div class="bulk-ambiguous-list">${ambiguous.map((a, i) => `
-          <div class="bulk-ambig-item" data-line-key="${escapeHtml(a.source)}">
-            <div class="bulk-ambig-source">「${escapeHtml(a.source)}」</div>
-            <div class="bulk-ambig-options">${a.candidates.map(c => `
-              <button class="bulk-ambig-btn" data-line="${escapeHtml(a.source)}" data-id="${c.drug.id}">
-                ${escapeHtml(c.drug.name)}
-              </button>
-            `).join('')}
-              <button class="bulk-ambig-btn bulk-ambig-skip" data-line="${escapeHtml(a.source)}" data-id="">
-                — 選ばない
-              </button>
-            </div>
-          </div>`).join('')}</div>
-      </div>`;
-    }
-    if (unmatched.length) {
-      html += `<div style="margin-top:12px">
-        <div class="bulk-section-title" style="color:var(--war)">⚠ 該当なし ${unmatched.length}件</div>
-        <div class="bulk-unmatched-list">${unmatched.map(u =>
-          `<span class="bulk-unmatch-chip">${escapeHtml(u.slice(0,30))}</span>`
-        ).join('')}</div>
-      </div>`;
-    }
-    html += '</div>';
-    resultEl.innerHTML = html;
-
-    // ambiguous 候補ボタンの配線
-    resultEl.querySelectorAll('.bulk-ambig-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const line = btn.dataset.line;
-        const id = btn.dataset.id;
-        userPicked.set(line, id || null);
-        // 同じ行内で active表示更新
-        const item = btn.closest('.bulk-ambig-item');
-        if (item) {
-          item.querySelectorAll('.bulk-ambig-btn').forEach(b => {
-            b.classList.toggle('is-active', b === btn);
-          });
-        }
-        updateApplyBtn();
-      });
-    });
-    updateApplyBtn();
-  }
-
-  function updateApplyBtn() {
-    const total = getFinalDrugs().length;
-    applyBtn.disabled = total === 0;
-    applyBtn.textContent = total ? `選択に追加 (${total}剤)` : '選択に追加';
-  }
-
-  let debounce;
-  inputEl.addEventListener('input', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(refresh, 150);
-  });
-  cancelBtn.addEventListener('click', () => closeModal());
-  applyBtn.addEventListener('click', () => {
-    const finalDrugs = getFinalDrugs();
-    const { selected, opened } = getState();
-    const newSel = new Set(selected);
-    const newOpen = new Set(opened);
-    let added = 0;
-    let skipped = 0;
-    for (const drug of finalDrugs) {
-      if (newSel.size >= MAX_SELECT) { skipped++; continue; }
-      if (!newSel.has(drug.id)) {
-        newSel.add(drug.id);
-        newOpen.add(drug.id);
-        added++;
-      }
-    }
-    setState({ selected: newSel, opened: newOpen });
-    closeModal();
-    if (skipped) toast(`${added}剤を追加 (${skipped}剤は上限超過でスキップ)`);
-    else toast(`${added}剤を選択に追加しました`);
-  });
-  setTimeout(() => inputEl.focus(), 100);
+function getFinalDrugs() {
+// 自動マッチ + ユーザー選択を統合（ID重複排除）
+const finalIds = new Set();
+const final = [];
+for (const m of autoMatched) {
+if (!finalIds.has(m.drug.id)) {
+finalIds.add(m.drug.id);
+final.push(m.drug);
+}
+}
+for (const drugId of userPicked.values()) {
+if (drugId && !finalIds.has(drugId)) {
+finalIds.add(drugId);
+const d = findDrug(drugId);
+if (d) final.push(d);
+}
+}
+return final;
 }
 
+function refresh() {
+userPicked.clear();
+const { matched, ambiguous, unmatched } = bulkMatch(inputEl.value);
+autoMatched = matched;
+renderResult(ambiguous, unmatched);
+}
+
+function renderResult(ambiguous, unmatched) {
+if (!autoMatched.length && !ambiguous.length && !unmatched.length) {
+resultEl.innerHTML = ‘’;
+updateApplyBtn();
+return;
+}
+let html = ‘<div class="bulk-result">’;
+if (autoMatched.length) {
+html += `<div> <div class="bulk-section-title" style="color:var(--ok)">✓ マッチ ${autoMatched.length}件</div> <div class="bulk-matched-list">${autoMatched.map(m => `<span class="bulk-match-chip">${escapeHtml(m.drug.name)}<span class="bulk-match-chip-source">← ${escapeHtml(m.source.slice(0,18))}</span></span>` ).join('')}</div> </div>`;
+}
+if (ambiguous.length) {
+html += `<div style="margin-top:12px"> <div class="bulk-section-title" style="color:var(--cau)">? 候補が複数あります — 選択してください</div> <div class="bulk-ambiguous-list">${ambiguous.map((a, i) => `
+<div class="bulk-ambig-item" data-line-key="${escapeHtml(a.source)}">
+<div class="bulk-ambig-source">「${escapeHtml(a.source)}」</div>
+<div class="bulk-ambig-options">${a.candidates.map(c => `<button class="bulk-ambig-btn" data-line="${escapeHtml(a.source)}" data-id="${c.drug.id}"> ${escapeHtml(c.drug.name)} </button>`).join(’’)}
+<button class="bulk-ambig-btn bulk-ambig-skip" data-line="${escapeHtml(a.source)}" data-id="">
+— 選ばない
+</button>
+</div>
+</div>`).join('')}</div> </div>`;
+}
+if (unmatched.length) {
+html += `<div style="margin-top:12px"> <div class="bulk-section-title" style="color:var(--war)">⚠ 該当なし ${unmatched.length}件</div> <div class="bulk-unmatched-list">${unmatched.map(u => `<span class="bulk-unmatch-chip">${escapeHtml(u.slice(0,30))}</span>` ).join('')}</div> </div>`;
+}
+html += ‘</div>’;
+resultEl.innerHTML = html;
+
+```
+// ambiguous 候補ボタンの配線
+resultEl.querySelectorAll('.bulk-ambig-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const line = btn.dataset.line;
+    const id = btn.dataset.id;
+    userPicked.set(line, id || null);
+    // 同じ行内で active表示更新
+    const item = btn.closest('.bulk-ambig-item');
+    if (item) {
+      item.querySelectorAll('.bulk-ambig-btn').forEach(b => {
+        b.classList.toggle('is-active', b === btn);
+      });
+    }
+    updateApplyBtn();
+  });
+});
+updateApplyBtn();
+```
+
+}
+
+function updateApplyBtn() {
+const total = getFinalDrugs().length;
+applyBtn.disabled = total === 0;
+applyBtn.textContent = total ? `選択に追加 (${total}剤)` : ‘選択に追加’;
+}
+
+let debounce;
+inputEl.addEventListener(‘input’, () => {
+clearTimeout(debounce);
+debounce = setTimeout(refresh, 150);
+});
+cancelBtn.addEventListener(‘click’, () => closeModal());
+applyBtn.addEventListener(‘click’, () => {
+const finalDrugs = getFinalDrugs();
+const { selected, opened } = getState();
+const newSel = new Set(selected);
+const newOpen = new Set(opened);
+let added = 0;
+let skipped = 0;
+for (const drug of finalDrugs) {
+if (newSel.size >= MAX_SELECT) { skipped++; continue; }
+if (!newSel.has(drug.id)) {
+newSel.add(drug.id);
+newOpen.add(drug.id);
+added++;
+}
+}
+setState({ selected: newSel, opened: newOpen });
+closeModal();
+if (skipped) toast(`${added}剤を追加 (${skipped}剤は上限超過でスキップ)`);
+else toast(`${added}剤を選択に追加しました`);
+});
+setTimeout(() => inputEl.focus(), 100);
+}
 
 // =============================================
 // 使用履歴モーダル
 // =============================================
 function openUsageModal() {
-  const optin = getOptIn();
-  let bodyHTML;
+const optin = getOptIn();
+let bodyHTML;
 
-  if (optin !== 'yes') {
-    bodyHTML = `<div class="usage-content">
-      <p class="usage-intro">
-        薬剤の閲覧履歴を端末内に記録し、よく見る薬剤の傾向を表示します。
-      </p>
-      <div class="usage-privacy">
-        <strong>🔒 プライバシー保護</strong>
-        <ul>
-          <li>すべての記録はあなたの端末にのみ保存されます</li>
-          <li>外部サーバーに送信されることは一切ありません</li>
-          <li>いつでも削除・無効化できます</li>
-          <li>処方患者の情報は記録しません（薬剤IDのみ）</li>
-        </ul>
-      </div>
-      <div class="bulk-actions">
-        <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-skip">使わない</button>
-        <button class="bulk-action-btn bulk-action-btn--primary" id="usage-enable">有効にする</button>
-      </div>
-    </div>`;
-  } else {
-    const summary = getUsageSummary(15);
-    let topHTML = '';
-    if (summary.total === 0) {
-      topHTML = `<p style="color:var(--ink-3);font-size:12px;text-align:center;padding:16px">
-        まだ閲覧履歴がありません。<br>薬剤詳細を開くと記録されます。
-      </p>`;
-    } else {
-      topHTML = `
-        <div class="usage-stats">
-          <div class="usage-stat">
-            <div class="usage-stat-num">${summary.total}</div>
-            <div class="usage-stat-lb">総閲覧回数</div>
-          </div>
-          <div class="usage-stat">
-            <div class="usage-stat-num">${summary.uniqueDrugs}</div>
-            <div class="usage-stat-lb">薬剤数</div>
-          </div>
-          <div class="usage-stat">
-            <div class="usage-stat-num">${summary.lastDays}</div>
-            <div class="usage-stat-lb">記録日数</div>
-          </div>
-        </div>
-        <div class="usage-section-title">よく見る薬剤</div>
-        <div class="usage-list">
-          ${summary.top.map((e, i) => {
-            const d = findDrug(e.id);
-            if (!d) return '';
-            const max = summary.top[0].count;
-            const w = Math.max(8, (e.count / max) * 100);
-            return `<div class="usage-item" data-action="open-drug-modal" data-id="${e.id}">
-              <div class="usage-rank">${i+1}</div>
-              <div class="usage-bar-wrap">
-                <div class="usage-name">${escapeHtml(d.name)}</div>
-                <div class="usage-bar"><div class="usage-bar-fill" style="width:${w}%"></div></div>
-              </div>
-              <div class="usage-count">${e.count}</div>
-            </div>`;
-          }).join('')}
-        </div>`;
-    }
-    bodyHTML = `<div class="usage-content">
-      ${topHTML}
-      <div class="usage-actions">
-        <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-clear">履歴を削除</button>
-        <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-disable">記録を停止</button>
-      </div>
-    </div>`;
-  }
-
-  openModal('使用履歴', bodyHTML);
-
-  const enable = document.getElementById('usage-enable');
-  if (enable) enable.addEventListener('click', () => {
-    setOptIn('yes');
-    closeModal();
-    toast('使用履歴の記録を有効にしました');
-  });
-  const skip = document.getElementById('usage-skip');
-  if (skip) skip.addEventListener('click', () => {
-    setOptIn('no');
-    closeModal();
-  });
-  const clear = document.getElementById('usage-clear');
-  if (clear) clear.addEventListener('click', () => {
-    if (confirm('履歴をすべて削除しますか？この操作は取り消せません。')) {
-      clearUsageLog();
-      closeModal();
-      toast('履歴を削除しました');
-    }
-  });
-  const disable = document.getElementById('usage-disable');
-  if (disable) disable.addEventListener('click', () => {
-    if (confirm('記録を停止します。既存の履歴は残りますが、新しい閲覧は記録されません。')) {
-      setOptIn('no');
-      closeModal();
-      toast('記録を停止しました');
-    }
-  });
+if (optin !== ‘yes’) {
+bodyHTML = `<div class="usage-content"> <p class="usage-intro"> 薬剤の閲覧履歴を端末内に記録し、よく見る薬剤の傾向を表示します。 </p> <div class="usage-privacy"> <strong>🔒 プライバシー保護</strong> <ul> <li>すべての記録はあなたの端末にのみ保存されます</li> <li>外部サーバーに送信されることは一切ありません</li> <li>いつでも削除・無効化できます</li> <li>処方患者の情報は記録しません（薬剤IDのみ）</li> </ul> </div> <div class="bulk-actions"> <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-skip">使わない</button> <button class="bulk-action-btn bulk-action-btn--primary" id="usage-enable">有効にする</button> </div> </div>`;
+} else {
+const summary = getUsageSummary(15);
+let topHTML = ‘’;
+if (summary.total === 0) {
+topHTML = `<p style="color:var(--ink-3);font-size:12px;text-align:center;padding:16px"> まだ閲覧履歴がありません。<br>薬剤詳細を開くと記録されます。 </p>`;
+} else {
+topHTML = `<div class="usage-stats"> <div class="usage-stat"> <div class="usage-stat-num">${summary.total}</div> <div class="usage-stat-lb">総閲覧回数</div> </div> <div class="usage-stat"> <div class="usage-stat-num">${summary.uniqueDrugs}</div> <div class="usage-stat-lb">薬剤数</div> </div> <div class="usage-stat"> <div class="usage-stat-num">${summary.lastDays}</div> <div class="usage-stat-lb">記録日数</div> </div> </div> <div class="usage-section-title">よく見る薬剤</div> <div class="usage-list"> ${summary.top.map((e, i) => { const d = findDrug(e.id); if (!d) return ''; const max = summary.top[0].count; const w = Math.max(8, (e.count / max) * 100); return`<div class="usage-item" data-action="open-drug-modal" data-id="${e.id}">
+<div class="usage-rank">${i+1}</div>
+<div class="usage-bar-wrap">
+<div class="usage-name">${escapeHtml(d.name)}</div>
+<div class="usage-bar"><div class="usage-bar-fill" style="width:${w}%"></div></div>
+</div>
+<div class="usage-count">${e.count}</div>
+</div>`; }).join('')} </div>`;
+}
+bodyHTML = `<div class="usage-content"> ${topHTML} <div class="usage-actions"> <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-clear">履歴を削除</button> <button class="bulk-action-btn bulk-action-btn--secondary" id="usage-disable">記録を停止</button> </div> </div>`;
 }
 
+openModal(‘使用履歴’, bodyHTML);
+
+const enable = document.getElementById(‘usage-enable’);
+if (enable) enable.addEventListener(‘click’, () => {
+setOptIn(‘yes’);
+closeModal();
+toast(‘使用履歴の記録を有効にしました’);
+});
+const skip = document.getElementById(‘usage-skip’);
+if (skip) skip.addEventListener(‘click’, () => {
+setOptIn(‘no’);
+closeModal();
+});
+const clear = document.getElementById(‘usage-clear’);
+if (clear) clear.addEventListener(‘click’, () => {
+if (confirm(‘履歴をすべて削除しますか？この操作は取り消せません。’)) {
+clearUsageLog();
+closeModal();
+toast(‘履歴を削除しました’);
+}
+});
+const disable = document.getElementById(‘usage-disable’);
+if (disable) disable.addEventListener(‘click’, () => {
+if (confirm(‘記録を停止します。既存の履歴は残りますが、新しい閲覧は記録されません。’)) {
+setOptIn(‘no’);
+closeModal();
+toast(‘記録を停止しました’);
+}
+});
+}
 
 // =============================================
 // テーマ切替
 // =============================================
 function setupThemeToggle() {
-  const btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-  function refreshIcon() {
-    const t = getTheme();
-    btn.textContent = themeIcon(t);
-    btn.setAttribute('title', `テーマ: ${themeLabel(t)} (タップで切替)`);
-    btn.setAttribute('aria-label', `テーマ: ${themeLabel(t)}`);
-  }
-  refreshIcon();
-  btn.addEventListener('click', () => {
-    const next = cycleTheme();
-    refreshIcon();
-    toast(`テーマ: ${themeLabel(next)}`);
-  });
+const btn = document.getElementById(‘theme-toggle’);
+if (!btn) return;
+function refreshIcon() {
+const t = getTheme();
+btn.textContent = themeIcon(t);
+btn.setAttribute(‘title’, `テーマ: ${themeLabel(t)} (タップで切替)`);
+btn.setAttribute(‘aria-label’, `テーマ: ${themeLabel(t)}`);
+}
+refreshIcon();
+btn.addEventListener(‘click’, () => {
+const next = cycleTheme();
+refreshIcon();
+toast(`テーマ: ${themeLabel(next)}`);
+});
 }
 
 // =============================================
 // バージョン情報
 // =============================================
 function applyVersionInfo() {
-  const meta = document.getElementById('app-meta');
-  if (meta) {
-    meta.textContent = `${APP_VERSION.source} · ${APP_VERSION.sourceYear}`;
-  }
-  const footer = document.getElementById('app-footer-version');
-  if (footer) {
-    footer.textContent = `${formatVersionLine()} · ${DRUGS.length}剤収載`;
-  }
+const meta = document.getElementById(‘app-meta’);
+if (meta) {
+meta.textContent = `${APP_VERSION.source} · ${APP_VERSION.sourceYear}`;
+}
+const footer = document.getElementById(‘app-footer-version’);
+if (footer) {
+footer.textContent = `${formatVersionLine()} · ${DRUGS.length}剤収載`;
+}
 }
 
 // =============================================
 // 初期化
 // =============================================
 function init() {
-  initTheme();
-  initModal();
-  setupInputTabs();
-  setupCalcInputs();
-  setupDirectInputs();
-  setupSearch();
-  setupEventDelegation();
-  setupThemeToggle();
-  buildGroupBrowser();
-  applyVersionInfo();
+initTheme();
+initModal();
+setupInputTabs();
+setupCalcInputs();
+setupDirectInputs();
+setupSearch();
+setupEventDelegation();
+setupThemeToggle();
+buildGroupBrowser();
+applyVersionInfo();
 
-  // In-app browser警告（一度だけ）
-  maybeShowInAppHint();
+// In-app browser警告（一度だけ）
+maybeShowInAppHint();
 
-  // 一括選択ボタン
-  const bulkBtn = document.getElementById('bulk-btn');
-  if (bulkBtn) bulkBtn.addEventListener('click', openBulkModal);
+// 一括選択ボタン
+const bulkBtn = document.getElementById(‘bulk-btn’);
+if (bulkBtn) bulkBtn.addEventListener(‘click’, openBulkModal);
 
-  // 使用履歴ボタン
-  const usageBtn = document.getElementById('usage-toggle');
-  if (usageBtn) usageBtn.addEventListener('click', openUsageModal);
+// 使用履歴ボタン
+const usageBtn = document.getElementById(‘usage-toggle’);
+if (usageBtn) usageBtn.addEventListener(‘click’, openUsageModal);
 
-  // モーダル閉じる時にカテゴリ比較・薬剤詳細ステートをクリア
-  window.addEventListener('modal-closed', () => {
-    const s = getState();
-    if (s.catCmpOpen || s.drugModalId) {
-      setState({ catCmpOpen: null, drugModalId: null });
-    }
-  });
+// モーダル閉じる時にカテゴリ比較・薬剤詳細ステートをクリア
+window.addEventListener(‘modal-closed’, () => {
+const s = getState();
+if (s.catCmpOpen || s.drugModalId) {
+setState({ catCmpOpen: null, drugModalId: null });
+}
+});
 
-  // Storeの変更を購読 → UI再描画
-  subscribe(() => {
-    renderResults();
-    renderSelectionBar();
-    renderComparePanel();
-    renderDrugList();
-    renderCategoryModal();
-    renderDrugModal();
-  });
+// Storeの変更を購読 → UI再描画
+subscribe(() => {
+renderResults();
+renderSelectionBar();
+renderComparePanel();
+renderDrugList();
+renderCategoryModal();
+renderDrugModal();
+});
 
-  // 初回レンダ
-  recompute();
+// 初回レンダ
+recompute();
 
-  // スプラッシュ閉じ
-  setTimeout(() => {
-    const splash = document.getElementById('splash');
-    if (splash) splash.dataset.hidden = 'true';
-  }, 250);
+// スプラッシュ閉じ
+setTimeout(() => {
+const splash = document.getElementById(‘splash’);
+if (splash) splash.dataset.hidden = ‘true’;
+}, 250);
 }
 
 // DOMReady → ロック確認 → init
 function startup() {
-  // PWA: Service Worker登録（オフライン対応）
-  if ('serviceWorker' in navigator
-      && location.protocol !== 'file:'
-      && !isInAppBrowser()) {
-    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
-  }
+// PWA: Service Worker登録（オフライン対応）
+if (‘serviceWorker’ in navigator
+&& location.protocol !== ‘file:’
+&& !isInAppBrowser()) {
+navigator.serviceWorker.register(’./service-worker.js’).catch(() => {});
+}
 
-  // スプラッシュは認証/初期化のいずれでも消すために用意
-  const hideSplash = () => {
-    const splash = document.getElementById('splash');
-    if (splash) splash.dataset.hidden = 'true';
-  };
+// スプラッシュは認証/初期化のいずれでも消すために用意
+const hideSplash = () => {
+const splash = document.getElementById(‘splash’);
+if (splash) splash.dataset.hidden = ‘true’;
+};
 
-  if (isAuthorized()) {
-    init();
-  } else {
-    window.addEventListener('pin-authorized', init, { once: true });
-    showLockOverlay();
-    hideSplash();  // ロック画面表示と同時にスプラッシュ消す
-  }
+if (isAuthorized()) {
+init();
+} else {
+window.addEventListener(‘pin-authorized’, init, { once: true });
+showLockOverlay();
+hideSplash();  // ロック画面表示と同時にスプラッシュ消す
+}
 }
 
 /**
- * iOS / Android のアプリ内ブラウザ判定
- * (Twitter/X, LINE, Slack, Instagram, Facebook等)
- */
-function isInAppBrowser() {
-  const ua = navigator.userAgent || '';
+
+- iOS / Android のアプリ内ブラウザ判定
+- (Twitter/X, LINE, Slack, Instagram, Facebook等)
+  */
+  function isInAppBrowser() {
+  const ua = navigator.userAgent || ‘’;
   const iOSWebView = /iPhone|iPad|iPod/.test(ua) && !/Safari/.test(ua);
-  const inApp = /(FBAN|FBAV|Instagram|Line\/|Twitter|TwitterAndroid|Slack|Discord|MicroMessenger)/i.test(ua);
+  const inApp = /(FBAN|FBAV|Instagram|Line/|Twitter|TwitterAndroid|Slack|Discord|MicroMessenger)/i.test(ua);
   return iOSWebView || inApp;
-}
+  }
 
 /**
- * In-app browser で開かれた時に「Safariで開いてください」のヒント表示
- * ユーザーがdismissしたら以降表示しない
- */
-function maybeShowInAppHint() {
+
+- In-app browser で開かれた時に「Safariで開いてください」のヒント表示
+- ユーザーがdismissしたら以降表示しない
+  */
+  function maybeShowInAppHint() {
   if (!isInAppBrowser()) return;
   let dismissed = false;
-  try { dismissed = localStorage.getItem('jsnp_inapp_hint_dismissed') === '1'; } catch {}
+  try { dismissed = localStorage.getItem(‘jsnp_inapp_hint_dismissed’) === ‘1’; } catch {}
   if (dismissed) return;
 
-  // バナー要素を作って挿入
-  const banner = document.createElement('div');
-  banner.className = 'inapp-banner';
-  banner.innerHTML = `
-    <div class="inapp-banner-body">
-      <div class="inapp-banner-title">📱 標準ブラウザでの利用を推奨</div>
-      <div class="inapp-banner-text">
-        アプリ内ブラウザではオフライン機能や一部の保存機能が制限されます。
-        ブラウザの「…」メニューから「Safariで開く」「ブラウザで開く」を選択してください。
-      </div>
-    </div>
-    <button class="inapp-banner-close" aria-label="閉じる">✕</button>
-  `;
-  document.body.appendChild(banner);
-  banner.querySelector('.inapp-banner-close').addEventListener('click', () => {
-    banner.remove();
-    try { localStorage.setItem('jsnp_inapp_hint_dismissed', '1'); } catch {}
-  });
+// バナー要素を作って挿入
+const banner = document.createElement(‘div’);
+banner.className = ‘inapp-banner’;
+banner.innerHTML = `<div class="inapp-banner-body"> <div class="inapp-banner-title">📱 標準ブラウザでの利用を推奨</div> <div class="inapp-banner-text"> アプリ内ブラウザではオフライン機能や一部の保存機能が制限されます。 ブラウザの「…」メニューから「Safariで開く」「ブラウザで開く」を選択してください。 </div> </div> <button class="inapp-banner-close" aria-label="閉じる">✕</button>`;
+document.body.appendChild(banner);
+banner.querySelector(’.inapp-banner-close’).addEventListener(‘click’, () => {
+banner.remove();
+try { localStorage.setItem(‘jsnp_inapp_hint_dismissed’, ‘1’); } catch {}
+});
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startup);
+if (document.readyState === ‘loading’) {
+document.addEventListener(‘DOMContentLoaded’, startup);
 } else {
-  startup();
+startup();
 }
-
 
 })();
 </script>
+
 </body>
 </html>
