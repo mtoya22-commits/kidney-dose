@@ -2012,6 +2012,7 @@ section { margin-top: 16px; }
   background: var(--bg-elev);
   border: 1px solid var(--rule);
   border-radius: var(--r-lg);
+  overflow: hidden;
 }
 .group-buttons {
   display: flex;
@@ -2022,7 +2023,7 @@ section { margin-top: 16px; }
 #group-top-btns {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  gap: 5px;
 }
 .group-btn {
   padding: 6px 12px;
@@ -2042,33 +2043,35 @@ section { margin-top: 16px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7px 3px 6px;
+  padding: 8px 2px 7px;
   border-radius: 12px;
-  aspect-ratio: 1;
-  gap: 3px;
+  min-width: 0;
+  width: 100%;
+  gap: 2px;
   background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
   border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
   color: var(--g-clr);
 }
 #group-top-btns .group-btn-icon {
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
   flex-shrink: 0;
 }
 #group-top-btns .group-btn-label {
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   text-align: center;
   word-break: keep-all;
   overflow-wrap: break-word;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
+  width: 100%;
 }
 #group-top-btns .group-btn-count {
-  font-size: 7.5px;
+  font-size: 8px;
   font-weight: 500;
   font-family: var(--font-mono);
-  opacity: 0.55;
+  opacity: 0.5;
   background: none;
   padding: 0;
   border-radius: 0;
