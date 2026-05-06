@@ -4,7 +4,7 @@
 // - ネット接続時: 毎回最新版を取得（更新ラグなし）
 // - オフライン時: キャッシュから起動
 // =============================================
-const CACHE_NAME = 'renal-checker-v2';
+const CACHE_NAME = 'renal-checker-v3';
 const ASSETS = [
   './',
   './index.html',

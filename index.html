@@ -2012,17 +2012,18 @@ section { margin-top: 16px; }
   background: var(--bg-elev);
   border: 1px solid var(--rule);
   border-radius: var(--r-lg);
+  overflow: hidden;
 }
 .group-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
-/* トップグループは5列スクエアグリッド */
+/* トップグループは5列フレックスグリッド */
 #group-top-btns {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 .group-btn {
   padding: 6px 12px;
@@ -2038,31 +2039,41 @@ section { margin-top: 16px; }
 }
 /* トップグループボタン: スクエアアイコン型 */
 #group-top-btns .group-btn {
+  flex: 0 0 calc((100% - 4 * 5px) / 5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 4px 9px;
-  border-radius: 14px;
-  aspect-ratio: 1;
-  gap: 5px;
+  padding: 8px 3px 7px;
+  border-radius: 12px;
+  gap: 2px;
   background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
   border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
   color: var(--g-clr);
 }
 #group-top-btns .group-btn-icon {
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
 }
 #group-top-btns .group-btn-label {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   text-align: center;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  letter-spacing: 0.01em;
+  word-break: break-all;
+  letter-spacing: 0;
+  width: 100%;
+}
+#group-top-btns .group-btn-count {
+  font-size: 9px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  opacity: 0.65;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  letter-spacing: 0;
 }
 .group-btn-count {
   font-family: var(--font-mono);
@@ -2599,7 +2610,7 @@ section { margin-top: 16px; }
   <!-- ============ 薬効群ブラウザ ============ -->
   <section class="group-browser" aria-labelledby="lbl-group">
     <div class="section-label" id="lbl-group">薬効群から比較する</div>
-    <div class="group-buttons" id="group-top-btns"></div>
+    <div id="group-top-btns"></div>
     <div class="group-sub-area" id="group-sub-area">
       <div class="group-sub-head">
         <span class="group-sub-title" id="group-sub-title"></span>
@@ -8212,7 +8223,7 @@ function buildGroupBrowser() {
     const text = labelParts.slice(1).join(' ');
     const btn = document.createElement('button');
     btn.className = 'group-btn';
-    btn.innerHTML = `<span class="group-btn-icon">${icon}</span><span class="group-btn-label">${escapeHtml(text)}</span>`;
+    btn.innerHTML = `<span class="group-btn-icon">${icon}</span><span class="group-btn-label">${escapeHtml(text)}</span><span class="group-btn-count">${drugCount}剤</span>`;
     btn.dataset.grpId = grp.id;
     btn.style.setProperty('--g-clr', grp.color);
     btn.setAttribute('aria-expanded', 'false');
