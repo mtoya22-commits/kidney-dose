@@ -2019,10 +2019,10 @@ section { margin-top: 16px; }
   flex-wrap: wrap;
   gap: 6px;
 }
-/* トップグループは5列スクエアグリッド */
+/* トップグループは5列フレックスグリッド */
 #group-top-btns {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 5px;
 }
 .group-btn {
@@ -2039,21 +2039,20 @@ section { margin-top: 16px; }
 }
 /* トップグループボタン: スクエアアイコン型 */
 #group-top-btns .group-btn {
+  flex: 0 0 calc((100% - 4 * 5px) / 5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 2px 7px;
+  padding: 8px 3px 7px;
   border-radius: 12px;
-  min-width: 0;
-  width: 100%;
   gap: 2px;
   background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
   border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
   color: var(--g-clr);
 }
 #group-top-btns .group-btn-icon {
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
 }
@@ -2062,16 +2061,15 @@ section { margin-top: 16px; }
   font-weight: 700;
   line-height: 1.25;
   text-align: center;
-  word-break: keep-all;
-  overflow-wrap: break-word;
+  word-break: break-all;
   letter-spacing: 0;
   width: 100%;
 }
 #group-top-btns .group-btn-count {
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 500;
   font-family: var(--font-mono);
-  opacity: 0.5;
+  opacity: 0.65;
   background: none;
   padding: 0;
   border-radius: 0;
@@ -2612,7 +2610,7 @@ section { margin-top: 16px; }
   <!-- ============ 薬効群ブラウザ ============ -->
   <section class="group-browser" aria-labelledby="lbl-group">
     <div class="section-label" id="lbl-group">薬効群から比較する</div>
-    <div class="group-buttons" id="group-top-btns"></div>
+    <div id="group-top-btns"></div>
     <div class="group-sub-area" id="group-sub-area">
       <div class="group-sub-head">
         <span class="group-sub-title" id="group-sub-title"></span>
