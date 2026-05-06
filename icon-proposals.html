@@ -4,235 +4,307 @@
 <meta charset="UTF-8">
 <title>App Icon Proposals — 腎機能別投与量</title>
 <style>
-  body { background:#1a1a2e; font-family: system-ui, sans-serif; color:#fff; padding:40px; }
-  h1 { font-size:18px; margin-bottom:8px; color:#aaa; }
-  .grid { display:flex; gap:40px; flex-wrap:wrap; }
-  .card { text-align:center; }
-  .card p { margin:12px 0 4px; font-size:14px; font-weight:600; }
-  .card small { font-size:11px; color:#888; }
-  svg { border-radius:22.5%; display:block; box-shadow:0 8px 32px rgba(0,0,0,.6); }
+  body { background:#18181b; font-family: system-ui, sans-serif; color:#fff;
+         padding:32px; display:flex; flex-direction:column; gap:32px; }
+  h1 { font-size:16px; color:#71717a; margin:0 0 4px; }
+  .row { display:flex; gap:28px; flex-wrap:wrap; }
+  .card { display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .card svg { border-radius:22.3%; box-shadow:0 8px 40px rgba(0,0,0,.7);
+              width:160px; height:160px; }
+  .card-label { font-size:13px; font-weight:600; color:#e4e4e7; }
+  .card-sub { font-size:11px; color:#71717a; text-align:center; }
 </style>
 </head>
 <body>
 <h1>iPhone App Icon Proposals — 腎機能別投与量チェッカー</h1>
-<div class="grid">
+<div class="row">
 
-<!-- A: Teal Kidney + Pill -->
+<!-- ===== A: White + Blue Medical ===== -->
 <div class="card">
-<svg width="180" height="180" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0d2137"/>
-      <stop offset="100%" stop-color="#0a3d4a"/>
-    </linearGradient>
-    <linearGradient id="kidneyA" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2dd4bf"/>
-      <stop offset="100%" stop-color="#0891b2"/>
-    </linearGradient>
-  </defs>
-  <!-- Background -->
-  <rect width="512" height="512" fill="url(#bgA)"/>
-  <!-- Kidney shape (left) -->
-  <path d="M 155 130
-    C 90 130, 55 185, 55 256
-    C 55 327, 90 382, 155 382
-    C 185 382, 200 365, 210 345
-    C 220 325, 215 290, 215 256
-    C 215 222, 220 187, 210 167
-    C 200 147, 185 130, 155 130 Z"
-    fill="url(#kidneyA)" opacity="0.95"/>
-  <!-- Hilum indent -->
-  <path d="M 210 220 C 230 235, 230 277, 210 292"
-    fill="none" stroke="#0a3d4a" stroke-width="18" stroke-linecap="round"/>
-  <!-- Kidney shape (right, mirrored) -->
-  <path d="M 357 130
-    C 422 130, 457 185, 457 256
-    C 457 327, 422 382, 357 382
-    C 327 382, 312 365, 302 345
-    C 292 325, 297 290, 297 256
-    C 297 222, 292 187, 302 167
-    C 312 147, 327 130, 357 130 Z"
-    fill="url(#kidneyA)" opacity="0.95"/>
-  <path d="M 302 220 C 282 235, 282 277, 302 292"
-    fill="none" stroke="#0a3d4a" stroke-width="18" stroke-linecap="round"/>
-  <!-- Pill capsule in center -->
-  <rect x="218" y="232" width="76" height="48" rx="24" fill="#fff" opacity="0.15"/>
-  <rect x="218" y="232" width="38" height="48" rx="24" fill="#f0abfc" opacity="0.7"/>
-  <rect x="256" y="232" width="38" height="48" rx="0 24 24 0" fill="#e879f9" opacity="0.7"/>
-  <line x1="256" y1="234" x2="256" y2="278" stroke="#fff" stroke-width="2" opacity="0.4"/>
-  <!-- Subtle grid lines -->
-  <line x1="0" y1="256" x2="512" y2="256" stroke="#fff" stroke-width="0.5" opacity="0.05"/>
-  <line x1="256" y1="0" x2="256" y2="512" stroke="#fff" stroke-width="0.5" opacity="0.05"/>
-  <!-- Bottom label area -->
-  <rect x="0" y="420" width="512" height="92" fill="#000" opacity="0.25"/>
-  <text x="256" y="468" text-anchor="middle" font-family="system-ui" font-size="34" font-weight="700" fill="#2dd4bf">腎機能</text>
-  <text x="256" y="500" text-anchor="middle" font-family="system-ui" font-size="22" fill="#7dd3fc" opacity="0.8">投与量</text>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bgA" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#e8f4f8"/><stop offset="100%" stop-color="#c8e8f4"/>
+  </linearGradient>
+  <linearGradient id="kA" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#29b6d6"/><stop offset="50%" stop-color="#0288d1"/>
+    <stop offset="100%" stop-color="#01579b"/>
+  </linearGradient>
+  <linearGradient id="kAhi" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#b3e5fc" stop-opacity="0.6"/><stop offset="100%" stop-color="#b3e5fc" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<rect width="512" height="512" fill="url(#bgA)"/>
+<!-- Shadow under kidneys -->
+<ellipse cx="256" cy="342" rx="165" ry="18" fill="#0277bd" opacity="0.12"/>
+<!-- Left kidney -->
+<path d="M 162 110 C 105 110 68 158 68 228 C 68 298 105 346 162 346
+  C 186 346 200 334 208 316 C 214 303 211 285 211 270
+  C 211 258 220 250 220 228 C 220 206 211 198 211 186
+  C 211 171 214 149 208 136 C 200 118 186 110 162 110 Z"
+  fill="url(#kA)" stroke="#01579b" stroke-width="4"/>
+<!-- Left kidney highlight -->
+<path d="M 162 118 C 115 118 80 162 80 228 C 80 260 90 288 108 308
+  C 90 285 80 258 80 228 C 80 162 115 118 162 118 Z"
+  fill="url(#kAhi)"/>
+<!-- Left inner detail (renal pelvis area) -->
+<path d="M 204 200 C 220 215 220 241 220 228 C 220 215 220 228 204 256
+  C 215 248 218 238 218 228 C 218 218 215 208 204 200 Z"
+  fill="#01579b" opacity="0.25"/>
+<!-- Left ureter -->
+<path d="M 214 292 C 222 310 228 330 232 355" fill="none"
+  stroke="#0277bd" stroke-width="7" stroke-linecap="round"/>
+<!-- Right kidney (mirror) -->
+<path d="M 350 110 C 407 110 444 158 444 228 C 444 298 407 346 350 346
+  C 326 346 312 334 304 316 C 298 303 301 285 301 270
+  C 301 258 292 250 292 228 C 292 206 301 198 301 186
+  C 301 171 298 149 304 136 C 312 118 326 110 350 110 Z"
+  fill="url(#kA)" stroke="#01579b" stroke-width="4"/>
+<!-- Right inner detail -->
+<path d="M 308 200 C 292 215 292 241 292 228 C 292 215 292 228 308 256
+  C 297 248 294 238 294 228 C 294 218 297 208 308 200 Z"
+  fill="#01579b" opacity="0.25"/>
+<!-- Right ureter -->
+<path d="M 298 292 C 290 310 284 330 280 355" fill="none"
+  stroke="#0277bd" stroke-width="7" stroke-linecap="round"/>
+<!-- Pill capsule -->
+<rect x="205" y="360" width="102" height="44" rx="22" fill="#fff" stroke="#0288d1" stroke-width="3"/>
+<rect x="205" y="360" width="52" height="44" rx="22" fill="#29b6d6"/>
+<line x1="257" y1="362" x2="257" y2="402" stroke="#fff" stroke-width="2.5" opacity="0.5"/>
+<!-- Checkmark circle -->
+<circle cx="386" cy="136" r="44" fill="#0288d1"/>
+<circle cx="386" cy="136" r="36" fill="#29b6d6"/>
+<polyline points="368,136 381,149 406,122" fill="none"
+  stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Text -->
+<rect x="0" y="418" width="512" height="94" fill="#01579b" opacity="0.88"/>
+<text x="256" y="458" text-anchor="middle" font-family="'Hiragino Sans','Yu Gothic UI',system-ui"
+  font-size="30" font-weight="700" fill="#fff">腎機能用量チェック</text>
+<text x="256" y="493" text-anchor="middle" font-family="system-ui"
+  font-size="19" fill="#b3e5fc" opacity="0.9">薬剤師サポート</text>
 </svg>
-<p>A: Teal Kidney</p>
-<small>深夜の手術室イメージ<br>ティール×ダークネイビー</small>
+<div class="card-label">A：ホワイト×ブルー</div>
+<div class="card-sub">清潔感・信頼感<br>腎臓＋カプセル＋チェック</div>
 </div>
 
-<!-- B: White Medical -->
+<!-- ===== B: Dark Navy ===== -->
 <div class="card">
-<svg width="180" height="180" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f0f7f8"/>
-      <stop offset="100%" stop-color="#dbeafe"/>
-    </linearGradient>
-    <linearGradient id="kidneyB" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1e6b78"/>
-      <stop offset="100%" stop-color="#0e4f6f"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#bgB)"/>
-  <!-- Left kidney -->
-  <path d="M 148 115
-    C 78 115, 42 175, 42 256
-    C 42 337, 78 397, 148 397
-    C 180 397, 197 379, 208 357
-    C 219 335, 214 297, 214 256
-    C 214 215, 219 177, 208 155
-    C 197 133, 180 115, 148 115 Z"
-    fill="url(#kidneyB)"/>
-  <path d="M 208 215 C 232 232, 232 280, 208 297"
-    fill="none" stroke="#f0f7f8" stroke-width="20" stroke-linecap="round"/>
-  <!-- Right kidney -->
-  <path d="M 364 115
-    C 434 115, 470 175, 470 256
-    C 470 337, 434 397, 364 397
-    C 332 397, 315 379, 304 357
-    C 293 335, 298 297, 298 256
-    C 298 215, 293 177, 304 155
-    C 315 133, 332 115, 364 115 Z"
-    fill="url(#kidneyB)"/>
-  <path d="M 304 215 C 280 232, 280 280, 304 297"
-    fill="none" stroke="#f0f7f8" stroke-width="20" stroke-linecap="round"/>
-  <!-- Rx symbol center -->
-  <circle cx="256" cy="256" r="52" fill="#fff" opacity="0.9"/>
-  <text x="256" y="274" text-anchor="middle" font-family="serif" font-size="64" font-weight="900" fill="#1e6b78">Rx</text>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#0a1628"/><stop offset="100%" stop-color="#05264a"/>
+  </linearGradient>
+  <linearGradient id="kB" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#4dd0e1"/><stop offset="60%" stop-color="#00acc1"/>
+    <stop offset="100%" stop-color="#0277bd"/>
+  </linearGradient>
+  <linearGradient id="kBhi" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#e0f7fa" stop-opacity="0.45"/><stop offset="100%" stop-color="#e0f7fa" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="glowB"><feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="512" height="512" fill="url(#bgB)"/>
+<!-- Background glow -->
+<ellipse cx="256" cy="220" rx="185" ry="130" fill="#00acc1" opacity="0.06"/>
+<!-- Left kidney -->
+<path d="M 158 106 C 99 106 62 155 62 227 C 62 299 99 348 158 348
+  C 183 348 198 335 206 317 C 213 299 209 280 209 265
+  C 209 252 218 244 218 227 C 218 210 209 202 209 189
+  C 209 174 213 152 206 134 C 198 116 183 106 158 106 Z"
+  fill="url(#kB)" stroke="#004d6e" stroke-width="3" filter="url(#glowB)"/>
+<path d="M 160 116 C 110 116 78 160 78 227 C 78 263 92 295 114 318"
+  fill="none" stroke="url(#kBhi)" stroke-width="22" stroke-linecap="round"/>
+<!-- Left hilum detail -->
+<path d="M 207 195 C 222 210 222 244 222 227 C 222 210 222 227 207 259"
+  fill="none" stroke="#004d6e" stroke-width="12" stroke-linecap="round" opacity="0.5"/>
+<!-- Left ureter -->
+<path d="M 210 294 C 220 318 226 340 230 368"
+  fill="none" stroke="#00acc1" stroke-width="8" stroke-linecap="round"/>
+<!-- Right kidney -->
+<path d="M 354 106 C 413 106 450 155 450 227 C 450 299 413 348 354 348
+  C 329 348 314 335 306 317 C 299 299 303 280 303 265
+  C 303 252 294 244 294 227 C 294 210 303 202 303 189
+  C 303 174 299 152 306 134 C 314 116 329 106 354 106 Z"
+  fill="url(#kB)" stroke="#004d6e" stroke-width="3" filter="url(#glowB)"/>
+<path d="M 352 116 C 402 116 434 160 434 227 C 434 263 420 295 398 318"
+  fill="none" stroke="url(#kBhi)" stroke-width="22" stroke-linecap="round"/>
+<path d="M 305 195 C 290 210 290 244 290 227 C 290 210 290 227 305 259"
+  fill="none" stroke="#004d6e" stroke-width="12" stroke-linecap="round" opacity="0.5"/>
+<path d="M 302 294 C 292 318 286 340 282 368"
+  fill="none" stroke="#00acc1" stroke-width="8" stroke-linecap="round"/>
+<!-- Rx symbol -->
+<text x="256" y="420" text-anchor="middle" font-family="Georgia,serif"
+  font-size="78" font-weight="900" fill="#4dd0e1" opacity="0.95" filter="url(#glowB)">Rx</text>
+<!-- Pill left of Rx -->
+<rect x="132" y="380" width="72" height="34" rx="17" fill="#00acc1" opacity="0.8"/>
+<rect x="132" y="380" width="37" height="34" rx="17 0 0 17" fill="#4dd0e1" opacity="0.8"/>
+<!-- Pill right -->
+<rect x="308" y="380" width="72" height="34" rx="17" fill="#00acc1" opacity="0.8"/>
+<rect x="308" y="380" width="37" height="34" rx="17 0 0 17" fill="#4dd0e1" opacity="0.8"/>
+<!-- Bottom text -->
+<text x="256" y="476" text-anchor="middle" font-family="'Hiragino Sans',system-ui"
+  font-size="28" font-weight="700" fill="#4dd0e1">腎機能用量チェック</text>
+<text x="256" y="504" text-anchor="middle" font-family="system-ui"
+  font-size="17" fill="#80deea" opacity="0.75">安全な薬物治療をサポート</text>
 </svg>
-<p>B: White Clinical</p>
-<small>清潔感・信頼感<br>ホワイト×ティール</small>
+<div class="card-label">B：ダークネイビー×ティール</div>
+<div class="card-sub">プロフェッショナル感<br>腎臓＋Rx＋カプセル</div>
 </div>
 
-<!-- C: Dark Gradient Gem -->
+<!-- ===== C: Teal Gradient (like App Store icons) ===== -->
 <div class="card">
-<svg width="180" height="180" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="bgC" cx="30%" cy="30%">
-      <stop offset="0%" stop-color="#1e1b4b"/>
-      <stop offset="60%" stop-color="#0f0c29"/>
-      <stop offset="100%" stop-color="#050312"/>
-    </radialGradient>
-    <linearGradient id="kidneyC" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#a78bfa"/>
-      <stop offset="50%" stop-color="#818cf8"/>
-      <stop offset="100%" stop-color="#38bdf8"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <rect width="512" height="512" fill="url(#bgC)"/>
-  <!-- Glow circles -->
-  <circle cx="180" cy="256" r="120" fill="#7c3aed" opacity="0.12"/>
-  <circle cx="332" cy="256" r="120" fill="#0369a1" opacity="0.12"/>
-  <!-- Left kidney with glow -->
-  <path d="M 142 118
-    C 74 118, 38 178, 38 256
-    C 38 334, 74 394, 142 394
-    C 175 394, 193 375, 205 352
-    C 217 329, 212 293, 212 256
-    C 212 219, 217 183, 205 160
-    C 193 137, 175 118, 142 118 Z"
-    fill="url(#kidneyC)" filter="url(#glow)" opacity="0.9"/>
-  <path d="M 205 212 C 230 230, 230 282, 205 300"
-    fill="none" stroke="#050312" stroke-width="22" stroke-linecap="round"/>
-  <!-- Right kidney -->
-  <path d="M 370 118
-    C 438 118, 474 178, 474 256
-    C 474 334, 438 394, 370 394
-    C 337 394, 319 375, 307 352
-    C 295 329, 300 293, 300 256
-    C 300 219, 295 183, 307 160
-    C 319 137, 337 118, 370 118 Z"
-    fill="url(#kidneyC)" filter="url(#glow)" opacity="0.9"/>
-  <path d="M 307 212 C 282 230, 282 282, 307 300"
-    fill="none" stroke="#050312" stroke-width="22" stroke-linecap="round"/>
-  <!-- Center star/cross accent -->
-  <circle cx="256" cy="256" r="28" fill="#fff" opacity="0.08"/>
-  <line x1="256" y1="228" x2="256" y2="284" stroke="#e0e7ff" stroke-width="4" opacity="0.5"/>
-  <line x1="228" y1="256" x2="284" y2="256" stroke="#e0e7ff" stroke-width="4" opacity="0.5"/>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bgC" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#006994"/><stop offset="100%" stop-color="#004d6e"/>
+  </linearGradient>
+  <linearGradient id="kC" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#fff" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#b3e5fc" stop-opacity="0.85"/>
+  </linearGradient>
+  <linearGradient id="kCshadow" x1="1" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0277bd" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#0277bd" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<rect width="512" height="512" fill="url(#bgC)"/>
+<!-- Subtle grid pattern -->
+<line x1="0" y1="170" x2="512" y2="170" stroke="#fff" stroke-width="0.5" opacity="0.06"/>
+<line x1="0" y1="340" x2="512" y2="340" stroke="#fff" stroke-width="0.5" opacity="0.06"/>
+<line x1="170" y1="0" x2="170" y2="512" stroke="#fff" stroke-width="0.5" opacity="0.06"/>
+<line x1="340" y1="0" x2="340" y2="512" stroke="#fff" stroke-width="0.5" opacity="0.06"/>
+<!-- Left kidney WHITE -->
+<path d="M 150 95 C 90 95 52 148 52 224 C 52 300 90 353 150 353
+  C 176 353 192 339 201 320 C 210 301 205 280 205 263
+  C 205 250 215 241 215 224 C 215 207 205 198 205 185
+  C 205 168 210 147 201 128 C 192 109 176 95 150 95 Z"
+  fill="url(#kC)" stroke="#b3e5fc" stroke-width="2" opacity="0.95"/>
+<!-- Left kidney shadow detail -->
+<path d="M 197 155 C 210 173 214 198 214 224 C 214 250 210 275 197 293"
+  fill="url(#kCshadow)" stroke="none"/>
+<!-- Left inner details -->
+<ellipse cx="148" cy="224" rx="38" ry="55" fill="#006994" opacity="0.1"/>
+<path d="M 205 192 C 218 207, 218 241, 205 256"
+  fill="none" stroke="#006994" stroke-width="10" stroke-linecap="round" opacity="0.18"/>
+<!-- Left ureter -->
+<path d="M 207 316 C 218 338 224 360 228 384"
+  fill="none" stroke="#b3e5fc" stroke-width="9" stroke-linecap="round" opacity="0.8"/>
+<!-- Right kidney WHITE -->
+<path d="M 362 95 C 422 95 460 148 460 224 C 460 300 422 353 362 353
+  C 336 353 320 339 311 320 C 302 301 307 280 307 263
+  C 307 250 297 241 297 224 C 297 207 307 198 307 185
+  C 307 168 302 147 311 128 C 320 109 336 95 362 95 Z"
+  fill="url(#kC)" stroke="#b3e5fc" stroke-width="2" opacity="0.95"/>
+<path d="M 315 155 C 302 173 298 198 298 224 C 298 250 302 275 315 293"
+  fill="url(#kCshadow)" stroke="none"/>
+<ellipse cx="364" cy="224" rx="38" ry="55" fill="#006994" opacity="0.1"/>
+<path d="M 307 192 C 294 207, 294 241, 307 256"
+  fill="none" stroke="#006994" stroke-width="10" stroke-linecap="round" opacity="0.18"/>
+<path d="M 305 316 C 294 338 288 360 284 384"
+  fill="none" stroke="#b3e5fc" stroke-width="9" stroke-linecap="round" opacity="0.8"/>
+<!-- Checkmark badge -->
+<circle cx="382" cy="120" r="48" fill="#fff" opacity="0.15"/>
+<circle cx="382" cy="120" r="40" fill="#fff" opacity="0.12"/>
+<polyline points="362,120 377,135 404,106" fill="none"
+  stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Bottom label band -->
+<rect x="0" y="400" width="512" height="112" fill="#003d57" opacity="0.75"/>
+<rect x="0" y="398" width="512" height="3" fill="#4dd0e1" opacity="0.6"/>
+<text x="256" y="444" text-anchor="middle"
+  font-family="'Hiragino Sans','Yu Gothic UI',system-ui"
+  font-size="30" font-weight="700" fill="#fff" letter-spacing="1">腎機能用量チェック</text>
+<text x="256" y="478" text-anchor="middle" font-family="system-ui"
+  font-size="19" fill="#80deea">eGFR · CrCl 対応</text>
 </svg>
-<p>C: Midnight Gem</p>
-<small>プレミアム・高級感<br>パープル×インディゴ</small>
+<div class="card-label">C：ディープティール</div>
+<div class="card-sub">App Storeらしい品質感<br>白腎臓＋チェック＋ラベル</div>
 </div>
 
-<!-- D: Warm Medical -->
+<!-- ===== D: Blue Split Layout ===== -->
 <div class="card">
-<svg width="180" height="180" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bgD" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a0a00"/>
-      <stop offset="100%" stop-color="#2d1200"/>
-    </linearGradient>
-    <linearGradient id="kidneyD" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fb923c"/>
-      <stop offset="100%" stop-color="#dc2626"/>
-    </linearGradient>
-    <linearGradient id="pillD" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#f59e0b"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#bgD)"/>
-  <!-- Warm glow -->
-  <circle cx="256" cy="256" r="200" fill="#dc2626" opacity="0.08"/>
-  <!-- Left kidney -->
-  <path d="M 148 125
-    C 80 125, 44 182, 44 256
-    C 44 330, 80 387, 148 387
-    C 180 387, 197 369, 208 347
-    C 219 325, 214 290, 214 256
-    C 214 222, 219 187, 208 165
-    C 197 143, 180 125, 148 125 Z"
-    fill="url(#kidneyD)"/>
-  <path d="M 208 218 C 233 235, 233 277, 208 294"
-    fill="none" stroke="#1a0a00" stroke-width="20" stroke-linecap="round"/>
-  <!-- Right kidney -->
-  <path d="M 364 125
-    C 432 125, 468 182, 468 256
-    C 468 330, 432 387, 364 387
-    C 332 387, 315 369, 304 347
-    C 293 325, 298 290, 298 256
-    C 298 222, 293 187, 304 165
-    C 315 143, 332 125, 364 125 Z"
-    fill="url(#kidneyD)"/>
-  <path d="M 304 218 C 279 235, 279 277, 304 294"
-    fill="none" stroke="#1a0a00" stroke-width="20" stroke-linecap="round"/>
-  <!-- Capsule pill center -->
-  <rect x="214" y="230" width="84" height="52" rx="26" fill="#000" opacity="0.3"/>
-  <rect x="216" y="232" width="80" height="48" rx="24" fill="url(#pillD)" opacity="0.9"/>
-  <rect x="216" y="232" width="40" height="48" rx="24 0 0 24" fill="#fbbf24"/>
-  <line x1="256" y1="234" x2="256" y2="278" stroke="#1a0a00" stroke-width="2.5" opacity="0.5"/>
-  <!-- Small cross symbol top right -->
-  <circle cx="390" cy="122" r="36" fill="#dc2626"/>
-  <rect x="378" y="110" width="24" height="8" rx="4" fill="#fff"/>
-  <rect x="383" y="105" width="8" height="24" fill="none"/>
-  <line x1="390" y1="108" x2="390" y2="136" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-  <line x1="376" y1="122" x2="404" y2="122" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bgDtop" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#0288d1"/><stop offset="100%" stop-color="#0277bd"/>
+  </linearGradient>
+  <linearGradient id="bgDbot" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#01579b"/><stop offset="100%" stop-color="#013a6b"/>
+  </linearGradient>
+  <linearGradient id="kD" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#e0f7fa"/><stop offset="100%" stop-color="#b3e5fc"/>
+  </linearGradient>
+  <clipPath id="topHalf"><rect x="0" y="0" width="512" height="280"/></clipPath>
+  <clipPath id="botHalf"><rect x="0" y="280" width="512" height="232"/></clipPath>
+</defs>
+<!-- Top section: teal/blue -->
+<rect width="512" height="512" fill="url(#bgDbot)"/>
+<rect width="512" height="286" fill="url(#bgDtop)"/>
+<line x1="0" y1="286" x2="512" y2="286" stroke="#fff" stroke-width="2" opacity="0.2"/>
+<!-- Left kidney (clipped to top) -->
+<path d="M 148 68 C 88 68 50 118 50 194 C 50 270 88 320 148 320
+  C 174 320 190 307 199 288 C 208 269 203 249 203 234
+  C 203 221 213 213 213 194 C 213 175 203 167 203 154
+  C 203 139 208 117 199 98 C 190 79 174 68 148 68 Z"
+  fill="url(#kD)" stroke="#0277bd" stroke-width="3" clip-path="url(#topHalf)"/>
+<!-- Left kidney visible below fold (shadow) -->
+<path d="M 148 68 C 88 68 50 118 50 194 C 50 270 88 320 148 320
+  C 174 320 190 307 199 288 C 208 269 203 249 203 234
+  C 203 221 213 213 213 194 C 213 175 203 167 203 154
+  C 203 139 208 117 199 98 C 190 79 174 68 148 68 Z"
+  fill="#0288d1" opacity="0.3" clip-path="url(#botHalf)"/>
+<!-- Left hilum -->
+<path d="M 201 160 C 216 176 216 212 201 228"
+  fill="none" stroke="#0277bd" stroke-width="10" stroke-linecap="round" opacity="0.3"
+  clip-path="url(#topHalf)"/>
+<!-- Left ureter -->
+<path d="M 203 284 C 214 305 220 326 224 352"
+  fill="none" stroke="#29b6d6" stroke-width="7" stroke-linecap="round"/>
+<!-- Right kidney -->
+<path d="M 364 68 C 424 68 462 118 462 194 C 462 270 424 320 364 320
+  C 338 320 322 307 313 288 C 304 269 309 249 309 234
+  C 309 221 299 213 299 194 C 299 175 309 167 309 154
+  C 309 139 304 117 313 98 C 322 79 338 68 364 68 Z"
+  fill="url(#kD)" stroke="#0277bd" stroke-width="3" clip-path="url(#topHalf)"/>
+<path d="M 364 68 C 424 68 462 118 462 194 C 462 270 424 320 364 320
+  C 338 320 322 307 313 288 C 304 269 309 249 309 234
+  C 309 221 299 213 299 194 C 299 175 309 167 309 154
+  C 309 139 304 117 313 98 C 322 79 338 68 364 68 Z"
+  fill="#0288d1" opacity="0.3" clip-path="url(#botHalf)"/>
+<path d="M 311 160 C 296 176 296 212 311 228"
+  fill="none" stroke="#0277bd" stroke-width="10" stroke-linecap="round" opacity="0.3"
+  clip-path="url(#topHalf)"/>
+<path d="M 309 284 C 298 305 292 326 288 352"
+  fill="none" stroke="#29b6d6" stroke-width="7" stroke-linecap="round"/>
+<!-- Bottom: info section -->
+<text x="256" y="336" text-anchor="middle" font-family="'Hiragino Sans',system-ui"
+  font-size="34" font-weight="800" fill="#fff" letter-spacing="0.5">腎機能</text>
+<text x="256" y="372" text-anchor="middle" font-family="'Hiragino Sans',system-ui"
+  font-size="34" font-weight="800" fill="#fff" letter-spacing="0.5">用量チェック</text>
+<!-- eGFR / CrCl badges -->
+<rect x="92" y="392" width="100" height="34" rx="17" fill="#fff" opacity="0.12"/>
+<text x="142" y="414" text-anchor="middle" font-family="system-ui"
+  font-size="16" font-weight="700" fill="#4dd0e1">eGFR</text>
+<rect x="204" y="392" width="8" height="34" fill="transparent"/>
+<rect x="214" y="392" width="100" height="34" rx="17" fill="#fff" opacity="0.12"/>
+<text x="264" y="414" text-anchor="middle" font-family="system-ui"
+  font-size="16" font-weight="700" fill="#4dd0e1">CrCl</text>
+<rect x="326" y="392" width="100" height="34" rx="17" fill="#fff" opacity="0.12"/>
+<text x="376" y="414" text-anchor="middle" font-family="system-ui"
+  font-size="16" font-weight="700" fill="#4dd0e1">用量</text>
+<!-- Bottom rule -->
+<rect x="0" y="446" width="512" height="66" fill="#000" opacity="0.15"/>
+<text x="256" y="488" text-anchor="middle" font-family="system-ui"
+  font-size="18" fill="#80deea" opacity="0.8">JSNP第39版 · 2026</text>
 </svg>
-<p>D: Warm Red</p>
-<small>緊急性・医療の力強さ<br>レッド×オレンジ×アンバー</small>
+<div class="card-label">D：スプリット（上下分割）</div>
+<div class="card-sub">情報量が多い・ユーティリティ感<br>腎臓＋テキスト＋バッジ</div>
 </div>
 
 </div>
-
-<p style="margin-top:40px;color:#555;font-size:12px">
-  ※ iOSはアイコンに角丸を自動適用します。<br>
-  このプレビューの角丸はiOS適用後のイメージです。
+<p style="color:#52525b;font-size:12px;margin-top:8px">
+  ※ iOSはアイコンの角丸を自動で丸めます（Squircle）。このプレビューは近似形状です。<br>
+  いずれかを選択後、PNG 512×512 として書き出してファイルを差し替えます。
 </p>
 </body>
 </html>
