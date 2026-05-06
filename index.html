@@ -2018,6 +2018,12 @@ section { margin-top: 16px; }
   flex-wrap: wrap;
   gap: 6px;
 }
+/* トップグループは5列スクエアグリッド */
+#group-top-btns {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
 .group-btn {
   padding: 6px 12px;
   font-size: 11.5px;
@@ -2029,6 +2035,34 @@ section { margin-top: 16px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+/* トップグループボタン: スクエアアイコン型 */
+#group-top-btns .group-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px 9px;
+  border-radius: 14px;
+  aspect-ratio: 1;
+  gap: 5px;
+  background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
+  color: var(--g-clr);
+}
+#group-top-btns .group-btn-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+#group-top-btns .group-btn-label {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  letter-spacing: 0.01em;
 }
 .group-btn-count {
   font-family: var(--font-mono);
@@ -2049,6 +2083,10 @@ section { margin-top: 16px; }
   font-weight: 700;
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(20,24,31,.12);
+}
+#group-top-btns .group-btn[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--g-clr) 24%, var(--bg-elev));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--g-clr) 30%, transparent);
 }
 .group-sub-area {
   margin-top: 10px;
@@ -8169,13 +8207,14 @@ function buildGroupBrowser() {
   for (const grp of GRP_DEF) {
     const drugCount = DRUGS.filter(d => grp.cats.includes(d.cat)).length;
     if (drugCount === 0) continue;
+    const labelParts = grp.label.split(' ');
+    const icon = labelParts[0];
+    const text = labelParts.slice(1).join(' ');
     const btn = document.createElement('button');
     btn.className = 'group-btn';
-    btn.innerHTML = `${escapeHtml(grp.label)}<span class="group-btn-count">${drugCount}</span>`;
+    btn.innerHTML = `<span class="group-btn-icon">${icon}</span><span class="group-btn-label">${escapeHtml(text)}</span>`;
     btn.dataset.grpId = grp.id;
-    btn.style.color = grp.color;
-    btn.style.borderColor = grp.color + '60';
-    btn.style.background = grp.bg;
+    btn.style.setProperty('--g-clr', grp.color);
     btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', () => toggleGroupSub(grp, btn));
     top.appendChild(btn);
