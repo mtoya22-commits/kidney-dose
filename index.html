@@ -2021,8 +2021,8 @@ section { margin-top: 16px; }
 /* トップグループは5列スクエアグリッド */
 #group-top-btns {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
 }
 .group-btn {
   padding: 6px 12px;
@@ -2042,27 +2042,37 @@ section { margin-top: 16px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 4px 9px;
-  border-radius: 14px;
+  padding: 7px 3px 6px;
+  border-radius: 12px;
   aspect-ratio: 1;
-  gap: 5px;
+  gap: 3px;
   background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
   border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
   color: var(--g-clr);
 }
 #group-top-btns .group-btn-icon {
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
 }
 #group-top-btns .group-btn-label {
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
   word-break: keep-all;
   overflow-wrap: break-word;
   letter-spacing: 0.01em;
+}
+#group-top-btns .group-btn-count {
+  font-size: 7.5px;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  opacity: 0.55;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  letter-spacing: 0;
 }
 .group-btn-count {
   font-family: var(--font-mono);
@@ -8212,7 +8222,7 @@ function buildGroupBrowser() {
     const text = labelParts.slice(1).join(' ');
     const btn = document.createElement('button');
     btn.className = 'group-btn';
-    btn.innerHTML = `<span class="group-btn-icon">${icon}</span><span class="group-btn-label">${escapeHtml(text)}</span>`;
+    btn.innerHTML = `<span class="group-btn-icon">${icon}</span><span class="group-btn-label">${escapeHtml(text)}</span><span class="group-btn-count">${drugCount}剤</span>`;
     btn.dataset.grpId = grp.id;
     btn.style.setProperty('--g-clr', grp.color);
     btn.setAttribute('aria-expanded', 'false');
