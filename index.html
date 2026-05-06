@@ -2037,7 +2037,7 @@ section { margin-top: 16px; }
   align-items: center;
   gap: 6px;
 }
-/* トップグループボタン: スクエアアイコン型 */
+/* ── トップグループボタン: ライトモード「Pastel Garden」── */
 #group-top-btns .group-btn {
   flex: 0 0 calc((100% - 4 * 5px) / 5);
   display: flex;
@@ -2047,9 +2047,22 @@ section { margin-top: 16px; }
   padding: 8px 3px 7px;
   border-radius: 12px;
   gap: 2px;
-  background: color-mix(in srgb, var(--g-clr) 14%, var(--bg-elev));
-  border-color: color-mix(in srgb, var(--g-clr) 30%, transparent);
+  background: color-mix(in srgb, var(--g-clr) 13%, #fafafa);
+  border-color: color-mix(in srgb, var(--g-clr) 22%, transparent);
   color: var(--g-clr);
+}
+/* ── ダークモード「Midnight Jewel」── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #group-top-btns .group-btn {
+    background: color-mix(in srgb, var(--g-clr) 42%, #06080d);
+    border-color: color-mix(in srgb, var(--g-clr) 58%, transparent);
+    color: #fff;
+  }
+}
+:root[data-theme="dark"] #group-top-btns .group-btn {
+  background: color-mix(in srgb, var(--g-clr) 42%, #06080d);
+  border-color: color-mix(in srgb, var(--g-clr) 58%, transparent);
+  color: #fff;
 }
 #group-top-btns .group-btn-icon {
   font-size: 20px;
@@ -2096,8 +2109,18 @@ section { margin-top: 16px; }
   box-shadow: 0 3px 10px rgba(20,24,31,.12);
 }
 #group-top-btns .group-btn[aria-expanded="true"] {
-  background: color-mix(in srgb, var(--g-clr) 24%, var(--bg-elev));
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--g-clr) 30%, transparent);
+  background: color-mix(in srgb, var(--g-clr) 22%, #f0f0f0);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--g-clr) 25%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #group-top-btns .group-btn[aria-expanded="true"] {
+    background: color-mix(in srgb, var(--g-clr) 55%, #06080d);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--g-clr) 40%, transparent);
+  }
+}
+:root[data-theme="dark"] #group-top-btns .group-btn[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--g-clr) 55%, #06080d);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--g-clr) 40%, transparent);
 }
 .group-sub-area {
   margin-top: 10px;
