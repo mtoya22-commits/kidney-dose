@@ -1624,8 +1624,21 @@ section { margin-top: 16px; }
 .dose-table tbody td {
   padding: 6px 8px;
   border-top: 1px solid var(--rule);
-  vertical-align: middle;
+  vertical-align: top;
   transition: background-color .25s var(--ease), box-shadow .25s var(--ease);
+}
+.dose-table td:nth-child(2) {
+  width: 110px;
+  min-width: 80px;
+  max-width: 130px;
+  vertical-align: top;
+}
+.dose-table td:nth-child(2) .badge {
+  white-space: normal;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 1.4;
 }
 .dose-table tbody td:first-child {
   font-family: var(--font-mono);
@@ -7061,7 +7074,7 @@ function renderDoseTable(drug, renal) {
   return `<table class="dose-table">
     <thead><tr>
       <th>${headerLabel}</th>
-      <th style="width:90px">状態</th>
+      <th>状態</th>
       <th style="text-align:left">推奨用量・用法</th>
     </tr></thead>
     <tbody>${body}</tbody>
