@@ -3261,18 +3261,6 @@ const DRUGS = [
  note:'腎排泄型。CCr<50で投与間隔延長（eCCr基準）。腎排泄型。腎機能低下では調節が必要。'},
 
 // ---- 抗ウイルス薬 ----
-{id:'valaciclovir',cat:'antiviral',name:'バラシクロビル',yomi:'ばらしくろびる',
- brand:['バルトレックス'],
- cls:'抗ヘルペスウイルス薬',metric:'ccr',
- thr:[
-  {min:50,max:999,st:'ok',      lb:'通常投与可', dose:'帯状疱疹: 1,000mg 1日3回×7日。単純疱疹: 500mg 1日2回'},
-  {min:30,max:50, st:'caution', lb:'1,000mg 1日2回', dose:'帯状疱疹: 1,000mg 1日2回。単純疱疹: 500mg 1日1回'},
-  {min:10,max:30, st:'caution', lb:'1,000mg 1日1回', dose:'帯状疱疹: 1,000mg 1日1回。単純疱疹: 500mg 隔日'},
-  {min:0, max:10, st:'warning', lb:'500mg 1日1回', dose:'帯状疱疹/単純疱疹ともに500mg 1日1回。血液透析後に投与'},
- ],
- dial:{st:'warning',lb:'透析後500mg',dose:'透析後に500mg投与。血栓性血小板減少性紫斑病/溶血性尿毒症症候群(TTP/HUS)リスク'},
- note:'腎排泄型（アシクロビルとして）。CCr30〜50: 1回1000mg 12時間毎。CCr<10: 1回500mg 24時間毎（eCCr(J or E)基準）。精神神経症状に注意。腎排泄型。CCr30〜50でアシクロビルAUCが上昇。CCr<10では高度蓄積→精神神経症状リスク（eCCr(J or E)基準）。腎排泄型。腎機能低下で神経毒性（意識障害・痙攣）・TTP/HUSリスク大。用量調節必須。'},
-
 {id:'aciclovir',cat:'antiviral',name:'アシクロビル（内服）',yomi:'あしくろびる',
  brand:['ゾビラックス','アシクロビル'],
  cls:'抗ヘルペスウイルス薬',metric:'ccr',
@@ -3915,7 +3903,7 @@ const DRUGS = [
   {min:50,max:999,st:'ok',      lb:'通常投与可', dose:'①帯状疱疹: 1000mg 1日3回×7日②単純疱疹: 500mg 1日2回③性器ヘルペス再発抑制: 500mg/日④水痘: 1000mg 1日3回'},
   {min:30,max:50, st:'caution', lb:'①1000mg 12時間毎 ②③500mg 12時間毎', dose:'①1000mg を12時間毎②③500mg を12時間毎（HIV感染症患者は500mgを12時間毎）'},
   {min:10,max:30, st:'caution', lb:'①1000mg 24時間毎 ②③500mg 24時間毎', dose:'①④1000mg を24時間毎②③500mg を24時間毎'},
-  {min:0, max:10, st:'caution', lb:'①500mg 24時間毎 ②③250mg', dose:'①帯状疱疹: 500mg を24時間毎②単純疱疹: 500mg を24時間毎（HIV患者）/250mg③再発抑制: 250mg'},
+  {min:0, max:10, st:'caution', lb:'①500〜1000mg/48h ②500mg/24h', dose:'①帯状疱疹: 500〜1000mgを48時間毎②単純疱疹: 500mgを24時間毎'},
  ],
  dial:{st:'caution',lb:'透析後500mg', dose:'透析で除去される。500mg を24時間毎、HD日はHD後に投与（CAPDは1回250mgを2日に1回）。src:JSNP第39版'},
  note:'プロドラッグ。体内でアシクロビルに変換（バイオアベイラビリティ約55%）。腎排泄型のため腎機能低下で蓄積→精神神経障害・意識障害（特に高用量）。metric:eCCr(J or E)。src:JSNP第39版'},
@@ -4861,7 +4849,7 @@ const DRUGS = [
  note:'腎排泄型。CCr<50で1日25〜50mgに減量（EO）。透析患者はHD後に補充（eCCr基準）。腎排泄型β遮断薬。腎機能低下で蓄積→過剰なβ遮断（徐脈・低血圧）。ビソプロロールより腎依存性が高い。src:JSNP第39版'},
 
 // ---- 炭酸脱水酵素阻害薬 ----
-{id:'acetazolamide',cat:'epilepsy',name:'アセタゾラミド',yomi:'あせたぞらみど',
+{id:'acetazolamide',cat:'ca_inhibitor',name:'アセタゾラミド',yomi:'あせたぞらみど',
  brand:['ダイアモックス錠'],
  cls:'炭酸脱水酵素阻害薬（緑内障・てんかん・メニエル病）',metric:'egfr',
  thr:[
@@ -5507,7 +5495,7 @@ const DRUGS = [
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
  note:'エプラジノン塩酸塩。気道分泌液の粘性低下・排出促進。腎機能による調節不要。src:添付文書'},
 
-{id:'tranexamic_acid',cat:'respiratory',name:'トラネキサム酸',yomi:'とらねきさむさん',
+{id:'tranexamic_acid',cat:'hemostatic',name:'トラネキサム酸',yomi:'とらねきさむさん',
  brand:['トランサミン'],
  cls:'抗プラスミン薬（止血・抗炎症・抗アレルギー）',metric:'ccr',
  thr:[
@@ -5682,6 +5670,8 @@ const catLb={
     antiviral:             '🔵 抗ウイルス薬',
     antiviral_flu:         '🔵 抗ウイルス｜インフルエンザ',
     antifungal:            '🍄 抗真菌薬',
+    hemostatic:            '🩸 止血・去痰薬',
+    ca_inhibitor:          '⚡ 炭酸脱水酵素阻害薬',
     epilepsy:              '⚡ 神経｜抗てんかん薬',
     dementia_pd:           '🧠 神経｜認知症・パーキンソン病',
     psychiatry:            '💊 神経｜抗精神病・気分安定薬',
@@ -5708,7 +5698,7 @@ const catOrd=[
     'analgesic',
     'abx_penicillin','abx_cephem','abx_macrolide','abx_quinolone','abx_other','abx_tb',
     'antiviral','antiviral_flu','antifungal',
-    'epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin',
+    'epilepsy','ca_inhibitor','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin',
     'urology','gastro_h2','gastro_ppi','gastro','respiratory','bone','immuno',
     'allergy_h1','allergy_lt','oncology','thyroid'
   ];
@@ -5722,11 +5712,11 @@ const GRP_DEF = [
   { id:'diabetes',    label:'🩸 糖尿病薬',         color:'#be185d', bg:'#fdf2f8',
     cats:['diabetes_dpp4','diabetes_sglt2','diabetes_glp1','diabetes_su','diabetes_other'] },
   { id:'cardio_cv',   label:'🫀 循環器',            color:'#dc2626', bg:'#fff5f5',
-    cats:['cv_arb','cv_ace','cv_ccb','cv_diuretic','cv_beta','cv_coronary','cv_other'] },
+    cats:['cv_arb','cv_ace','cv_ccb','cv_diuretic','cv_beta','cv_coronary','cv_other','ca_inhibitor'] },
   { id:'lipid_uric',  label:'🧪 脂質・尿酸',         color:'#7c3aed', bg:'#f5f3ff',
     cats:['dyslipidemia_statin','dyslipidemia_fibrate','dyslipidemia_other','uricacid'] },
   { id:'blood',       label:'💉 血液',              color:'#9f1239', bg:'#fff1f2',
-    cats:['blood_anemia','blood_coag'] },
+    cats:['blood_anemia','blood_coag','hemostatic'] },
   { id:'heart_rx',    label:'⚡ 不整脈・強心',        color:'#b45309', bg:'#fffbeb',
     cats:['cardio'] },
   { id:'pain',        label:'💊 鎮痛薬',             color:'#0f766e', bg:'#f0fdfa',
@@ -5736,13 +5726,13 @@ const GRP_DEF = [
   { id:'antivir',     label:'🧫 抗ウイルス・抗真菌',    color:'#0369a1', bg:'#f0f9ff',
     cats:['antiviral','antiviral_flu','antifungal'] },
   { id:'neuro',       label:'🧠 神経系',              color:'#4338ca', bg:'#eef2ff',
-    cats:['epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin'] },
+    cats:['epilepsy','ca_inhibitor','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin'] },
   { id:'uro',         label:'🫘 泌尿器',              color:'#0e7490', bg:'#ecfeff',
     cats:['urology'] },
   { id:'gi',          label:'🩻 消化器',              color:'#15803d', bg:'#f0fdf4',
     cats:['gastro_h2','gastro_ppi','gastro'] },
   { id:'resp',        label:'🫁 呼吸器',              color:'#1d4ed8', bg:'#eff6ff',
-    cats:['respiratory'] },
+    cats:['respiratory','hemostatic'] },
   { id:'bone_rx',     label:'🦴 骨粗鬆症',            color:'#92400e', bg:'#fffbeb',
     cats:['bone'] },
   { id:'immuno',      label:'🛡️ 免疫抑制',            color:'#6d28d9', bg:'#f5f3ff',
