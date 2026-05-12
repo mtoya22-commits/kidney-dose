@@ -819,12 +819,12 @@ section { margin-top: 16px; }
   border-bottom-color: var(--brand);
   font-weight: 600;
 }
-.input-body { padding: 14px 14px 12px; }
+.input-body { padding: 10px 12px 8px; }
 
 .field-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px 10px;
+  gap: 6px 8px;
 }
 .field-grid--2 { grid-template-columns: 1fr 1fr; }
 
@@ -838,7 +838,7 @@ section { margin-top: 16px; }
 }
 .field-input, .field-select {
   width: 100%;
-  padding: 9px 10px;
+  padding: 6px 8px;
   background: var(--bg-elev);
   border: 1px solid var(--rule-2);
   border-radius: var(--r);
@@ -906,13 +906,13 @@ section { margin-top: 16px; }
 .result-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 8px;
 }
 .result-cell {
   border: 1px solid var(--rule);
   border-radius: var(--r-lg);
-  padding: 12px 14px;
+  padding: 8px 10px;
   background: var(--bg-elev);
   position: relative;
   overflow: hidden;
@@ -939,11 +939,11 @@ section { margin-top: 16px; }
 }
 .result-value {
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 500;
   color: var(--ink);
   line-height: 1.05;
-  margin-top: 4px;
+  margin-top: 2px;
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
 }
@@ -963,9 +963,16 @@ section { margin-top: 16px; }
   background: var(--ink);
   color: var(--bg-elev);
   border-radius: 99px;
+  cursor: pointer;
+  user-select: none;
 }
 .result-cell--egfr .result-stage { background: var(--brand); }
 .result-cell--ccr  .result-stage { background: var(--ok); }
+/* CKD guide modal */
+.ckd-guide-table { width:100%; border-collapse:collapse; font-size:13px; }
+.ckd-guide-table th { text-align:left; padding:7px 10px; width:6em; font-weight:600; color:var(--ink-3); font-size:11px; vertical-align:top; border-bottom:1px solid var(--rule); }
+.ckd-guide-table td { padding:7px 10px; border-bottom:1px solid var(--rule); line-height:1.5; }
+.ckd-guide-src { font-size:10px; color:var(--ink-4); margin-top:10px; text-align:right; }
 .result-individualized {
   font-size: 10px;
   color: var(--ink-2);
@@ -2486,16 +2493,6 @@ section { margin-top: 16px; }
 
         <span class="field-error" id="err-bmi" style="display:block;text-align:center;margin-top:6px"></span>
 
-        <div class="formula-row" role="radiogroup" aria-label="eGFR算出式">
-          <button class="formula-btn" data-formula="mdrd"
-                  role="radio" aria-selected="true">MDRD式（推奨）</button>
-          <button class="formula-btn" data-formula="ckdepi"
-                  role="radio" aria-selected="false">CKD-EPI 2021</button>
-        </div>
-        <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
-          ※ CKD-EPI 2021はrace coefficientを廃止した式。日本人への適用は議論があり、JSNP第39版はMDRD式を採用。
-        </p>
-
         <div class="formula-row" role="radiogroup" aria-label="CCr計算用体重" style="margin-top:8px">
           <button class="formula-btn" data-bw="auto" role="radio" aria-selected="true">自動</button>
           <button class="formula-btn" data-bw="tbw" role="radio" aria-selected="false">実体重</button>
@@ -2512,7 +2509,7 @@ section { margin-top: 16px; }
             <div class="result-cell result-cell--egfr">
               <div class="result-label">
                 <span>eGFR</span>
-                <span class="result-formula" id="egfr-formula">(MDRD)</span>
+                <span class="result-formula" id="egfr-formula">(日本腎臓学会式)</span>
               </div>
               <div class="result-value" id="egfr-val">—</div>
               <div class="result-unit">mL/min/1.73m² (標準化)</div>
@@ -4659,6 +4656,18 @@ const DRUGS = [
  dial:{st:'caution',lb:'75mg 1日1回',dose:'透析後に75mg投与。AUCは健常者の2〜3倍'},
  note:'CCr10〜49でAUC2.6倍、CCr<10でAUC5.5倍（半減期3.3倍）。CCr10〜49: 1日1回75mg。CCr<10: 1日1回37.5mg（eCCr基準）。CCr10〜49で半減期2.6倍、CCr<10で3.3倍。腎排泄型H2ブロッカー。CCr<50で半減期延長。添付文書に明確な減量指示あり。src:JSNP第39版'},
 
+{id:'lafutidine', cat:'gastro_h2', name:'ラフチジン', yomi:'らふちじん',
+ brand:['プロテカジン'],
+ cls:'H2受容体拮抗薬', metric:'ccr',
+ thr:[
+  {min:50,max:999, st:'ok',      lb:'通常投与可',              dose:'10〜20mg 1日1〜2回（就寝前または朝夕食後）'},
+  {min:30,max:50,  st:'caution', lb:'慎重投与',               dose:'症状が悪化するおそれあり。用量・用法に注意（EO）'},
+  {min:10,max:30,  st:'caution', lb:'20mg隔日 または10mg/日', dose:'1回20mgを2〜3日に1回、または1日1回10mg'},
+  {min:0, max:10,  st:'caution', lb:'10mg 1日1回',            dose:'1日1回10mg'},
+ ],
+ dial:{st:'caution', lb:'10mg/日 または20mg週3回HD後', dose:'1日1回10mg、又は1回20mgを週3回 HD後に投与（EO）'},
+ note:'H2ブロッカー。腎排泄型。非HD時AUCが約3倍。逆流性食道炎には適応に注意。metric:eCCr(J)。src:JSNP第39版'},
+
 // ---- SU薬 ----
 {id:'glibenclamide',cat:'diabetes_su',name:'グリベンクラミド',yomi:'ぐりべんくらみど',
  brand:['オイグルコン','ダオニール'],
@@ -6065,20 +6074,6 @@ function calcMDRD(scr, age, sex) {
 }
 
 /**
- * CKD-EPI 2021 (race coefficient廃止版)
- * 注: 日本人への適用は議論あり。MDRDが第一選択推奨。
- * @returns {number} eGFR (mL/min/1.73m²)
- */
-function calcCKDEPI2021(scr, age, sex) {
-  const k = sex === 'female' ? 0.7 : 0.9;
-  const a = sex === 'female' ? -0.241 : -0.302;
-  const r = scr / k;
-  let g = 142 * Math.pow(Math.min(r, 1), a) * Math.pow(Math.max(r, 1), -1.200) * Math.pow(0.9938, age);
-  if (sex === 'female') g *= 1.012;
-  return Math.round(g * 10) / 10;
-}
-
-/**
  * Cockcroft-Gault式
  * @returns {number} CCr (mL/min, 個別化値)
  */
@@ -6157,6 +6152,30 @@ function getStage(v) {
   return 'G5';
 }
 
+const CKD_GUIDE = {
+  G1:  { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'過剰摂取を避ける', notes:'BMI&lt;25を目標。禁煙。節酒。' },
+  G2:  { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'過剰摂取を避ける', notes:'BMI&lt;25を目標。禁煙。節酒。' },
+  G3a: { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'0.8〜1.0 g/kg/日', notes:'BMI&lt;25を目標。禁煙。節酒。カリウム・リンに注意。' },
+  G3b: { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'0.6〜0.8 g/kg/日', notes:'BMI&lt;25を目標。禁煙。節酒。カリウム・リン制限開始。' },
+  G4:  { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'0.6〜0.8 g/kg/日', notes:'肥満者は20〜25 kcal/kg/日。カリウム・リン・水分管理。禁煙。' },
+  G5:  { salt:'3〜6g/日未満', energy:'25〜35 kcal/kg/日', protein:'0.6〜0.8 g/kg/日', notes:'肥満者は20〜25 kcal/kg/日。カリウム・リン・水分厳格管理。透析導入を考慮。' },
+};
+
+function showCKDGuide(stage) {
+  const g = CKD_GUIDE[stage];
+  if (!g) return;
+  const body = `
+    <table class="ckd-guide-table">
+      <tr><th>食塩</th><td>${g.salt}</td></tr>
+      <tr><th>エネルギー</th><td>${g.energy}</td></tr>
+      <tr><th>たんぱく質</th><td>${g.protein}</td></tr>
+      <tr><th>その他</th><td>${g.notes}</td></tr>
+    </table>
+    <p class="ckd-guide-src">出典: CKD診療ガイド2012（日本腎臓学会）</p>
+  `;
+  openModal(`CKD生活管理ガイド — ${stage}`, body);
+}
+
 /**
  * 統合計算: 入力値からeGFR/CCr両方を算出
  * @param {Object} input
@@ -6189,10 +6208,8 @@ function calcRenalFunction(input) {
   }
   if (result.errors.length) return result;
 
-  // eGFR計算
-  result.eGFR = formula === 'ckdepi'
-    ? calcCKDEPI2021(scr, age, sex)
-    : calcMDRD(scr, age, sex);
+  // eGFR計算（日本腎臓学会式）
+  result.eGFR = calcMDRD(scr, age, sex);
 
   // CCr計算用の体重戦略
   let useBW = null;
@@ -7721,16 +7738,6 @@ function setupCalcInputs() {
     el.addEventListener('change', () => { handler(el.value); recompute(); });
   });
 
-  document.querySelectorAll('[data-formula]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const f = btn.dataset.formula;
-      setState({ formula: f });
-      document.querySelectorAll('[data-formula]').forEach(b =>
-        b.setAttribute('aria-selected', b.dataset.formula === f));
-      recompute();
-    });
-  });
-
   // 体重戦略ピッカー
   document.querySelectorAll('[data-bw]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -7827,7 +7834,8 @@ function renderCalcResult(renal) {
   if (renal.eGFR !== null) {
     document.getElementById('egfr-val').textContent = renal.eGFR;
     document.getElementById('egfr-stage').textContent = `CKD ${getStage(renal.eGFR)}`;
-    document.getElementById('egfr-formula').textContent = `(${renal.formula === 'mdrd' ? 'MDRD' : 'CKD-EPI 2021'})`;
+    document.getElementById('egfr-stage').onclick = () => showCKDGuide(getStage(renal.eGFR));
+    document.getElementById('egfr-formula').textContent = '(日本腎臓学会式)';
     if (renal.indGFR !== null) {
       document.getElementById('egfr-individualized').innerHTML =
         `個別化値 <strong>${renal.indGFR}</strong> mL/min`;
@@ -7845,9 +7853,11 @@ function renderCalcResult(renal) {
   if (renal.ccr !== null) {
     document.getElementById('ccr-val').textContent = renal.ccr;
     document.getElementById('ccr-stage').textContent = `CKD ${getStage(renal.ccr)}`;
+    document.getElementById('ccr-stage').onclick = () => showCKDGuide(getStage(renal.ccr));
   } else {
     document.getElementById('ccr-val').textContent = '—';
     document.getElementById('ccr-stage').textContent = '未計算';
+    document.getElementById('ccr-stage').onclick = null;
   }
 
   // IBWノート
@@ -7882,16 +7892,20 @@ function renderDirectResult(renal) {
   if (renal.eGFR !== null) {
     document.getElementById('din-egfr-val').textContent = renal.eGFR;
     document.getElementById('din-egfr-stage').textContent = `CKD ${getStage(renal.eGFR)}`;
+    document.getElementById('din-egfr-stage').onclick = () => showCKDGuide(getStage(renal.eGFR));
   } else {
     document.getElementById('din-egfr-val').textContent = '—';
     document.getElementById('din-egfr-stage').textContent = '未入力';
+    document.getElementById('din-egfr-stage').onclick = null;
   }
   if (renal.ccr !== null) {
     document.getElementById('din-ccr-val').textContent = renal.ccr;
     document.getElementById('din-ccr-stage').textContent = `CKD ${getStage(renal.ccr)}`;
+    document.getElementById('din-ccr-stage').onclick = () => showCKDGuide(getStage(renal.ccr));
   } else {
     document.getElementById('din-ccr-val').textContent = '—';
     document.getElementById('din-ccr-stage').textContent = '未入力';
+    document.getElementById('din-ccr-stage').onclick = null;
   }
 }
 
