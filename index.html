@@ -996,46 +996,6 @@ section { margin-top: 16px; }
   line-height: 1.5;
 }
 
-/* ===== Status bar (sticky summary) ===== */
-.status-bar {
-  position: sticky;
-  top: 56px;
-  z-index: 90;
-  background: var(--ink);
-  color: var(--bg-elev);
-  border-radius: var(--r-lg);
-  padding: 10px 14px;
-  margin: 12px 0;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-  box-shadow: var(--shadow-2);
-}
-.status-bar[hidden] { display: none; }
-.status-values { display: flex; gap: 18px; align-items: baseline; }
-.status-cell { display: flex; flex-direction: column; gap: 2px; }
-.status-label {
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: .65;
-}
-.status-num {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.status-num--sm { font-size: 16px; opacity: .92; }
-.status-stage {
-  background: rgba(255,255,255,.16);
-  padding: 4px 10px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
 /* ===== Selection bar ===== */
 .selection-bar {
   background: var(--brand-tint);
@@ -2352,12 +2312,9 @@ section { margin-top: 16px; }
 @media (max-width: 480px) {
   .field-grid { grid-template-columns: 1fr 1fr; }
   .field-grid .field--span2 { grid-column: span 2; }
-  .result-grid { grid-template-columns: 1fr; }
-  .status-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
   .app-title { font-size: 15px; }
   .app-meta { font-size: 10px; }
-  .result-value { font-size: 30px; }
-  .status-num { font-size: 18px; }
+  .result-value { font-size: 24px; }
 }
 
 </style>
@@ -2574,21 +2531,6 @@ section { margin-top: 16px; }
       </div>
     </div>
   </section>
-
-  <!-- ============ Status Bar (sticky) ============ -->
-  <div class="status-bar" id="status-bar" role="status" aria-live="polite" hidden>
-    <div class="status-values">
-      <div class="status-cell">
-        <span class="status-label">eGFR</span>
-        <span class="status-num" id="sb-egfr">—</span>
-      </div>
-      <div class="status-cell">
-        <span class="status-label">CCr</span>
-        <span class="status-num status-num--sm" id="sb-ccr">—</span>
-      </div>
-    </div>
-    <span class="status-stage" id="sb-stage">—</span>
-  </div>
 
   <!-- ============ 選択中バー ============ -->
   <div class="selection-bar" id="selection-bar" hidden>
@@ -7807,8 +7749,6 @@ function renderResults() {
   } else {
     renderDirectResult(renal);
   }
-
-  renderStatusBar(renal);
 }
 
 function renderCalcResult(renal) {
@@ -7907,26 +7847,6 @@ function renderDirectResult(renal) {
     document.getElementById('din-ccr-stage').textContent = '未入力';
     document.getElementById('din-ccr-stage').onclick = null;
   }
-}
-
-function renderStatusBar(renal) {
-  const bar = document.getElementById('status-bar');
-  if (!bar) return;
-  if (renal.isDialysis) {
-    bar.hidden = false;
-    document.getElementById('sb-egfr').textContent = '透析';
-    document.getElementById('sb-ccr').textContent = '透析';
-    document.getElementById('sb-stage').textContent = renal.dialysisType.toUpperCase();
-    return;
-  }
-  const hasResult = renal.eGFR !== null || renal.ccr !== null;
-  bar.hidden = !hasResult;
-  if (!hasResult) return;
-
-  document.getElementById('sb-egfr').textContent = renal.eGFR ?? '—';
-  document.getElementById('sb-ccr').textContent  = renal.ccr  ?? '—';
-  const refVal = renal.eGFR ?? renal.ccr;
-  document.getElementById('sb-stage').textContent = `CKD ${getStage(refVal)}`;
 }
 
 // =============================================
