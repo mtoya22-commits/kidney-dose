@@ -854,6 +854,11 @@ section { margin-top: 16px; }
   border-color: var(--brand);
   box-shadow: 0 0 0 3px var(--brand-soft);
 }
+.field-input::placeholder {
+  opacity: 0.35;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
 .field-input:invalid:not(:placeholder-shown) {
   border-color: var(--war-rule);
 }
@@ -2403,28 +2408,28 @@ section { margin-top: 16px; }
           <div class="field">
             <label class="field-label" for="in-age">年齢 (歳)</label>
             <input class="field-input" id="in-age" type="number"
-                   inputmode="numeric" placeholder="65" min="1" max="120"
+                   inputmode="numeric" placeholder="例) 65" min="1" max="120"
                    aria-describedby="err-age">
             <span class="field-error" id="err-age"></span>
           </div>
           <div class="field">
             <label class="field-label" for="in-height">身長 (cm)</label>
             <input class="field-input" id="in-height" type="number"
-                   inputmode="decimal" placeholder="165" min="50" max="250"
+                   inputmode="decimal" placeholder="例) 165" min="50" max="250"
                    aria-describedby="err-height">
             <span class="field-error" id="err-height"></span>
           </div>
           <div class="field">
             <label class="field-label" for="in-weight">体重 (kg)</label>
             <input class="field-input" id="in-weight" type="number"
-                   inputmode="decimal" placeholder="60" min="1" max="300"
+                   inputmode="decimal" placeholder="例) 60" min="1" max="300"
                    aria-describedby="err-weight">
             <span class="field-error" id="err-weight"></span>
           </div>
           <div class="field">
             <label class="field-label" for="in-scr">血清Cr (mg/dL)</label>
             <input class="field-input" id="in-scr" type="number"
-                   inputmode="decimal" step="0.01" placeholder="1.2" min="0.01" max="30"
+                   inputmode="decimal" step="0.01" placeholder="例) 1.2" min="0.01" max="30"
                    aria-describedby="err-scr">
             <span class="field-error" id="err-scr"></span>
           </div>
@@ -2485,12 +2490,12 @@ section { margin-top: 16px; }
           <div class="field">
             <label class="field-label" for="din-egfr">eGFR (mL/min/1.73m²)</label>
             <input class="field-input" id="din-egfr" type="number"
-                   inputmode="decimal" placeholder="45" min="0" max="200">
+                   inputmode="decimal" placeholder="例) 45" min="0" max="200">
           </div>
           <div class="field">
             <label class="field-label" for="din-ccr">CCr (mL/min)</label>
             <input class="field-input" id="din-ccr" type="number"
-                   inputmode="decimal" placeholder="40" min="0" max="200">
+                   inputmode="decimal" placeholder="例) 40" min="0" max="200">
           </div>
           <div class="field field--span2">
             <label class="field-label" for="din-dialysis">透析</label>
