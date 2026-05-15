@@ -806,7 +806,7 @@ section { margin-top: 16px; }
 }
 .input-tab {
   flex: 1;
-  padding: 11px 12px;
+  padding: 8px 10px;
   font-size: 12px;
   font-weight: 500;
   color: var(--ink-3);
@@ -888,19 +888,16 @@ section { margin-top: 16px; }
   font-weight: 600;
 }
 
-.reset-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 7px;
-  font-size: 11px;
-  color: var(--ink-3);
-  border: 1px dashed var(--rule-2);
-  border-radius: var(--r);
+.reset-icon-btn {
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--ink-4);
+  border-left: 1px solid var(--rule);
   background: transparent;
-  transition: color .15s, border-color .15s;
-  letter-spacing: 0.04em;
+  transition: color .15s;
+  flex-shrink: 0;
 }
-.reset-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.reset-icon-btn:hover { color: var(--ink); }
 
 /* ===== Result display ===== */
 .result-grid {
@@ -2385,8 +2382,7 @@ section { margin-top: 16px; }
 <main class="app">
 
   <!-- ============ 入力パネル ============ -->
-  <section aria-labelledby="lbl-input">
-    <div class="section-label" id="lbl-input">腎機能入力</div>
+  <section>
     <div class="card input-panel">
       <div class="input-tabs" role="tablist" aria-label="入力モード">
         <button class="input-tab" data-input-tab="calc"
@@ -2395,8 +2391,9 @@ section { margin-top: 16px; }
         </button>
         <button class="input-tab" data-input-tab="direct"
                 role="tab" aria-selected="false" aria-controls="panel-direct">
-          eGFR / CCr 直接入力
+          直接入力
         </button>
+        <button class="reset-icon-btn" id="panel-reset" type="button" title="入力値をリセット">↻</button>
       </div>
 
       <!-- 計算モード -->
@@ -2450,16 +2447,11 @@ section { margin-top: 16px; }
 
         <span class="field-error" id="err-bmi" style="display:block;text-align:center;margin-top:6px"></span>
 
-        <div class="formula-row" role="radiogroup" aria-label="CCr計算用体重" style="margin-top:8px">
+        <div class="formula-row" role="radiogroup" aria-label="CCr計算用体重" style="margin-top:6px">
           <button class="formula-btn" data-bw="auto" role="radio" aria-selected="true">自動</button>
           <button class="formula-btn" data-bw="tbw" role="radio" aria-selected="false">実体重</button>
           <button class="formula-btn" data-bw="adjbw" role="radio" aria-selected="false">補正</button>
         </div>
-        <p style="font-size:9.5px;color:var(--ink-4);margin-top:4px;line-height:1.5">
-          ※ 通常は<strong>実体重</strong>でOK。体重が明らかに多い/少ない患者でCCrが実態と乖離する場合に<strong>補正</strong>を選択。
-        </p>
-
-        <button class="reset-btn" id="calc-reset" type="button">↻ 入力値をリセット</button>
 
         <div id="calc-result" hidden>
           <div class="result-grid">
@@ -2469,9 +2461,8 @@ section { margin-top: 16px; }
                 <span class="result-formula" id="egfr-formula">(日本腎臓学会式)</span>
               </div>
               <div class="result-value" id="egfr-val">—</div>
-              <div class="result-unit">mL/min/1.73m² (標準化)</div>
+              <div class="result-unit" id="egfr-unit">mL/min/1.73m²</div>
               <div class="result-stage" id="egfr-stage">—</div>
-              <div class="result-individualized" id="egfr-individualized"></div>
             </div>
             <div class="result-cell result-cell--ccr">
               <div class="result-label">
@@ -2510,7 +2501,6 @@ section { margin-top: 16px; }
             </select>
           </div>
         </div>
-        <button class="reset-btn" id="direct-reset" type="button">↻ 入力値をリセット</button>
 
         <div id="direct-result" hidden>
           <div class="result-grid" style="margin-top:14px">
@@ -7691,20 +7681,8 @@ function setupCalcInputs() {
     });
   });
 
-  document.getElementById('calc-reset').addEventListener('click', () => {
-    ['in-age','in-height','in-weight','in-scr'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('in-sex').value = 'male';
-    document.getElementById('in-dialysis').value = 'no';
-    patchInputs({
-      age: null, height: null, weight: null, scr: null,
-      sex: 'male', dialysis: 'no',
-    });
-    recompute();
-    toast('入力値をリセットしました');
-  });
 }
+
 
 // =============================================
 // 直接入力モード
@@ -7719,11 +7697,24 @@ function setupDirectInputs() {
   document.getElementById('din-dialysis').addEventListener('change', e => {
     patchInputs({ dialysis: e.target.value }); recompute();
   });
-  document.getElementById('direct-reset').addEventListener('click', () => {
-    document.getElementById('din-egfr').value = '';
-    document.getElementById('din-ccr').value = '';
-    document.getElementById('din-dialysis').value = 'no';
-    patchInputs({ egfrDirect: null, ccrDirect: null, dialysis: 'no' });
+}
+
+function setupPanelReset() {
+  document.getElementById('panel-reset').addEventListener('click', () => {
+    const { mode } = getState();
+    if (mode === 'calc') {
+      ['in-age','in-height','in-weight','in-scr'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('in-sex').value = 'male';
+      document.getElementById('in-dialysis').value = 'no';
+      patchInputs({ age: null, height: null, weight: null, scr: null, sex: 'male', dialysis: 'no' });
+    } else {
+      document.getElementById('din-egfr').value = '';
+      document.getElementById('din-ccr').value = '';
+      document.getElementById('din-dialysis').value = 'no';
+      patchInputs({ egfrDirect: null, ccrDirect: null, dialysis: 'no' });
+    }
     recompute();
     toast('入力値をリセットしました');
   });
@@ -7758,8 +7749,8 @@ function renderCalcResult(renal) {
   if (renal.isDialysis) {
     block.hidden = false;
     document.getElementById('egfr-val').textContent = '透析';
+    document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²';
     document.getElementById('egfr-stage').textContent = renal.dialysisType.toUpperCase();
-    document.getElementById('egfr-individualized').innerHTML = '';
     document.getElementById('ccr-val').textContent = '透析';
     document.getElementById('ccr-stage').textContent = renal.dialysisType.toUpperCase();
     document.getElementById('ibw-note').textContent = '';
@@ -7773,20 +7764,16 @@ function renderCalcResult(renal) {
   // eGFR
   if (renal.eGFR !== null) {
     document.getElementById('egfr-val').textContent = renal.eGFR;
+    document.getElementById('egfr-unit').textContent = renal.indGFR !== null
+      ? `mL/min/1.73m²  個別 ${renal.indGFR}`
+      : 'mL/min/1.73m²';
     document.getElementById('egfr-stage').textContent = `CKD ${getStage(renal.eGFR)}`;
     document.getElementById('egfr-stage').onclick = () => showCKDGuide(getStage(renal.eGFR));
     document.getElementById('egfr-formula').textContent = '(日本腎臓学会式)';
-    if (renal.indGFR !== null) {
-      document.getElementById('egfr-individualized').innerHTML =
-        `個別化値 <strong>${renal.indGFR}</strong> mL/min`;
-    } else {
-      document.getElementById('egfr-individualized').innerHTML =
-        `<span style="color:var(--ink-4)">個別化値: 体重入力で表示</span>`;
-    }
   } else {
     document.getElementById('egfr-val').textContent = '—';
+    document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²';
     document.getElementById('egfr-stage').textContent = '未計算';
-    document.getElementById('egfr-individualized').innerHTML = '';
   }
 
   // CCr
@@ -8622,6 +8609,7 @@ function init() {
   setupInputTabs();
   setupCalcInputs();
   setupDirectInputs();
+  setupPanelReset();
   setupSearch();
   setupEventDelegation();
   setupThemeToggle();
