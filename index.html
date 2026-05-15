@@ -8132,6 +8132,7 @@ function renderDrugModal() {
   const title = `${escapeHtml(drug.name)} ${metricTag(drug)}`;
   const body = renderDrugDetail(drug, renal, isSelected);
   if (isModalOpen()) {
+    modalTitle.innerHTML = title;
     updateModalBody(body);
   } else {
     openModal(title, body);
