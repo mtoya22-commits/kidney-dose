@@ -1,0 +1,475 @@
+/* =========================================
+   FIRE Lifeplan Simulator — Stylesheet
+   ========================================= */
+
+/* ── CSS変数 ── */
+.flsim-root {
+  --flsim-navy:    #1a2744;
+  --flsim-teal:    #3a8fa6;
+  --flsim-blue-gr: #6b8cae;
+  --flsim-bg:      #f8f9fb;
+  --flsim-white:   #ffffff;
+  --flsim-border:  #dde3ee;
+  --flsim-text:    #1e2a3a;
+  --flsim-muted:   #7a8ba0;
+  --flsim-success: #2da06e;
+  --flsim-warn:    #e07c30;
+  --flsim-danger:  #c94040;
+  --flsim-radius:  12px;
+  --flsim-shadow:  0 2px 12px rgba(26,39,68,.08);
+  --flsim-font:    'Noto Sans JP', 'Inter', sans-serif;
+
+  font-family: var(--flsim-font);
+  color: var(--flsim-text);
+  background: var(--flsim-bg);
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  box-sizing: border-box;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* ── リセット（スコープ内のみ） ── */
+.flsim-root *, .flsim-root *::before, .flsim-root *::after {
+  box-sizing: inherit;
+}
+.flsim-root input, .flsim-root select, .flsim-root button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* =========================================
+   ヘッダー
+   ========================================= */
+.flsim-header {
+  text-align: center;
+  padding: 32px 16px 24px;
+}
+.flsim-title {
+  font-size: clamp(20px, 4vw, 30px);
+  font-weight: 700;
+  color: var(--flsim-navy);
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+.flsim-title span {
+  color: var(--flsim-teal);
+}
+.flsim-subtitle {
+  color: var(--flsim-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* =========================================
+   プリセット
+   ========================================= */
+.flsim-presets {
+  margin-bottom: 24px;
+  text-align: center;
+}
+.flsim-label-sm {
+  font-size: 12px;
+  color: var(--flsim-muted);
+  margin: 0 0 8px;
+}
+.flsim-preset-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.flsim-preset-btn {
+  background: var(--flsim-white);
+  border: 1.5px solid var(--flsim-border);
+  color: var(--flsim-navy);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.flsim-preset-btn:hover {
+  background: var(--flsim-navy);
+  color: var(--flsim-white);
+  border-color: var(--flsim-navy);
+}
+
+/* =========================================
+   フォームセクション
+   ========================================= */
+.flsim-form-section {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+/* モードタブ */
+.flsim-mode-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--flsim-border);
+}
+.flsim-tab {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--flsim-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color .15s, border-color .15s;
+}
+.flsim-tab.active {
+  color: var(--flsim-navy);
+  border-bottom-color: var(--flsim-teal);
+}
+.flsim-tab:hover:not(.active) {
+  color: var(--flsim-navy);
+}
+
+/* グリッド */
+.flsim-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .flsim-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* フィールド */
+.flsim-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flsim-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--flsim-navy);
+}
+.flsim-opt {
+  font-weight: 400;
+  color: var(--flsim-muted);
+  font-size: 11px;
+}
+.flsim-input-unit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flsim-input-unit span {
+  font-size: 13px;
+  color: var(--flsim-muted);
+  white-space: nowrap;
+}
+.flsim-root input[type="number"],
+.flsim-root select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--flsim-border);
+  border-radius: 8px;
+  background: var(--flsim-bg);
+  color: var(--flsim-text);
+  outline: none;
+  transition: border-color .15s;
+  -moz-appearance: textfield;
+}
+.flsim-root input[type="number"]::-webkit-inner-spin-button,
+.flsim-root input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+.flsim-root input[type="number"]:focus,
+.flsim-root select:focus {
+  border-color: var(--flsim-teal);
+}
+
+/* 小見出し */
+.flsim-subheading {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--flsim-teal);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin: 20px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--flsim-border);
+}
+
+/* アクションボタン */
+.flsim-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.flsim-btn-primary {
+  flex: 1;
+  min-width: 180px;
+  padding: 14px 28px;
+  background: var(--flsim-navy);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.flsim-btn-primary:hover {
+  background: #25367a;
+  transform: translateY(-1px);
+}
+.flsim-btn-ghost {
+  padding: 14px 20px;
+  background: none;
+  color: var(--flsim-muted);
+  border: 1.5px solid var(--flsim-border);
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.flsim-btn-ghost:hover {
+  color: var(--flsim-navy);
+  border-color: var(--flsim-navy);
+}
+
+/* =========================================
+   結果エリア
+   ========================================= */
+.flsim-results {
+  animation: flsim-fadein .35s ease;
+}
+@keyframes flsim-fadein {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.flsim-result-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.flsim-result-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--flsim-navy);
+  margin: 0;
+}
+.flsim-disclaimer-inline {
+  font-size: 12px;
+  color: var(--flsim-muted);
+  margin: 0;
+}
+
+/* サマリーカード */
+.flsim-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 500px) {
+  .flsim-summary-cards { grid-template-columns: 1fr; }
+}
+.flsim-card {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 20px;
+  border-left: 4px solid var(--flsim-teal);
+}
+.flsim-card-label {
+  font-size: 12px;
+  color: var(--flsim-muted);
+  font-weight: 600;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+.flsim-card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--flsim-navy);
+  font-family: 'Inter', sans-serif;
+}
+
+/* FIRE達成度 */
+.flsim-progress-section {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.flsim-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--flsim-navy);
+  margin-bottom: 10px;
+}
+.flsim-progress-bar-bg {
+  height: 14px;
+  background: var(--flsim-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.flsim-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--flsim-teal), var(--flsim-success));
+  border-radius: 999px;
+  transition: width .6s ease;
+}
+.flsim-danger-badge {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.flsim-danger-badge.safe   { color: var(--flsim-success); }
+.flsim-danger-badge.caution{ color: var(--flsim-warn); }
+.flsim-danger-badge.danger { color: var(--flsim-danger); }
+
+/* タイムライン */
+.flsim-timeline-section {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.flsim-timeline-section h3,
+.flsim-chart-wrap h3,
+.flsim-cf-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--flsim-navy);
+  margin: 0 0 16px;
+}
+.flsim-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.flsim-timeline li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+}
+.flsim-tl-year {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--flsim-teal);
+  min-width: 52px;
+  flex-shrink: 0;
+}
+.flsim-tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--flsim-teal);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+.flsim-tl-event {
+  color: var(--flsim-text);
+}
+
+/* グラフ */
+.flsim-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .flsim-charts { grid-template-columns: 1fr; }
+}
+.flsim-chart-wrap {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 20px 16px;
+}
+
+/* キャッシュフロー表 */
+.flsim-cf-section {
+  background: var(--flsim-white);
+  border-radius: var(--flsim-radius);
+  box-shadow: var(--flsim-shadow);
+  padding: 20px 16px;
+  margin-bottom: 24px;
+}
+.flsim-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.flsim-cf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.flsim-cf-table th {
+  background: var(--flsim-navy);
+  color: #fff;
+  padding: 8px 10px;
+  font-weight: 600;
+  text-align: right;
+}
+.flsim-cf-table th:first-child,
+.flsim-cf-table td:first-child { text-align: center; }
+.flsim-cf-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--flsim-border);
+  text-align: right;
+  color: var(--flsim-text);
+}
+.flsim-cf-table td.flsim-event-cell {
+  color: var(--flsim-teal);
+  font-weight: 600;
+  font-size: 12px;
+  text-align: left;
+  max-width: 120px;
+  white-space: normal;
+}
+.flsim-cf-table tbody tr:nth-child(even) td {
+  background: var(--flsim-bg);
+}
+.flsim-cf-table tr.fire-row td {
+  background: #e8f7f1;
+  font-weight: 700;
+}
+.flsim-cf-table .neg { color: var(--flsim-danger); }
+.flsim-cf-table .pos { color: var(--flsim-success); }
+
+/* =========================================
+   免責フッター
+   ========================================= */
+.flsim-disclaimer {
+  margin-top: 32px;
+  padding: 16px 20px;
+  background: var(--flsim-white);
+  border-radius: 8px;
+  border: 1px solid var(--flsim-border);
+}
+.flsim-disclaimer p {
+  font-size: 12px;
+  color: var(--flsim-muted);
+  margin: 0;
+  line-height: 1.8;
+}
