@@ -4189,6 +4189,13 @@ const DRUGS = [
  dial:{st:'caution',lb:'TDM必須',dose:'腎機能による調節不要だがTDM必須。タクロリムス自体が腎毒性あり'},
  note:'肝代謝（CYP3A4/3A5）主体。腎機能による用量調節規定なし（TDMで管理）。腎毒性あり（eCCr基準）。肝代謝（CYP3A4）。腎機能による調節不要だがタクロリムス自体に腎毒性あり。TDM必須。'},
 
+{id:'cyclosporine',cat:'immuno',name:'シクロスポリン',yomi:'しくろすぽりん',
+ brand:['ネオーラル','サンディミュン'],
+ cls:'カルシニューリン阻害薬（免疫抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能による調節不要（TDM必須）',dose:'移植: 初期6〜8mg/kg/日 分2、TDMで調節。RA: 3〜5mg/kg/日 分2（最大200mg/日）。目標trough値は適応・時期による'}],
+ dial:{st:'caution',lb:'TDM必須',dose:'透析ではほとんど除去されない（高タンパク結合・大きいVd）。TDM管理のうえ使用'},
+ note:'肝代謝（CYP3A4/3A5）主体。腎機能による用量調節規定なし（TDMで管理）。腎毒性（慢性腎毒性・血管攣縮・TMA）に注意。血清Crをモニタリング。src:JSNP第39版'},
+
 // ---- 追加：消化器薬 ----
 {id:'omeprazole',cat:'gastro_ppi',name:'オメプラゾール',yomi:'おめぷらぞーる',
  brand:['オメプラール'],
@@ -4283,6 +4290,16 @@ const DRUGS = [
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
  note:'肝代謝（CYP2C9）主体（腎排泄<6%）。腎機能による調節不要（eCCr基準）。肝代謝（CYP2C9）主体。腎排泄はわずか（<6%）。腎機能による調節不要。HMG-CoA還元酵素阻害薬の中でも腎排泄が少なく腎機能低下患者に使いやすい。src:JSNP第39版'},
+
+{id:'simvastatin',cat:'dyslipidemia_statin',name:'シンバスタチン',yomi:'しんばすたちん',
+ brand:['リポバス'],
+ cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',      lb:'通常投与可',dose:'5〜20mg 1日1回（就寝前）。最大20mg/日（本邦の承認上限）'},
+  {min:0, max:30, st:'caution', lb:'5mg/日から開始・最大20mg/日',dose:'5mg/日から開始し慎重に増量。最大20mg/日。横紋筋融解症リスク増大。CK・Cr定期測定'},
+ ],
+ dial:{st:'caution',lb:'5mg/日から・最大20mg/日',dose:'5mg/日から開始。横紋筋融解症・ミオパチーモニタリング'},
+ note:'肝代謝（CYP3A4）主体（腎排泄<1%）。高度腎障害（eGFR<30）では5mg/日から開始し慎重に増量（最大20mg）。シクロスポリン・アムロジピン・アミオダロンとの併用で横紋筋融解症リスク増大。src:JSNP第39版'},
 
 {id:'pemafibrate',cat:'dyslipidemia_fibrate',name:'ペマフィブラート',yomi:'ぺまふぃぶらーと',
  brand:['パルモディア','パルモディアXR'],
@@ -4728,6 +4745,28 @@ const DRUGS = [
  ],
  dial:{st:'prohibited',lb:'禁忌', dose:'禁忌（活性代謝物GS-829845の曝露量が増加→副作用増強）。RA適応での禁忌'},
  note:'eGFR<30禁忌。活性代謝物GS-829845のAUCが健常者の1.5〜1.7→2.7倍に上昇（標準化eGFR基準）。JAK1選択的阻害薬。腎機能低下で活性代謝物が蓄積。透析患者は禁忌。src:JSNP第39版'},
+
+{id:'upadacitinib',cat:'immuno',name:'ウパダシチニブ',yomi:'うぱだしちにぶ',
+ brand:['リンヴォック'],
+ cls:'JAK1選択的阻害薬（関節リウマチ・アトピー性皮膚炎・炎症性腸疾患・脊椎関節炎）',metric:'ccr',
+ thr:[
+  {min:30,max:999,st:'ok',      lb:'通常投与可',dose:'RA・PsA・AS: 15mg 1日1回。AD（中等度〜重度）: 30mg/日（導入）→15mg/日（維持）。UC/CD: 45mg/日×8週（導入）→15mg/日（維持）。適応により用量が異なる'},
+  {min:15,max:30, st:'caution', lb:'最大15mg/日',dose:'15mgを上限。AUCが上昇するため30mg以上への増量は不可。曝露量増大に注意'},
+  {min:0, max:15, st:'prohibited',lb:'投与推奨されない',dose:'安全性未確立のため投与を推奨しない'},
+ ],
+ dial:{st:'prohibited',lb:'投与推奨されない',dose:'透析患者への投与は推奨されない（安全性未確立）'},
+ note:'肝代謝（CYP3A4）主体。CCr<30でAUC上昇→最大15mg/日に制限。CCr<15・透析患者は投与推奨されない（eCCr基準）。JAK1選択的阻害薬。腎機能低下で代謝物蓄積リスク。src:JSNP第39版'},
+
+{id:'tofacitinib',cat:'immuno',name:'トファシチニブ',yomi:'とふぁしちにぶ',
+ brand:['ゼルヤンツ'],
+ cls:'JAK1/3阻害薬（関節リウマチ・乾癬性関節炎・潰瘍性大腸炎）',metric:'ccr',
+ thr:[
+  {min:50,max:999,st:'ok',      lb:'通常投与可',dose:'RA・PsA: 5mg 1日2回（または徐放錠11mg 1日1回）。UC寛解導入: 10mg 1日2回×8週、維持5mg 1日2回'},
+  {min:25,max:50, st:'caution', lb:'慎重投与（5mg 1日2回）',dose:'AUCが1.37倍。5mg 1日2回で慎重に。UC寛解導入10mgは早期に5mgへ移行を検討。徐放錠11mgは避けることを考慮'},
+  {min:0, max:25, st:'caution', lb:'5mg 1日1回',dose:'5mg 1日1回に減量（AUCが1.73倍）。UC・PsA適応での用量調節は添付文書参照'},
+ ],
+ dial:{st:'caution',lb:'5mg 1日1回（HD後）',dose:'HD後に5mg 1日1回。透析でわずかに除去（補充投与不要）'},
+ note:'肝代謝（CYP3A4/2C19）+腎排泄（約18%）。CCr25〜50: AUC1.37倍、慎重投与。CCr<25: 5mg/日に減量（eCCr(J)基準）。腎排泄型JAK阻害薬。src:JSNP第39版'},
 
 // ---- 免疫抑制薬 ----
 {id:'mizoribine',cat:'immuno',name:'ミゾリビン',yomi:'みぞりびん',
