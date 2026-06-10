@@ -988,6 +988,29 @@ section { margin-top: 16px; }
   font-variant-numeric: tabular-nums;
 }
 
+.result-ind {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: 5px;
+  padding: 3px 6px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: var(--r-sm);
+  font-size: 10px;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+}
+.result-ind-label { white-space: nowrap; }
+.result-ind-val {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.result-ind-unit { white-space: nowrap; font-size: 10px; }
+
 .result-note {
   font-size: 10px;
   color: var(--ink-3);
@@ -2467,6 +2490,11 @@ section { margin-top: 16px; }
               </div>
               <div class="result-value" id="egfr-val">—</div>
               <div class="result-unit" id="egfr-unit">mL/min/1.73m²</div>
+              <div class="result-ind" id="egfr-ind" hidden>
+                <span class="result-ind-label">個別化</span>
+                <span class="result-ind-val" id="egfr-ind-val"></span>
+                <span class="result-ind-unit">mL/min</span>
+              </div>
               <div class="result-stage" id="egfr-stage">—</div>
             </div>
             <div class="result-cell result-cell--ccr">
@@ -7794,6 +7822,7 @@ function renderCalcResult(renal) {
     block.hidden = false;
     document.getElementById('egfr-val').textContent = '透析';
     document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²';
+    document.getElementById('egfr-ind').hidden = true;
     document.getElementById('egfr-stage').textContent = renal.dialysisType.toUpperCase();
     document.getElementById('ccr-val').textContent = '透析';
     document.getElementById('ccr-stage').textContent = renal.dialysisType.toUpperCase();
@@ -7808,15 +7837,21 @@ function renderCalcResult(renal) {
   // eGFR
   if (renal.eGFR !== null) {
     document.getElementById('egfr-val').textContent = renal.eGFR;
-    document.getElementById('egfr-unit').textContent = renal.indGFR !== null
-      ? `mL/min/1.73m²  個別 ${renal.indGFR}`
-      : 'mL/min/1.73m²';
+    document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²';
+    const indEl = document.getElementById('egfr-ind');
+    if (renal.indGFR !== null) {
+      document.getElementById('egfr-ind-val').textContent = renal.indGFR;
+      indEl.hidden = false;
+    } else {
+      indEl.hidden = true;
+    }
     document.getElementById('egfr-stage').textContent = `CKD ${getStage(renal.eGFR)}`;
     document.getElementById('egfr-stage').onclick = () => showCKDGuide(getStage(renal.eGFR));
     document.getElementById('egfr-formula').textContent = '(日本腎臓学会式)';
   } else {
     document.getElementById('egfr-val').textContent = '—';
     document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²';
+    document.getElementById('egfr-ind').hidden = true;
     document.getElementById('egfr-stage').textContent = '未計算';
   }
 
