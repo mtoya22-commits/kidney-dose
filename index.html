@@ -3500,12 +3500,13 @@ const DRUGS = [
  brand:['ガスター'],
  cls:'H2受容体拮抗薬',metric:'ccr',
  thr:[
-  {min:60,max:999,st:'ok',      lb:'通常投与可', dose:'20mg 1日2回（または40mg就寝前）'},
-  {min:30,max:60, st:'caution', lb:'20mg 1日1回', dose:'20mg 1日1回（就寝前）'},
-  {min:0, max:30, st:'caution', lb:'20mg 1日1回 or 隔日', dose:'20mg 1日1回または20mg 36〜48時間ごと'},
+  {min:50,max:999,st:'ok',      lb:'通常投与可', dose:'①胃潰瘍・十二指腸潰瘍・吻合部潰瘍・上部消化管出血・逆流性食道炎・ZE症候群: 1回20mgを1日2回、朝・夕食後または就寝前（1日1回40mg就寝前も可）②急性胃炎・慢性胃炎急性増悪期: 1回10mgを1日2回（1日1回20mgも可）'},
+  {min:30,max:50, st:'caution', lb:'1日20mgを分1〜2', dose:'1日20mgを分1〜2（EO）'},
+  {min:10,max:30, st:'caution', lb:'20mgを2〜3日に1回 または10mg/日', dose:'1回20mgを2〜3日に1回、又は1日1回10mg（EO）'},
+  {min:0, max:10, st:'caution', lb:'10mg 1日1回', dose:'1日1回10mg（末期腎不全）'},
  ],
- dial:{st:'caution',lb:'透析後に20mg',dose:'透析後に20mg投与（HDで除去される）。精神神経症状（錯乱）リスク'},
- note:'腎排泄型。CCr<50: 1日1回20mgに減量。CCr<30: 2〜3日に1回または1日1回10mg（eCCr(J)基準）。腎排泄型。CCr<30で蓄積リスク大。腎排泄型。腎機能低下で蓄積→中枢神経系副作用（錯乱・幻覚）。高齢者・腎機能低下患者での使用に注意。'},
+ dial:{st:'caution',lb:'10mg/日 または20mg週3回HD後',dose:'1日1回10mg、又は1回20mgを週3回、HD後に投与（EO）。精神神経症状（錯乱・幻覚）リスク'},
+ note:'腎排泄型。CCr30〜50: 1日20mg分1〜2。CCr10〜30: 20mg 2〜3日に1回 or 10mg/日。CCr<10・HD: 10mg/日または20mg週3回（eCCr(J)基準）。腎機能低下で蓄積→中枢神経系副作用リスク。src:JSNP第39版'},
 
 {id:'cimetidine',cat:'gastro_h2',name:'シメチジン',yomi:'しめちじん',
  brand:['タガメット'],
@@ -4614,13 +4615,12 @@ const DRUGS = [
  brand:['プロテカジン'],
  cls:'H2受容体拮抗薬', metric:'ccr',
  thr:[
-  {min:50,max:999, st:'ok',      lb:'通常投与可',              dose:'10〜20mg 1日1〜2回（就寝前または朝夕食後）'},
-  {min:30,max:50,  st:'caution', lb:'慎重投与',               dose:'症状が悪化するおそれあり。用量・用法に注意（EO）'},
-  {min:10,max:30,  st:'caution', lb:'20mg隔日 または10mg/日', dose:'1回20mgを2〜3日に1回、または1日1回10mg'},
-  {min:0, max:10,  st:'caution', lb:'10mg 1日1回',            dose:'1日1回10mg'},
+  {min:50,max:999, st:'ok',      lb:'通常投与可', dose:'①胃潰瘍・十二指腸潰瘍・吻合部潰瘍・逆流性食道炎: 10mg 1日2回（朝食後・夕食後または就寝前）②急性胃炎・慢性胃炎急性増悪期: 10mg 1日1回（夕食後または就寝前）③麻酔前投薬: 10mgを手術前日就寝前および手術当日麻酔導入2時間前'},
+  {min:30,max:50,  st:'caution', lb:'通常量で慎重投与（EO）', dose:'症状が悪化するおそれがある（EO）。腎機能正常者と同量での投与も可（EO）'},
+  {min:0, max:30,  st:'caution', lb:'低用量から慎重投与（EO）', dose:'低用量から慎重に投与する（EO）'},
  ],
- dial:{st:'caution', lb:'10mg/日 または20mg週3回HD後', dose:'1日1回10mg、又は1回20mgを週3回 HD後に投与（EO）'},
- note:'H2ブロッカー。腎排泄型。非HD時AUCが約3倍。逆流性食道炎には適応に注意。metric:eCCr(J)。src:JSNP第39版'},
+ dial:{st:'caution', lb:'5mg 1日1〜2回（EO）', dose:'非HD時のAUCが健常者の約3倍になる（EO）。1回5mgを1日1〜2回（EO）'},
+ note:'H2ブロッカー。腎排泄型。非HD時AUCが約3倍。CCr30〜50: 症状悪化のおそれ・通常量で慎重。CCr<30・末期腎不全: 低用量から慎重投与。HD: 5mg 1日1〜2回。metric:eCCr(J)。src:JSNP第39版'},
 
 // ---- SU薬 ----
 {id:'glibenclamide',cat:'diabetes_su',name:'グリベンクラミド',yomi:'ぐりべんくらみど',
