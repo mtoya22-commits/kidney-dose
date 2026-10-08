@@ -4247,14 +4247,13 @@ const DRUGS = [
 // ---- 脂質異常症 ----
 {id:'rosuvastatin',cat:'dyslipidemia_statin',name:'ロスバスタチン',yomi:'ろすばすたちん',
  brand:['クレストール'],
- cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr',
+ cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr_std',
  thr:[
-  {min:60,max:999,st:'ok',      lb:'通常投与可', dose:'2.5〜20mg 1日1回（夕食後）。最大20mg/日'},
-  {min:30,max:60, st:'caution', lb:'最大10mg/日', dose:'最大10mg/日。CK定期測定'},
-  {min:0, max:30, st:'caution', lb:'最大5mg/日',  dose:'2.5〜5mg 1日1回。横紋筋融解症リスク増大。CK定期測定'},
+  {min:30,max:999,st:'ok',      lb:'腎機能正常者と同じ', dose:'1日1回2.5〜5mgより開始し、4週以降に漸次10mgまで増量。最大1日20mg。中等度〜高度低下（GFR30〜44）までは腎機能正常者と同じ'},
+  {min:0, max:30, st:'caution', lb:'2.5mg開始・最大5mg',  dose:'1日1回2.5mgより開始し、1日最大5mg。血漿濃度が3倍に上昇し腎外クリアランスが67%低下する（Clin Pharmacol Ther 86:475-479, 2009）。CK定期測定'},
  ],
- dial:{st:'caution',lb:'最大5mg/日',dose:'2.5〜5mg/日。横紋筋融解症モニタリング'},
- note:'主に胆汁排泄（腎排泄約10%）。腎機能による調節は原則不要。重度腎障害(CCr<30)では5mgから開始（eCCr(J or E)基準）。腎排泄型スタチン。腎機能低下で血漿中濃度上昇→横紋筋融解症リスク。'},
+ dial:{st:'caution',lb:'2.5mg開始・最大5mg',dose:'1日1回2.5mgより開始し1日最大5mg。横紋筋融解症モニタリング'},
+ note:'腎機能指標は標準化mCCr（J or E）が用いられる。主に胆汁排泄だが高度腎障害で血漿濃度が上昇するため、GFR30未満では2.5mg開始・最大5mgとする。フィブラート系薬との併用は治療上やむを得ない場合のみ（急激な腎機能悪化を伴う横紋筋融解症のおそれ）。'},
 
 {id:'atorvastatin',cat:'dyslipidemia_statin',name:'アトルバスタチン',yomi:'あとるばすたちん',
  brand:['リピトール'],
@@ -4267,11 +4266,10 @@ const DRUGS = [
  brand:['メバロチン'],
  cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr',
  thr:[
-  {min:30,max:999,st:'ok',      lb:'通常投与可', dose:'5〜20mg 1日1回（就寝前）'},
-  {min:0, max:30, st:'caution', lb:'慎重投与',   dose:'5〜10mg/日から。横紋筋融解症モニタリング'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日10mgを分1〜2。最大1日20mg。全腎機能域で腎機能正常者と同じ'},
  ],
- dial:{st:'caution',lb:'5〜10mg/日',dose:'低用量から。横紋筋融解症に注意'},
- note:'肝代謝・胆汁排泄主体。腎機能による調節不要（eCCr基準）。腎排泄の比率がやや高め。高度腎障害では慎重に。'},
+ dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
+ note:'肝代謝・胆汁排泄主体。全腎機能域で用量調節不要。横紋筋融解症の初期症状（筋痛・脱力・CK上昇）には腎機能にかかわらず注意する。'},
 
 {id:'fenofibrate',cat:'dyslipidemia_fibrate',name:'フェノフィブラート',yomi:'ふぇのふぃぶらーと',
  brand:['トライコア','リピディル'],
@@ -5219,12 +5217,12 @@ const DRUGS = [
  brand:['メインテート'],
  cls:'β1選択的遮断薬（心不全・高血圧・AF）',metric:'egfr',
  thr:[
-  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'心不全: 0.625mgから開始→漸増。高血圧/AF: 2.5〜5mg 1日1回'},
-  {min:10,max:50,st:'caution',lb:'75%に減量',dose:'白鷺13版: Ccr10〜50は75%に減量。心拍数・血圧をモニタリングし漸増'},
-  {min:0,max:10,st:'caution',lb:'2.5mg/日に減量',dose:'白鷺13版: Ccr10未満は2.5mg/日または50%に減量。腎排泄約50%のため蓄積に注意'},
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'高血圧・狭心症・心室性期外収縮: 1日1回5mg。慢性心不全: 0.625mgより開始し漸増（維持量1.25〜5mg）。頻脈性心房細動: 2.5mgより開始し最大5mg。軽度〜中等度低下までは腎機能正常者と同じ（添付文書）'},
+  {min:30,max:45,st:'caution',lb:'2.5〜5mg 1日1回',dose:'高血圧等: 1日1回2.5〜5mg。CCr<40mL/minでは1日1回2.5mgより開始し注意して漸増（FDA）。慢性心不全: 0.625mgより開始、最大1日1回5mg（EO）'},
+  {min:0,max:30,st:'caution',lb:'2.5mg 1日1回',dose:'重篤な腎障害患者では排泄が遅延し作用が増強するおそれ（添付文書）。1日1回2.5mg（EO）。慢性心不全: 0.625mgより開始し注意して漸増、最大1日1回2.5mg（EO）'},
  ],
  dial:{st:'caution',lb:'0.625〜2.5mg',dose:'透析患者は低用量から。透析で除去される分を考慮'},
- note:'腎排泄約50%。CCr<20で減量考慮（添付文書）（eCCr基準）。腎・肝両排泄（各50%）。腎機能低下では蓄積リスクあり。心不全では必須薬であり慎重に調節する。'},
+ note:'腎・肝の両方から排泄される（各約50%）。軽度〜中等度低下（GFR45〜59）までは減量不要で、CCr40未満から低用量開始が推奨される。アテノロールより腎依存性が低い。心不全では予後改善薬として必須であり、中止ではなく慎重な用量調節で対応する。透析性なし。'},
 
 {id:'carvedilol',cat:'cv_beta',name:'カルベジロール',yomi:'かるべじろーる',
  brand:['アーチスト'],
@@ -5260,9 +5258,9 @@ const DRUGS = [
 {id:'dilazep',cat:'cv_coronary',name:'ジラゼプ',yomi:'じらぜぷ',
  brand:['コメリアン'],
  cls:'冠拡張薬（アデノシン取り込み阻害）',metric:'egfr',
- thr:[{min:0,max:999,st:'ok',lb:'調節不要', dose:'1回50〜100mgを1日3回（食後）'}],
+ thr:[{min:0,max:999,st:'ok',lb:'調節不要', dose:'狭心症・その他の虚血性心疾患: 1回50mgを1日3回。腎障害軽度〜中等度のIgA腎症: 1回100mgを1日3回（CCr50mL/min以上のみ適応）'}],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
- note:'肝代謝、腎機能による減量不要。虚血性心疾患・IgA腎症の蛋白尿減少にも適応。比較的副作用少ない。'},
+ note:'肝代謝、腎機能による減量不要。IgA腎症の蛋白尿減少に対する適応はCCr50mL/min以上に限られる点に注意（虚血性心疾患に対しては腎機能正常者と同じ）。'},
 
 {id:'sacubitril_valsartan',cat:'cv_arb',name:'サクビトリル/バルサルタン',yomi:'さくびとりるばるさるたん',
  brand:['エンレスト'],
@@ -5507,19 +5505,17 @@ const DRUGS = [
  brand:['リバロ'],
  cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr',
  thr:[
-  {min:60,max:999,st:'ok',      lb:'調節不要', dose:'1〜2mg 1日1回（最大4mg/日）'},
-  {min:30,max:60, st:'caution', lb:'50%に減量', dose:'白鷺13版: GFR 30〜59で50%減量（FDA基準）。日本ではCcr15〜29で減量不要との報告もある'},
-  {min:0, max:30, st:'warning', lb:'使用を避ける', dose:'白鷺13版: GFR 30未満は避ける（FDA基準）。透析患者は日本の基準では減量不要とされるが、FDAは50%減量を推奨'},
+  {min:30,max:999,st:'ok',      lb:'腎機能正常者と同じ', dose:'1日1回1〜2mg。最大1日4mg。JSNP第39版は全腎機能域で腎機能正常者と同じ'},
+  {min:0, max:30, st:'caution', lb:'慎重投与', dose:'JSNP第39版: 腎機能正常者と同じ（1日1〜2mg、最大4mg）。白鷺13版はFDA基準としてGFR30未満は回避を推奨。腎排泄は約5%と少なくAUC上昇も限定的だが、高度低下例ではCK測定などモニタリングを'},
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要。透析患者も同一用量'},
- note:'中等度腎障害(GFR30〜49)でAUCは健常者の1.9・2.3倍になるが有害事象増加の傾向は認められず用量調節不要（eCCr基準）。肝代謝（CYP2C9）主体。腎排泄はわずか（約5%）。腎機能による調節不要。重度腎障害でも使用可。中程度腎障害(GFR30〜49)でのAUCは健常者の1.9倍だが有害事象増加の傾向は認められず用量調節不要とされている。src:JSNP第39版。白鷺13版はFDA基準としてGFR 30〜59で50%減量、GFR 30未満は「避ける」と記載（日本のデータではCcr15〜29で減量不要との報告もあり）。従来は全域「調節不要」としていた。シクロスポリン併用で血中濃度が大幅上昇（AUC 4.6倍）するため要注意。'},
+ note:'肝代謝（CYP2C9）主体で腎排泄はわずか（約5%）。中等度腎障害（GFR30〜49）でAUCは健常者の1.9〜2.3倍になるが有害事象増加の傾向は認められず、JSNP第39版は全腎機能域で用量調節不要としている。一方、白鷺13版はFDA基準としてGFR30未満の回避を挙げており、高度低下例では慎重側に扱う。シクロスポリン併用で血中濃度が大幅上昇（AUC 4.6倍）するため要注意。'},
 
 {id:'fluvastatin',cat:'dyslipidemia_statin',name:'フルバスタチン',yomi:'ふるばすたちん',
  brand:['ローコール'],
  cls:'HMG-CoA還元酵素阻害薬（スタチン）',metric:'egfr',
  thr:[
-  {min:10,max:999,st:'ok',lb:'調節不要',dose:'白鷺13版: GFR10mL/min以上は減量の必要なし。常用量20〜30mgを1日1回（夕食後または就寝前）、最大60mg/日'},
-  {min:0,max:10,st:'caution',lb:'50%に減量',dose:'白鷺13版: GFR10mL/min未満は50%に減量。ただし「体内動態は腎機能低下の影響を受けない」との記載も併存し、透析患者は減量の必要なしとされる'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回20mgより開始し1日20〜30mg（夕食後）、最大1日60mg。JSNP第39版は全腎機能域で腎機能正常者と同じ。白鷺13版はGFR10未満で50%減量と記載（体内動態は腎機能低下の影響を受けないとの記載も併存）'},
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
  note:'肝代謝（CYP2C9）主体（腎排泄<6%）。腎機能による調節不要（eCCr基準）。肝代謝（CYP2C9）主体。腎排泄はわずか（<6%）。腎機能による調節不要。HMG-CoA還元酵素阻害薬の中でも腎排泄が少なく腎機能低下患者に使いやすい。src:JSNP第39版'},
@@ -6044,13 +6040,14 @@ const DRUGS = [
  brand:['テノーミン'],
  cls:'β1選択的遮断薬（高血圧・狭心症・不整脈）',metric:'egfr',
  thr:[
-  {min:35,max:999,st:'ok',lb:'通常投与可',dose:'50mg 1日1回（25mgから開始も可）。最大100mg/日。白鷺13版: Ccr>50は25mgを1日2回、GFR>50は50〜100mg/日'},
-  {min:15,max:35,st:'caution',lb:'25〜50mg 1日1回',dose:'白鷺13版: Ccr10〜50は25mgを1日1回、GFR10〜50は25〜50mg/日（75%に減量）。添付文書: Ccr15〜35は50mg/日まで'},
-  {min:10,max:15,st:'caution',lb:'25mg 1日1回',dose:'白鷺13版: Ccr10〜50は25mgを1日1回。添付文書: Ccr<15は25mg/日まで。徐脈・低血圧に注意'},
-  {min:0,max:10,st:'caution',lb:'25mg 週3回',dose:'白鷺13版: Ccr<10は25mgを週3回（GFR<10は25mg/日、50%以下に減量）。ESRDで半減期50時間に延長'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回50mg。最大1日1回100mg'},
+  {min:45,max:60,st:'caution',lb:'25〜50mg 1日1回',dose:'1日1回25〜50mg（EO）'},
+  {min:30,max:45,st:'caution',lb:'25mg 1日1回',dose:'投与間隔をのばすなど慎重に投与（添付文書）。1日1回25mg（EO）、最大1日50mg（FDA）'},
+  {min:15,max:30,st:'caution',lb:'12.5mg 1日1回',dose:'投与間隔をのばすなど慎重に投与（添付文書）。1日1回12.5mg（EO）、最大1日おきに50mg（FDA）'},
+  {min:0,max:15,st:'caution',lb:'12.5mg 1日1回',dose:'1日1回12.5mg（EO）。ESRDで半減期が延長するため徐脈・低血圧に注意'},
  ],
- dial:{st:'caution',lb:'25〜50mg 透析後',dose:'透析で除去されるため透析後に投与。25〜50mg（EO）'},
- note:'腎排泄型。CCr<50で1日25〜50mgに減量（EO）。透析患者はHD後に補充（eCCr基準）。腎排泄型β遮断薬。腎機能低下で蓄積→過剰なβ遮断（徐脈・低血圧）。ビソプロロールより腎依存性が高い。src:JSNP第39版'},
+ dial:{st:'caution',lb:'25mg 週3回 HD後',dose:'HD: 1回25mgを週3回、透析後に投与（Kidney Int 55:1528-1535, 1999）。PD: 1回25mgを週3回（EO）'},
+ note:'腎排泄型β遮断薬（腎排泄約90%）。GFR60未満から段階的に減量が必要で、同じβ1選択的遮断薬のビソプロロールより腎依存性が高い。腎機能低下で蓄積し過剰なβ遮断（徐脈・低血圧）を起こしうる。透析性があるためHD後に投与する。'},
 
 // ---- 炭酸脱水酵素阻害薬 ----
 {id:'acetazolamide',cat:'epilepsy',name:'アセタゾラミド',yomi:'あせたぞらみど',
@@ -6332,12 +6329,11 @@ const DRUGS = [
  brand:['インデラル'],
  cls:'β遮断薬（非選択性）',metric:'ccr',
  thr:[
-  {min:50,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'白鷺13版: 保存期CKDは常用量。1回10〜30mg 1日3回。狭心症・高血圧: 1日30〜60mg 分3。頻脈性不整脈: 1日30mg 分3'},
-  {min:10,max:50,st:'caution',lb:'1/2〜2/3から開始',dose:'白鷺13版: Ccr10〜50は1/2〜2/3から開始。腎不全でも薬物動態に変化なく減量不要との報告も併記'},
-  {min:0,max:10,st:'caution',lb:'1/3〜1/2から開始',dose:'白鷺13版: Ccr<10は1/3〜1/2から開始。徐脈・低血圧に注意'},
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'高度低下（GFR15〜29）までは腎機能正常者と同じ。本態性高血圧: 1日30〜60mgより開始し120mgまで漸増、分3'},
+  {min:0,max:15,st:'caution',lb:'減量して開始',dose:'末期腎不全では経口薬のバイオアベイラビリティが上昇する報告があるため減量して開始（EO）。バイオアベイラビリティは健常者19%に対し末期腎不全（保存期）62%・透析患者32%との報告があるが、差がないとの報告もあり見解は一致していない'},
  ],
  dial:{st:'caution',lb:'1日20mg 分2',dose:'HD: 1日20mg 分2（EO）。透析でやや除去'},
- note:'肝代謝（CYP2D6）主体。腎排泄は少ないが重度腎障害では活性代謝物蓄積。CCr<30で50%減量考慮（EO）。src:JSNP第39版'},
+ note:'肝代謝（CYP2D6）主体で腎排泄はわずか。高度低下までは減量不要だが、末期腎不全では初回通過効果の低下によりバイオアベイラビリティが上昇するとの報告があり、減量して開始する。透析性なし。'},
 
 {id:'metoprolol',cat:'cv_beta',name:'メトプロロール',yomi:'めとぷろろーる',
  brand:['セロケン','ロプレソール','セロケンL'],
@@ -7623,7 +7619,7 @@ const ALT_MAP = {
   tramadol:       {label:'トラマドールが使えない場合',alts:['acetaminophen']},
 
   // ===== 循環器系 =====
-  spironolactone: {label:'スピロノラクトンが使えない場合',alts:['eplerenone','esaxerenone','furosemide']},
+  spironolactone: {label:'スピロノラクトンが使えない場合',alts:['furosemide']},
   eplerenone:     {label:'エプレレノンが使えない場合',alts:['esaxerenone','furosemide']},
   esaxerenone:    {label:'エサキセレノンが使えない場合',alts:['furosemide','amlodipine']},
   finerenone:     {label:'フィネレノンが使えない場合',alts:['esaxerenone','spironolactone']},
@@ -7656,11 +7652,11 @@ const ALT_MAP = {
   rivaroxaban:    {label:'リバーロキサバンが使えない場合',alts:['apixaban','edoxaban']},
   edoxaban:       {label:'エドキサバンが使えない場合',alts:['apixaban']},
   apixaban:       {label:'アピキサバンを減量する場合',alts:['edoxaban','warfarin']},
-  warfarin:       {label:'ワルファリンが使えない場合（DOACへ切替）',alts:['apixaban','edoxaban']},
+  warfarin:       {label:'ワルファリンが使えない場合（腎機能が保たれていればDOACへ切替）',alts:['apixaban','edoxaban']},
 
   // ===== 痛風・尿酸 =====
   allopurinol:    {label:'アロプリノールを減量する場合',alts:['febuxostat']},
-  febuxostat:     {label:'フェブキソスタットが使えない場合',alts:['allopurinol']},
+
   colchicine:     {label:'コルヒチンが使えない場合',alts:['acetaminophen']},
 
   // ===== 抗菌薬 =====
@@ -7688,7 +7684,7 @@ const ALT_MAP = {
 
   // ===== 泌尿器 =====
   silodosin:      {label:'シロドシンが使えない場合',alts:['tamsulosin']},
-  tamsulosin:     {label:'タムスロシンが使えない場合',alts:['silodosin']},
+
   solifenacin:    {label:'ソリフェナシンを減量する場合',alts:['mirabegron','vibegron']},
   imidafenacin:   {label:'イミダフェナシンを減量する場合',alts:['mirabegron','vibegron']},
   mirabegron:     {label:'ミラベグロンを減量する場合',alts:['vibegron']},
@@ -7698,14 +7694,14 @@ const ALT_MAP = {
   bromazepam:     {label:'ブロマゼパムが使えない場合',alts:['etizolam','clotiazepam']},
   zolpidem:       {label:'ゾルピデムが使えない場合',alts:['suvorexant','lemborexant']},
   paroxetine:     {label:'パロキセチンを減量する場合',alts:['sertraline','escitalopram']},
-  sertraline:     {label:'セルトラリンが使えない場合',alts:['escitalopram','duloxetine']},
-  escitalopram:   {label:'エスシタロプラムを減量する場合',alts:['sertraline','duloxetine']},
+  sertraline:     {label:'セルトラリンが使えない場合',alts:['escitalopram']},
+  escitalopram:   {label:'エスシタロプラムを減量する場合',alts:['sertraline']},
   mirtazapine:    {label:'ミルタザピンを減量する場合',alts:['sertraline','escitalopram']},
   venlafaxine:    {label:'ベンラファキシンを減量する場合',alts:['duloxetine','sertraline']},
 
   // ===== 抗てんかん薬 =====
   levetiracetam:  {label:'レベチラセタムを減量する場合',alts:['valproate','lamotrigine']},
-  gabapentin:     {label:'ガバペンチンが使えない場合',alts:['pregabalin','mirogabalin']},
+  gabapentin:     {label:'ガバペンチンを減量する場合（抗てんかん薬として）',alts:['valproate','lamotrigine']},
   topiramate:     {label:'トピラマートを減量する場合',alts:['valproate','lamotrigine']},
 
   // ===== 認知症・パーキンソン =====
@@ -7726,9 +7722,6 @@ const ALT_MAP = {
   olopatadine:    {label:'オロパタジンを減量する場合',alts:['fexofenadine','desloratadine']},
 
   // ===== IBD =====
-  mesalazine_pentasa: {label:'メサラジン（ペンタサ）が使えない場合',alts:['sulfasalazine']},
-  mesalazine_asacol:  {label:'メサラジン（アサコール）が使えない場合',alts:['sulfasalazine']},
-  mesalazine_lialda:  {label:'メサラジン（リアルダ）が使えない場合',alts:['sulfasalazine']},
 
   // ===== 便秘薬・下剤（2026-09 追加） =====
   magnesium_oxide: {label:'酸化マグネシウムが使いにくい場合（高Mg血症を避けたいとき）',
@@ -7738,7 +7731,7 @@ const ALT_MAP = {
   picosulfate:     {label:'ピコスルファートで効果不十分な場合',
                     alts:['macrogol','lubiprostone','elobixibat','sennoside']},
   lubiprostone:    {label:'ルビプロストンが使えない場合（悪心等）',
-                    alts:['macrogol','elobixibat','linaclotide','magnesium_oxide']},
+                    alts:['macrogol','elobixibat','linaclotide']},
   elobixibat:      {label:'エロビキシバットが使えない場合（腹痛等）',
                     alts:['macrogol','lubiprostone','linaclotide']},
 
@@ -7795,7 +7788,7 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.10.0',
+  app: '1.11.0',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
@@ -7834,6 +7827,21 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.11.0',
+    date: '2026-10-08',
+    title: '代替薬サジェストの点検とβ遮断薬・スタチンの修正',
+    items: [
+      { type: 'fix', text: '代替薬サジェストを全120薬剤・266組で総点検し、<b>代替薬のほうが腎機能的に不利だった9組を削除</b>しました（フェブキソスタット→アロプリノール、タムスロシン→シロドシン、ルビプロストン→酸化マグネシウム、スピロノラクトン→エプレレノン/エサキセレノン、SSRI→デュロキセチン、メサラジン→サラゾスルファピリジン）。' },
+      { type: 'fix', text: 'ガバペンチンの代替候補がプレガバリン・ミロガバリンになっていたのを修正。国内ではこの2剤にてんかんの適応がなく、腎排泄の点でも利得がないため、<b>バルプロ酸・ラモトリギン</b>に変更しました。' },
+      { type: 'feat', text: '代替薬の候補を<b>「今の腎機能で元の薬より区分が良いものだけ」</b>に絞るようにしました。同じ区分の薬が並んで判断を鈍らせることがなくなります。' },
+      { type: 'data', text: '<b>アテノロール</b>: GFR60未満から段階的に減量が必要（従来はGFR35まで通常投与可としていた）。45〜59で25〜50mg、30〜44で25mg、30未満で12.5mg、HDは25mgを週3回・透析後。' },
+      { type: 'data', text: '<b>ビソプロロール</b>: 軽度〜中等度低下（GFR45〜59）までは腎機能正常者と同じ。CCr40未満から2.5mg開始。' },
+      { type: 'data', text: '<b>プロプラノロール</b>: 高度低下まで腎機能正常者と同じに修正。末期腎不全ではバイオアベイラビリティ上昇のため減量して開始。' },
+      { type: 'data', text: '<b>スタチン</b>: ピタバスタチンのGFR30未満「使用を避ける」を慎重投与に緩和、プラバスタチン・フルバスタチンを全腎機能域で調節不要に修正。ロスバスタチンはGFR30以上で調節不要とし、判定指標を標準化eGFRに変更しました。' },
+      { type: 'data', text: '<b>ジラゼプ（コメリアン）</b>: IgA腎症の適応がCCr50mL/min以上に限られる点を追記しました。' },
+    ],
+  },
   {
     v: '1.10.0',
     date: '2026-10-08',
@@ -9325,6 +9333,9 @@ function escapeHtml(s) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
 }
+
+// 代替薬サジェストの優劣比較用（小さいほど安全側）
+const ST_RANK = { ok: 0, caution: 1, warning: 2, prohibited: 3 };
 function metricTag(drug) {
   if (drug.metric === 'ccr') {
     return `<span class="mtag mtag-c" title="CCr（Cockcroft-Gault・個別化値）で判定">CCr</span>`;
@@ -9410,9 +9421,16 @@ function renderAltSuggest(drug, currentStatus, renal) {
   const altDrugs = altInfo.alts.map(id => findDrug(id)).filter(Boolean);
   if (!altDrugs.length) return '';
 
+  // 現在の腎機能で「元の薬より明確に区分が良い」候補だけを出す。
+  // 同じ区分の薬を並べても乗り換える意味がなく、かえって判断を鈍らせるため。
+  const srcRank = ST_RANK[currentStatus.st];
   const items = altDrugs
     .map(alt => ({ alt, status: getStatus(alt, renal) }))
-    .filter(({ status }) => ['ok', 'caution'].includes(status.st));
+    .filter(({ status }) => {
+      const r = ST_RANK[status.st];
+      if (r === undefined || srcRank === undefined) return false;
+      return r < srcRank;
+    });
   if (!items.length) return '';
 
   const chips = items.map(({ alt, status }) => `
