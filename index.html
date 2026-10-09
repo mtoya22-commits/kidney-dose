@@ -3426,6 +3426,75 @@ section { margin-top: 16px; }
   :root:not([data-theme="light"]) .help-tip { background: rgba(93, 211, 233, .07); }
 }
 
+/* ===== 出典別の比較表示 ===== */
+.srccmp {
+  margin-top: 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.srccmp-head {
+  padding: 7px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--rule);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.srccmp-table { width: 100%; border-collapse: collapse; }
+.srccmp-table th {
+  padding: 5px 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--ink-4);
+  text-align: center;
+  border-bottom: 1px solid var(--rule-2);
+  background: var(--bg);
+}
+.srccmp-table td {
+  padding: 7px 8px;
+  font-size: 10.5px;
+  line-height: 1.55;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule-2);
+}
+.srccmp-table tr:last-child td { border-bottom: 0; }
+.srccmp-name {
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--ink);
+}
+.srccmp-dose { text-align: left; color: var(--ink-2); }
+.srccmp-verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px; height: 13px;
+  margin-left: 3px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+.srccmp-verified--ok   { background: var(--ok-bg, #e3f2e8);   color: var(--ok-fg, #1d7a45); }
+.srccmp-verified--warn { background: var(--cau-bg, #fdf0dd); color: var(--cau-fg, #9a6210); }
+.srccmp-warn {
+  padding: 8px 10px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--cau-fg, #9a6210);
+  background: var(--cau-bg, #fdf0dd);
+  border-top: 1px solid var(--rule-2);
+}
+.srccmp-foot {
+  padding: 6px 10px;
+  font-size: 9px;
+  line-height: 1.6;
+  color: var(--ink-4);
+  background: var(--bg);
+  border-top: 1px solid var(--rule-2);
+}
+
 </style>
 </head>
 <body>
@@ -3800,8 +3869,31 @@ section { margin-top: 16px; }
 (function(){
 
 // ===== data/drugs.js =====
-// JSNP第39版（2026年改訂）準拠 内服薬データ
-// metric: "egfr" = 標準化eGFR(mL/min/1.73m²) / "ccr" = CCr(mL/min)
+// JSNP第39版（2026年改訂）＋ 白鷺病院「透析患者に対する投薬ガイドライン」13th Edition 準拠
+// metric: 'egfr' = 個別化eGFR / 'egfr_std' = 標準化eGFR(mL/min/1.73m²) / 'ccr' = CCr(mL/min)
+//
+// 【出典別データ（srcs）について】
+// thr / dial は「判定に使う統合ビュー」で、両ガイドラインの記載が食い違う場合は
+// 安全側（厳しい方）を採用している。
+// 両者の記載が異なる薬剤には srcs を持たせ、それぞれの原典の記載をそのまま保持する:
+//
+//   srcs: {
+//     jsnp:      { verified:'photo', thr:[{min,max,st,lb,dose}], dial:{st,lb,dose} },
+//     shirasagi: { verified:'pdf',   thr:[...], dial:{...} },
+//   }
+//
+// - 記載が一致する薬剤には srcs を付けない（二重保持を避けるため）
+// - srcs がある薬剤は、詳細画面に出典別の比較表が表示される
+// - src/validate-data.mjs が「thr が本当に両者の厳しい方になっているか」を
+//   全腎機能域で機械的に検証する。統合ミスはビルド前に検出される
+//
+// 【verified: データの取得方法】二つの出典は信頼度が大きく異なる
+//   'pdf'   … 原典PDFから直接読み取り、確認済み（白鷺13版はすべてこれ）
+//   'photo' … 書籍の写真からの読み取りで未検証（JSNP第39版の大半がこれ）
+//   'web'   … 出版社のWeb版で確認済み
+// 'photo' の記載が判定を動かしている（＝そちらが厳しい）場合、詳細画面に
+// 「この判定の根拠は未検証」と表示する。読み取りミスが黙って判定を
+// 厳しくしている状態を可視化するため。
 const DRUGS = [
 // ---- 鎮痛薬 ----
 {id:'acetaminophen',cat:'analgesic_nsaid',name:'アセトアミノフェン',yomi:'あせとあみのふぇん',
@@ -3841,9 +3933,9 @@ const DRUGS = [
  brand:['トラマール','ツートラム','ワントラム'],
  cls:'弱オピオイド鎮痛薬',metric:'egfr',
  thr:[
-  {min:50,max:999,st:'ok',      lb:'通常投与可',      dose:'25〜100mg/回、最大400mg/日。徐放製剤も使用可'},
+  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'トラマールOD錠: 1日100〜300mgを分4、最大1回100mg・1日400mg。75歳以上の高齢者では最大1日300mg。注: 100〜150mgを筋注、その後必要に応じて4〜5時間毎に反復'},
   {min:30,max:50, st:'caution', lb:'最大200mg/日',    dose:'投与間隔12時間以上。速放剤25〜50mg 1日2〜4回'},
-  {min:0, max:30, st:'warning', lb:'原則使用回避',    dose:'CCr<30は原則回避。使用する場合は最大100mg/日、間隔延長'},
+  {min:0,max:30,st:'warning',lb:'最大200mg/日を12時間毎',dose:'JSNP第39版: 低用量より開始し漸増、依存性に配慮し長期投与は避ける（EO）。最大1日200mgを12時間毎（FDA）。eGFR<30mL/minの患者では慎重投与（日本緩和医療学会: がん疼痛の薬物療法に関するガイドライン2020年版）。トラマドール・活性代謝物M1のAUCはそれぞれ健常者の1.5、2.3倍になる。※徐放錠（ワントラム・ツートラム）はこの腎機能域では禁忌なので速放製剤を用いる'},
  ],
  dial:{st:'caution',lb:'50mg 12時間毎',dose:'白鷺13版: 50mgを12時間毎（HD日はHD後）。PDも同じ。活性代謝物M1の蓄積に注意し傾眠・痙攣を観察'},
  note:'トラマドール・活性代謝物M1のAUCは健常者の2.0・2.2倍（CCr30〜50未満）、1.5・2.3倍（CCr50超、EO）。M1（O-デスメチルトラマドール）腎排泄→蓄積→痙攣リスク。白鷺13版: 透析でほとんど除去されない（除去率7%）、腎障害で活性代謝物M-1のAUCが1.5〜2倍。'},
@@ -4142,7 +4234,7 @@ const DRUGS = [
  thr:[
   {min:60,max:999,st:'ok',        lb:'通常投与可', dose:'20mg 1日1回（食事の影響なし）'},
   {min:25,max:60, st:'caution',   lb:'10mgから開始', dose:'10mg 1日1回から。4週後K<4.8なら20mgへ増量'},
-  {min:0, max:25, st:'caution',   lb:'投与開始非推奨', dose:'eGFR<25での投与開始は非推奨（臨床試験での安全性データなし）'},
+  {min:0,max:25,st:'warning',lb:'開始非推奨／心不全は禁忌',dose:'JSNP第39版: ①2型糖尿病を合併するCKD: eGFR25mL/min/1.73m²未満では投与の適否を慎重に判断する。投与によりeGFRが低下することがあり、投与中に末期腎不全又は透析に至った場合は投与を中止する（末期腎不全・透析中の患者は適応外）②慢性心不全（HFrEFを除く）: 禁忌（腎機能が悪化するおそれがある）。開始時に血清カリウム値が5.5mEq/Lを超えている患者は禁忌'},
  ],
  dial:{st:'prohibited',lb:'禁忌',dose:'禁忌（臨床試験データなし）'},
  warning_factors:[
@@ -4190,59 +4282,59 @@ const DRUGS = [
  brand:['ダーブロック'],
  cls:'HIF-PH阻害薬（腎性貧血）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'非透析: 2〜4mg 週1回から開始。透析: 4mg 週1回から開始。Hbに応じ2〜24mgの範囲で調節'},
+  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'1日1回。保存期はESA未治療でHb9.0g/dL未満なら4mg/日、Hb9.0以上なら2mg/日から開始。透析は4mg/日から開始。最大24mg/日。増量段階は1→2→4→6→8→12→18→24mgで、4週間は同一用量を維持する'},
  ],
- dial:{st:'ok',lb:'4mg 週1回から開始',dose:'4mg 週1回（透析日に関係なく同じ曜日）。Hbに応じ増減'},
+ dial:{st:'ok',lb:'4mg/日 1日1回から開始',dose:'HD・PD共通で4mg/日を1日1回から開始、最大24mg/日。増量は1→2→4→6→8→12→18→24mgを1段階ずつ、4週間は同一用量を維持。週3回投与とする場合は1回量を倍量にする（Bailey CK, 2019）。PDはバイオアベイラビリティがHDより31%低下'},
  warning_factors:[
   {title:'🔴 ヘモグロビン（Hb）値による投与調節（添付文書）',
    items:['Hb ≥ 13.0 g/dL: 休薬。Hb<12.0になったら1段階減量で再開','Hb 11.0〜13.0: 維持（目標域）','Hb < 10.0（4週後）: 1段階増量','目標Hb: 10〜12 g/dL']},
-  {title:'📋 他HIF-PHI薬との比較（週1回投与）',
-   items:['週1回投与（ロキサデュスタットの週3回と異なる）','透析日に縛られずに服用可能','血栓塞栓症・眼底病変悪化リスクは共通注意事項']},
+  {title:'📋 HIF-PH阻害薬5剤の投与頻度',
+   items:['1日1回: ダプロデュスタット（本剤）、バダデュスタット、モリデュスタット、エナロデュスタット','週3回: ロキサデュスタットのみ（HD後投与）','週1回投与の製剤はない。頻度を取り違えると著しい過少投与になる','血栓塞栓症・眼底病変悪化リスクは共通注意事項']},
  ],
- note:'肝代謝主体。腎機能による調節不要（透析・非透析で用量が異なる）（eCCr基準）。週1回投与のHIF-PH阻害薬。腎機能での用量調節不要。Hb値で用量管理（目標10〜12 g/dL）。Hb≥13で休薬。'},
+ note:'肝代謝主体で腎機能による用量調節は不要。1日1回投与の製剤であり、週3回投与のロキサデュスタットとは用法が異なる。用量はHb値で管理する（目標10〜12 g/dL、Hb≥13で休薬）。'},
 
 {id:'vadadustat',cat:'blood_anemia',name:'バダデュスタット',yomi:'ばだでゅすたっと',
  brand:['バフセオ'],
  cls:'HIF-PH阻害薬（腎性貧血）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'300mg 週1回から開始（非透析・透析ともに）。Hbに応じ150〜600mgの範囲で調節'},
+  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'1日1回300mgから開始（保存期・透析とも）。150mg幅で増量し、増量間隔は4週間以上、最大600mg/日。休薬後の再開は150mg減量して再開する'},
  ],
- dial:{st:'ok',lb:'300mg 週1回から開始',dose:'透析日に関係なく週1回投与。Hbに応じ増減'},
+ dial:{st:'ok',lb:'300mg/日 1日1回から開始',dose:'HDは1日1回300mgから開始、150mg刻みで増量（4週間以上の間隔）、最大600mg/日。PDはESA使用時の維持量のめやすがHb11以上で300mg/日、Hb11未満で450mg/日'},
  warning_factors:[
   {title:'🔴 ヘモグロビン（Hb）値による投与調節（添付文書）',
    items:['Hb ≥ 13.0 g/dL: 休薬','Hb 11.0〜13.0: 維持（目標域）','Hb < 10.0（4週後）: 増量','目標Hb: 10〜12 g/dL']},
   {title:'⚠️ 共通注意事項（HIF-PHI全般）',
    items:['活動性の悪性腫瘍: 原則禁忌（HIF経路を介した腫瘍増悪リスク）','重篤な心血管イベントリスクのある患者は慎重評価','開始前に眼底検査（増殖性糖尿病網膜症悪化）']},
  ],
- note:'肝代謝主体。腎機能による用量調節不要（透析・非透析で用量が異なる）（eCCr基準）。週1回経口投与のHIF-PH阻害薬。腎機能での用量調節不要。Hb≥13で休薬。悪性腫瘍合併には原則禁忌。'},
+ note:'肝代謝主体で腎機能による用量調節は不要。1日1回投与の製剤。多価金属イオン製剤（鉄剤・リン吸着薬など）とは前後2時間以上あける。Hb≥13で休薬。悪性腫瘍合併には原則禁忌。'},
 
 {id:'molidustat',cat:'blood_anemia',name:'モリデュスタット',yomi:'もりでゅすたっと',
  brand:['マスーレッド'],
  cls:'HIF-PH阻害薬（腎性貧血）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'非透析: 25mg 週1回から。透析: 25mg 週1回から。Hbに応じ25〜150mgの範囲で調節'},
+  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'1日1回・食後。保存期は新規開始が1回25mg、ESAからの切替は1回25mgまたは50mg（ダルベポエチン30μg/月超、CERA 25μg/月超が50mgの目安）。用量段階は5/12.5/25/50/75/100/150/200mgで1回最大200mg'},
  ],
- dial:{st:'ok',lb:'25mg 週1回から開始',dose:'週1回投与。Hbに応じ25〜150mgの範囲で増減'},
+ dial:{st:'ok',lb:'75mg/日 1日1回から開始',dose:'透析患者は1日1回食後、1回75mgから開始し最大1回200mg。用量変更の段階は5・12.5・25・50・75・100・150・200mg'},
  warning_factors:[
   {title:'🔴 ヘモグロビン（Hb）値による投与調節（添付文書）',
    items:['Hb ≥ 13.0 g/dL: 休薬','Hb 11.0〜13.0: 維持','Hb < 10.0（4週後）: 増量','目標Hb: 10〜12 g/dL']},
  ],
- note:'肝代謝主体。腎機能による用量調節不要（透析・非透析で用量が異なる）（eCCr基準）。週1回投与のHIF-PH阻害薬。腎機能による調節不要。Hb≥13で休薬。悪性腫瘍（特に多血症を呈するリスクの高いもの）は禁忌。'},
+ note:'肝代謝主体で腎機能による用量調節は不要。1日1回・食後に投与する製剤で、保存期の開始量（25mg）と透析患者の開始量（75mg）が異なる点に注意。Hb≥13で休薬。悪性腫瘍（特に多血症を呈するリスクの高いもの）は禁忌。'},
 
 {id:'enarodustat',cat:'blood_anemia',name:'エナロデュスタット',yomi:'えなろでゅすたっと',
  brand:['エナロイ'],
  cls:'HIF-PH阻害薬（腎性貧血）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'透析: 4mg 週3回（HD後）または週1回4mg から。非透析: 2mg 週1回から。Hbに応じ2〜8mgの範囲で調節'},
+  {min:0,max:999,st:'ok',lb:'eGFRによる用量調節不要', dose:'1日1回・食前または就寝前。保存期（PDを含む）は1回2mgから開始し最大8mg。増量は4週間以上の間隔をあける。休薬後の再開時は減量する'},
  ],
- dial:{st:'ok',lb:'4mg 週3回（HD後）または週1回',dose:'透析後または週1回。Hbに応じ増減'},
+ dial:{st:'ok',lb:'4mg/日 1日1回から開始',dose:'HDは1回4mgから開始し最大8mg、1日1回、食前または就寝前。PDは1回2mgから開始し最大8mg。増量は4週間以上の間隔をあける'},
  warning_factors:[
   {title:'🔴 ヘモグロビン（Hb）値による投与調節（添付文書）',
    items:['Hb ≥ 13.0 g/dL: 休薬','Hb 11.0〜13.0: 維持（目標域）','Hb < 10.0（4週後）: 増量','目標Hb: 10〜12 g/dL']},
   {title:'📋 HIF-PH阻害薬 5剤の投与頻度比較',
-   items:['週3回: ロキサデュスタット（HD後）、エナロデュスタット（週3回HD後オプション）','週1回: ダプロデュスタット、バダデュスタット、モリデュスタット、エナロデュスタット（週1回オプション）']},
+   items:['1日1回: エナロデュスタット（本剤）、ダプロデュスタット、バダデュスタット、モリデュスタット','週3回: ロキサデュスタットのみ（HD後投与）','週1回投与の製剤はない。頻度を取り違えると著しい過少投与になる']},
  ],
- note:'肝代謝主体。腎機能による用量調節不要（透析・非透析で用量が異なる）（eCCr基準）。週3回または週1回の投与オプションあり。腎機能による調節不要。Hb≥13で休薬。'},
+ note:'肝代謝主体で腎機能による用量調節は不要。1日1回・食前または就寝前に投与する製剤で、週3回投与のロキサデュスタットとは用法が異なる。保存期・PDの開始量は2mg、HDは4mg。Hb≥13で休薬。'},
 
 // ---- 脂質異常症 ----
 {id:'rosuvastatin',cat:'dyslipidemia_statin',name:'ロスバスタチン',yomi:'ろすばすたちん',
@@ -4513,7 +4605,15 @@ const DRUGS = [
   {min:15,max:30,st:'warning',lb:'VTE適応は禁忌',dose:'白鷺13版: 静脈血栓塞栓症の適応ではCcr30mL/min未満は禁忌（使用経験なし）。心房細動では2.5mg 1日2回で慎重投与'},
   {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'白鷺13版: Ccr15mL/min未満は禁忌（使用経験なし）。添付文書: CCr15mL/min未満は禁忌。AUCは健常者の1.4倍'},
  ],
- dial:{st:'warning',lb:'2.5mg 1日2回（慎重）',dose:'白鷺13版: 使用経験がなく推奨されないが、血中濃度評価から2.5mg 1日2回の適用可能性あり。透析患者のNVAFではワルファリンと有効性・安全性が同等でなく大出血リスク増加の報告があるため、適応は慎重に判断'},
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 末期腎不全・透析は全適応で禁忌（使用経験がない）。HD患者で無治療やワルファリンと比較した研究が多数報告されているが、現時点では有効性及び安全性を結論づけることはできない（EO）。やむを得ない場合の報告として1回2.5mgを1日2回（Am J Nephrol 55:146-164, 2024）。白鷺13版も推奨されないとしている'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:50,max:999,st:'ok',lb:'通常投与可',dose:'心房細動1回5mgを1日2回（80歳以上・体重60kg以下・SCr1.5mg/dL以上の2項目以上該当で2.5mg 1日2回）'},{min:30,max:50,st:'caution',lb:'2.5mg×2回へ減量考慮',dose:'心房細動は1回2.5mgを1日2回への減量を考慮（EO）'},{min:15,max:30,st:'warning',lb:'VTE適応は禁忌',dose:'①③出血の危険性が増大するおそれがある（添）。②静脈血栓塞栓症の適応は禁忌（使用経験が少ない）（添）。①1回2.5mgを1日2回に減量を考慮する（EO）。AUCは健常者の1.3倍になる'},{min:0,max:15,st:'prohibited',lb:'禁忌',dose:'全適応で禁忌（使用経験がない）'}],
+   dial:{st:'prohibited',lb:'禁忌（使用経験がない）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:50,max:999,st:'ok',lb:'通常投与可',dose:'1回5mgを1日2回'},{min:30,max:50,st:'caution',lb:'減量考慮',dose:'Ccr15〜50は慎重投与'},{min:15,max:30,st:'warning',lb:'VTE適応は禁忌',dose:'静脈血栓塞栓症ではCcr30未満が禁忌'},{min:0,max:15,st:'prohibited',lb:'禁忌',dose:'Ccr15未満は禁忌'}],
+   dial:{st:'warning',lb:'推奨されないが2.5mg 1日2回の可能性'}},
+ },
  warning_factors:[
   {title:'⚠️ 腎機能以外の2.5mg減量基準（AF・下記のうち2項目以上該当で減量）',
    items:['① 年齢 ≥ 80歳','② 体重 ≤ 60kg','③ SCr ≥ 1.5 mg/dL（腎機能単独では減量基準にならない点が他DOACと大きく異なる）']},
@@ -4579,7 +4679,15 @@ const DRUGS = [
   {min:15,max:30,st:'caution',lb:'300〜400mg×1回',dose:'白鷺13版: Ccr15〜29は初日1回200mgを1日1回、維持量1回300〜400mgを1日1回'},
   {min:0,max:15,st:'warning',lb:'200〜300mg隔日',dose:'白鷺13版: Ccr5〜14は初日1回200mgを1日1回、維持量200〜300mgを2日に1回。中止時は最低1週間かけて漸減'},
  ],
- dial:{st:'caution',lb:'HD後補充',dose:'透析毎に200〜300mg補充。蓄積→眠気・眩暈に注意'},
+ dial:{st:'caution',lb:'HD後に200〜400mg',dose:'JSNP第39版: 初日1日1回200mg、維持量1日1回200mgでHD日はHD後。又は維持量として週3回HD後に1回200〜400mg。CAPD患者はGFR<15に準じる。白鷺13版: 初日1回200mgを1日1回、維持は1回200mgを2日に1回＋HD後に200〜400mg追加。蓄積→眠気・眩暈に注意'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'初日1日600mg→2日目1,200mg→維持1,200〜1,800mg 分3、最大2,400mg/日'},{min:45,max:60,st:'caution',lb:'初日400mg',dose:'初日1日400mg、維持600〜800mg/日 分2、最大1,000mg/日'},{min:30,max:45,st:'caution',lb:'1日1回300〜400mg',dose:'初日1回200mg、維持1日1回300〜400mg、最大500mg/日'},{min:15,max:30,st:'caution',lb:'2日に1回200〜300mg',dose:'初日1回200mg、維持は2日に1回200〜300mg、最大200mg/日'},{min:0,max:15,st:'caution',lb:'1日1回200mg',dose:'初日1回200mg、維持1日1回200mg'}],
+   dial:{st:'caution',lb:'1日1回200mg（HD後）または週3回HD後に200〜400mg'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'300〜1,200mgを1日3回（漸増）'},{min:30,max:60,st:'caution',lb:'300〜400mg×1日2回',dose:'初日1回200mgを1日2回、維持1回300〜400mgを1日2回'},{min:15,max:30,st:'caution',lb:'300〜400mg×1日1回',dose:'初日1回200mgを1日1回、維持1回300〜400mgを1日1回'},{min:0,max:15,st:'warning',lb:'200〜300mgを2日に1回',dose:'初日1回200mgを1日1回、維持200〜300mgを2日に1回'}],
+   dial:{st:'caution',lb:'2日に1回200mg＋HD後200〜400mg'}},
+ },
  note:'腎排泄型。CCr51〜80: AUCは健常者の1.3倍。CCr31〜50: 2.0倍。CCr11〜30: 4.5倍（eCCr(J or E)基準）。HD後補充。ほぼ全量腎排泄。プレガバリンと同系統。腎機能に応じた段階的な用量調節が必須。'},
 
 {id:'valproate',cat:'epilepsy',xcat:['psychiatry'],name:'バルプロ酸',yomi:'ばるぷろさん',
@@ -4607,7 +4715,7 @@ const DRUGS = [
  brand:['トピナ'],
  cls:'抗てんかん薬',metric:'egfr',
  thr:[
-  {min:70,max:999,st:'ok',lb:'通常投与可',dose:'常用量。200〜400mg/日 分2（25mgより漸増）'},
+  {min:70,max:999,st:'ok',lb:'通常投与可',dose:'1回50mgを1日1回または1日2回で開始。1週間以上の間隔をあけて維持量200〜400mg/日 分2、最大600mg/日'},
   {min:10,max:70,st:'caution',lb:'50%に減量',dose:'白鷺13版: Ccr70未満は50%に減量して慎重投与（GFR10〜50も50%に減量）。尿路結石リスクに水分補給励行'},
   {min:0,max:10,st:'warning',lb:'25%に減量',dose:'白鷺13版: GFR10未満は25%に減量'},
  ],
@@ -5081,9 +5189,9 @@ const DRUGS = [
  thr:[
   {min:50,max:999,st:'ok',lb:'通常投与可',dose:'25mg 1日おき→2週毎に漸増（バルプロ酸併用で半量）。維持100〜200mg/日'},
   {min:10,max:50,st:'caution',lb:'75%に減量',dose:'白鷺13版: GFR10〜50は75%に減量（PKへの影響は小さく減量不要との報告も併記）'},
-  {min:0,max:10,st:'caution',lb:'100mgを2日おき',dose:'白鷺13版: Ccr10以下は1回100mgを2日おき（GFR<10で100mgを1日1回との記載も併記されるが安全側を採用）。活性代謝物グルクロン酸抱合体の蓄積、AUC約1.5倍上昇の報告あり'},
+  {min:0,max:10,st:'caution',lb:'1日1回100mg',dose:'JSNP第39版・白鷺13版とも単剤療法の維持量として1回100mgを1日1回。末期腎不全・透析患者のAUCは健常者の1.8倍。活性代謝物グルクロン酸抱合体の蓄積に注意'},
  ],
- dial:{st:'caution',lb:'透析日に追加投与考慮',dose:'透析で除去される分の補充を考慮。専門医判断'},
+ dial:{st:'caution',lb:'1日1回100mg（HD後）',dose:'白鷺13版: HDは常用量100mgを1日1回、HD後に投与。透析で除去される分を考慮'},
  note:'肝代謝（グルクロン酸抱合）主体。腎機能による調節は原則不要（eCCr基準）。主に肝グルクロン酸抱合。腎機能の影響は中程度。Stevens-Johnson症候群に注意（漸増プロトコル必須）。'},
 
 {id:'phenytoin',cat:'epilepsy',name:'フェニトイン',yomi:'ふぇにといん',
@@ -5110,18 +5218,26 @@ const DRUGS = [
  cls:'非定型抗精神病薬',metric:'egfr',
  thr:[
   {min:60,max:999,st:'ok',      lb:'通常投与可', dose:'1〜2mg/日から開始。維持2〜6mg/日'},
-  {min:30,max:60, st:'caution', lb:'0.5mgから開始', dose:'0.5〜1mgから開始。最大4mg/日。活性代謝物9-OH体の蓄積に注意'},
-  {min:0, max:30, st:'caution', lb:'最低量から', dose:'0.5mgから開始。慎重に増量。9-OH体蓄積大。PDF準拠: CCr<30は0.5mg 1日2回から（FDA）'},
+  {min:30,max:60, st:'caution', lb:'1mg/日 分2から開始', dose:'JSNP第39版: 活性代謝物パリペリドンが蓄積するため1日1mgを分2より開始、維持2〜6mg/日 分2、最大1日6mg（EO）。白鷺13版は常用量の2/3〜3/4（eGFR60未満で50%）に減量。eGFR30〜60では未変化体とパリペリドンの合計活性濃度が2倍以上になる'},
+  {min:0, max:30, st:'caution', lb:'0.5mg×2回から開始', dose:'JSNP第39版: CCr<30は1回0.5mgを1日2回から開始、増量は1回0.5mg以下で1日2回。1回1.5mgを1日2回を超える場合は1週間以上の間隔をあけて増量（FDA）。最大1日6mg。9-OH体（パリペリドン）の蓄積大'},
  ],
- dial:{st:'caution',lb:'低用量から',dose:'0.5mgから開始。慎重に増量'},
+ dial:{st:'caution',lb:'1mg/日 分2から開始',dose:'白鷺13版: HDは活性代謝物9-OH体の蓄積を考え常用量の1/2〜2/3に減量し、1mg分2から開始。JSNP第39版の高度低下に準じれば0.5mg×2回開始'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:45,max:999,st:'ok',lb:'通常投与可',dose:'1回1mgを1日2回より開始、維持2〜6mg/日 分2、最大12mg/日'},{min:30,max:45,st:'caution',lb:'1mg/日 分2から開始',dose:'パリペリドン蓄積のため1日1mg 分2より開始、維持2〜6mg/日、最大6mg/日（EO）'},{min:0,max:30,st:'caution',lb:'0.5mg×2回から開始',dose:'CCr<30は1回0.5mgを1日2回から開始、増量は1回0.5mg以下（FDA）'}],
+   dial:{st:'caution',lb:'高度低下に準じる（0.5mg×2回開始）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'1〜2mg/日から開始、維持2〜6mg/日'},{min:10,max:60,st:'caution',lb:'2/3〜3/4に減量',dose:'eGFR60未満は50%に減量との記載も併記'},{min:0,max:10,st:'caution',lb:'50%に減量',dose:'活性代謝物9-OH体の蓄積に注意'}],
+   dial:{st:'caution',lb:'常用量の1/2〜2/3、1mg分2から開始'}},
+ },
  note:'eGFR30〜60でパリペリドン合計活性濃度が2倍以上（J Clin Psychiatry 80:19m12890,2019）。CCr<30でさらに上昇。活性代謝物（9-OH体）が腎排泄。腎機能低下で蓄積→錐体外路症状・起立性低血圧。'},
 
 {id:'quetiapine',cat:'psychiatry',name:'クエチアピン',yomi:'くえちあぴん',
  brand:['セロクエル'],
  cls:'非定型抗精神病薬',metric:'egfr',
- thr:[{min:0,max:999,st:'ok',lb:'調節不要', dose:'50〜200mgから開始。維持300〜750mg/日 分2〜3'}],
- dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
- note:'肝代謝（CYP3A4）主体。腎機能による調節不要（eCCr基準）。肝代謝主体。腎機能による調節不要。糖代謝異常・体重増加に注意。'},
+ thr:[{min:0,max:999,st:'ok',lb:'調節不要', dose:'1回25mgを1日2〜3回（50〜75mg/日）から開始し徐々に増量。維持150〜600mg/日 分2〜3、最大750mg/日'}],
+ dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要。1回25mgを1日2〜3回から開始、維持150〜600mg/日'},
+ note:'肝代謝（CYP3A4）主体。腎機能による調節不要（eCCr基準）。糖代謝異常・体重増加に注意。徐放錠（ビプレッソ）は末期腎不全で禁忌。JSNP第39版・白鷺13版とも開始量は1回25mgで一致。'},
 
 {id:'olanzapine',cat:'psychiatry',name:'オランザピン',yomi:'おらんざぴん',
  brand:['ジプレキサ'],
@@ -5134,31 +5250,56 @@ const DRUGS = [
  brand:['サインバルタ'],
  cls:'SNRI（抗うつ薬・神経障害性疼痛）',metric:'ccr',
  thr:[
-  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'白鷺13版: Ccr30mL/min以上は減量の必要なし（常用量）。40〜60mg 1日1回（朝食後）'},
-  {min:0,max:30,st:'warning',lb:'添文は禁忌／白鷺は慎重',dose:'白鷺13版: Ccr30mL/min未満は一般的に投与が推奨されず、可能なら避ける。使用する場合はeGFR<30で40mg/日として慎重に増量。添付文書: 高度腎障害は禁忌（AUC・Cmaxが約2倍に上昇、透析でほとんど除去されない）'},
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'いずれも朝食後。うつ病・糖尿病性神経障害に伴う疼痛: 1日1回40mg（1日20mgより1週間以上の間隔をあけて20mgずつ増量、最大60mg/日）。線維筋痛症・慢性腰痛症・変形性関節症に伴う疼痛: 1日1回60mg（1日20mgより漸増）。中等度腎障害では薬物動態に変化が認められない'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（ほとんど尿中排泄されず半減期も延長しないものの、AUC・最大血中濃度が約2倍に上昇する）（添）。ただしやむを得ない場合には吸収量の増加が原因と考えられることから、血中濃度上昇分を考慮し減量することにより使用できるかもしれない（EO、情報不足で今後の検討が望まれる）。白鷺13版は「一般的に推奨されず可能なら避ける、使用する場合はeGFR<30で40mg/日」としており、JSNPのほうが厳しい'},
  ],
- dial:{st:'prohibited',lb:'原則禁忌',dose:'禁忌に準ずる'},
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版・添付文書とも禁忌。透析でほとんど除去されない'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'中等度腎障害では薬物動態に変化が認められない'},{min:0,max:30,st:'prohibited',lb:'禁忌',dose:'AUC・最大血中濃度が約2倍に上昇する（添）'}],
+   dial:{st:'prohibited',lb:'禁忌（添）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'減量不要',dose:'40〜60mg 1日1回（朝食後）'},{min:0,max:30,st:'warning',lb:'推奨されず慎重投与',dose:'可能なら避ける。使用する場合はeGFR<30で40mg/日'}],
+   dial:{st:'prohibited',lb:'禁忌に準ずる'}},
+ },
  note:'中等度腎障害(CCr30〜80)では薬物動態に変化なし（Clin Pharmacokinet 49:311-321,2010）。CCr<30は禁忌（AUC・最高血中濃度が約2倍に上昇、透析でほとんど除去されない）（eCCr(J or E)基準）。腎障害（重度）では禁忌に準ずる記載あり。神経障害性疼痛・うつ病に使用。'},
 
 {id:'venlafaxine',cat:'antidep_sleep',name:'ベンラファキシン',yomi:'べんらふぁきしん',
  brand:['イフェクサーSR'],
  cls:'SNRI（抗うつ薬）',metric:'egfr',
  thr:[
-  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'37.5〜75mgから開始。維持75〜225mg/日（徐放錠: 1日1回）'},
-  {min:15,max:30,st:'warning',lb:'原則回避・50%減量',dose:'白鷺13版: eGFR<30は50%に減量（GFR15以上は慎重投与、Ccr50未満で50%減量との記載も併記）。添付文書: Ccr30mL/min未満は禁忌。両者の立場が異なるため原則回避とし、使用する場合のみ50%減量で厳重監視'},
-  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'白鷺13版: GFR<15は禁忌（透析患者も禁忌）。添付文書でも重度腎機能障害は禁忌'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日37.5mgを初期用量とし1週後より1日1回75mg、食後。増量は1週間以上の間隔をあけて1日75mgずつ、最大225mg/日（徐放錠: 1日1回）'},
+  {min:45,max:60,st:'caution',lb:'常用量の50〜75%',dose:'JSNP第39版: 常用量の50〜75%に減量（FDA）。白鷺13版はGFR15以上を慎重投与、Ccr50未満で50%減量'},
+  {min:30,max:45,st:'caution',lb:'常用量の50%以下',dose:'JSNP第39版: 常用量の50%以下に減量（FDA）。総クリアランスが40%低下する。白鷺13版もCcr50未満は50%減量'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（使用経験が少なくクリアランスが低下して血中濃度が上昇するおそれがあり、透析ではほとんど除去されない）。添付文書もCcr30mL/min未満は禁忌。白鷺13版はGFR15未満を禁忌としておりJSNPのほうが厳しい'},
  ],
- dial:{st:'prohibited',lb:'禁忌',dose:'禁忌（添付文書上禁忌）'},
- note:'CCr<30で禁忌（添付文書）。血中濃度上昇（総CLが40%低下）。metric:個別化eGFR。腎排泄型（代謝物含む）。eGFR<30は添付文書上禁忌。src:JSNP第39版'},
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版・添付文書とも禁忌。透析でほとんど除去されない。白鷺13版はHDを禁忌、PDは50%減量で投与可としている'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'37.5mgで開始→1日1回75mg、最大225mg/日'},{min:45,max:60,st:'caution',lb:'50〜75%に減量',dose:'常用量の50〜75%に減量（FDA）'},{min:30,max:45,st:'caution',lb:'50%以下に減量',dose:'総クリアランスが40%低下する（FDA）'},{min:0,max:30,st:'prohibited',lb:'禁忌',dose:'使用経験が少なく、透析ではほとんど除去されない'}],
+   dial:{st:'prohibited',lb:'禁忌（透析でほとんど除去されない）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:50,max:999,st:'ok',lb:'通常投与可',dose:'37.5〜75mgから開始、維持75〜225mg/日'},{min:15,max:50,st:'caution',lb:'50%に減量',dose:'GFR15以上は慎重投与'},{min:0,max:15,st:'prohibited',lb:'禁忌',dose:'GFR<15は禁忌（透析患者も禁忌）'}],
+   dial:{st:'prohibited',lb:'HDは禁忌。PDは50%減量で投与可'}},
+ },
+ note:'腎排泄型（代謝物含む）。腎機能指標はJSNP第39版で【個別化eGFR】と明記。総クリアランスが40%低下する。JSNP第39版はeGFR30未満を禁忌としており、白鷺13版（15未満で禁忌）より厳しい。'},
 
 {id:'escitalopram',cat:'antidep_sleep',name:'エスシタロプラム',yomi:'えすしたろぷらむ',
  brand:['レクサプロ'],
  cls:'SSRI（抗うつ薬）',metric:'egfr',
  thr:[
   {min:30,max:999,st:'ok',      lb:'通常投与可', dose:'10mg 1日1回（夕）から。最大20mg/日'},
-  {min:0, max:30, st:'caution', lb:'慎重投与', dose:'10mg/日。重度腎障害での安全性データ少なし'},
+  {min:0, max:30, st:'caution', lb:'5mg開始・最大10mg/日', dose:'白鷺13版: 高度腎障害は開始5mg/日を考慮し、増量は1週間以上あける。JSNP第39版: 最大1日1回10mg（EO）。両方を満たす「5mgで開始し10mgを超えない」が安全。GFR10〜53のAUCは健常者の1.2倍'},
  ],
- dial:{st:'caution',lb:'10mg/日',dose:'10mg/日。透析患者での安全性データ限定的'},
+ dial:{st:'caution',lb:'5mg開始・最大10mg/日',dose:'JSNP第39版: 最大1日1回10mg。白鷺13版に透析患者の用量記載はなく、高度腎機能低下時の5mg/日開始に準じる'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回10mg 夕食後、最大20mg/日。GFR10〜53のAUCは1.2倍'},{min:0,max:30,st:'caution',lb:'最大10mg/日',dose:'クリアランス低下により血中濃度上昇のおそれ（添）、最大1日1回10mg（EO）'}],
+   dial:{st:'caution',lb:'最大1日1回10mg'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'減量不要',dose:'10mg 1日1回（夕）から、最大20mg/日'},{min:0,max:30,st:'caution',lb:'5mg/日から開始',dose:'高度腎障害は開始5mg/日を考慮。増量は1週間以上あける'}],
+   dial:{st:'caution',lb:'記載なし（高度腎機能低下に準じる）'}},
+ },
  note:'肝代謝主体。腎機能による調節不要。重度腎障害では慎重（eCCr基準）。主に肝代謝（CYP2C19）。腎機能の影響は比較的少ないがeGFR<30では慎重。QT延長注意。'},
 
 {id:'sertraline',cat:'antidep_sleep',name:'セルトラリン',yomi:'せるとらりん',
@@ -5170,36 +5311,61 @@ const DRUGS = [
   {min:0, max:15, st:'caution', lb:'最大25mg/日', dose:'白鷺13版: eGFR<15は25mg/日。透析患者は常用量で対応可だがデータは限定的'},
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
- note:'肝代謝主体。腎機能による調節不要。SSRIの中で腎機能低下患者に使いやすい。白鷺13版（保存期CKD）: eGFR15〜30は50mg/日、eGFR<15は25mg/日（いずれも最大量を減量）。透析患者は常用量で対応可だがデータは限定的。'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回25mgで開始し100mgまで漸増、最大100mg/日'}],
+   dial:{st:'ok',lb:'腎機能正常者と同じ（最大100mg/日）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'調節不要',dose:'25〜50mgから開始、維持50〜100mg 1日1回'},{min:15,max:30,st:'caution',lb:'最大50mg/日',dose:'最大量を減量'},{min:0,max:15,st:'caution',lb:'最大25mg/日',dose:'透析患者は常用量で対応可だがデータは限定的'}],
+   dial:{st:'ok',lb:'常用量で対応可（データは限定的）'}},
+ },
+ note:'肝代謝主体。JSNP第39版は全腎機能域で腎機能正常者と同じ（1日25mgから開始し100mgまで漸増、最大100mg/日）。SSRIの中で腎機能低下患者に使いやすい。白鷺13版（保存期CKD）: eGFR15〜30は50mg/日、eGFR<15は25mg/日（いずれも最大量を減量）。透析患者は常用量で対応可だがデータは限定的。'},
 
 {id:'zolpidem',cat:'sleep_bz',name:'ゾルピデム',yomi:'ぞるぴでむ',
  brand:['マイスリー'],
  cls:'非ベンゾジアゼピン系睡眠薬',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'5〜10mg 就寝前'},
+  {min:60,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1日1回5〜10mgを就寝直前。高齢者は1回5mgから開始。最大1日10mg'},
+  {min:0,max:60,st:'caution',lb:'5mgから開始', dose:'白鷺13版: 保存期CKDは5mg/日から開始。JSNP第39版は全腎機能域で腎機能正常者と同じとしており、白鷺のほうが厳しい'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝主体'},
- note:'肝代謝（CYP3A4）主体。腎機能による調節不要だが高度腎障害では慎重（eCCr基準）。肝代謝主体。腎機能の影響は少ないが高度腎障害・透析患者では過鎮静・転倒リスクに注意。'},
+ dial:{st:'caution',lb:'5mgから開始',dose:'白鷺13版: 透析患者は5mg/日から開始。JSNP第39版は腎機能正常者と同じ'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回5〜10mgを就寝直前、高齢者は5mgから。最大10mg/日'}],
+   dial:{st:'ok',lb:'腎機能正常者と同じ'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'5〜10mg 就寝前'},{min:0,max:60,st:'caution',lb:'5mgから開始',dose:'保存期CKDは5mg/日から開始'}],
+   dial:{st:'caution',lb:'5mg/日から開始'}},
+ },
+ note:'肝代謝（CYP3A4）主体。腎機能の影響は少ないが高度腎障害・透析患者では過鎮静・転倒リスクに注意。'},
 
 {id:'triazolam',cat:'sleep_bz',name:'トリアゾラム',yomi:'とりあぞらむ',
  brand:['ハルシオン'],
  cls:'ベンゾジアゼピン系睡眠薬（超短時間型）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'0.125〜0.25mg 就寝前'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1日1回0.25mgを就寝前、最大1回0.5mg。高齢者は1回0.125〜0.25mgまで'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝主体'},
- note:'肝代謝（CYP3A4）主体。腎機能による調節不要だが高度腎障害では慎重（eCCr基準）。依存性・健忘リスクあり。高齢者・腎機能低下患者では特に注意。'},
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（0.25mg、最大0.5mg）。肝代謝主体'},
+ note:'肝代謝（CYP3A4）主体。腎機能による調節不要だが高度腎障害では慎重（eCCr基準）。依存性・健忘リスクあり。高齢者・腎機能低下患者では特に注意。JSNP第39版・白鷺13版とも上限0.5mgで一致。'},
 
 {id:'galantamine',cat:'dementia_pd',name:'ガランタミン',yomi:'がらんたみん',
  brand:['レミニール'],
  cls:'コリンエステラーゼ阻害薬（抗認知症薬）',metric:'egfr',
  thr:[
-  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'8mg/日 分2から→4週後16mg→最大24mg/日'},
-  {min:9,max:30,st:'caution',lb:'慎重に増量',dose:'白鷺13版: Ccr30mL/min未満は用量調節の記載はないがAUCが1.6倍に上昇する可能性があり慎重投与。増量間隔を十分にあけ、消化器症状・徐脈を確認する'},
-  {min:0,max:9,st:'warning',lb:'原則避ける',dose:'白鷺13版: Ccr9mL/min未満は投与経験がなく安全性が確立していないため、治療上やむを得ない場合を除き使用を避ける（絶対禁忌ではない）'},
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日8mg（1回4mgを1日2回）から開始し4週間後に1日16mg（1回8mgを1日2回）へ増量。最大24mg/日（1回12mgを1日2回）。増量は変更前の用量で4週間以上投与後'},
+  {min:30,max:45,st:'caution',lb:'最大16mg/日',dose:'JSNP第39版: 最大1日16mg（FDA）。中等度（CCr30〜60）のAUCは健常者の1.38倍。白鷺13版はCcr30以上を常用量（最大24mg）としており、JSNPのほうが厳しい'},
+  {min:0,max:30,st:'warning',lb:'原則避ける',dose:'JSNP第39版: 投与経験がなく安全性が確立していないため、治療上やむを得ないと判断される場合を除き使用は避ける（添）／使用は推奨されない（FDA）。白鷺13版はCcr9〜30を慎重投与、Ccr9未満で原則避ける。重度（CCr5〜29）のAUCは健常者の1.67倍'},
  ],
- dial:{st:'prohibited',lb:'禁忌',dose:'透析患者への使用は禁忌'},
- note:'腎排泄型（約20%）。CCr<9で禁忌。CCr9〜59では慎重投与（eCCr(J or E)基準）。腎排泄約25%。重篤な腎障害（CCr<9）は禁忌。'},
+ dial:{st:'warning',lb:'推奨されない',dose:'JSNP第39版: 使用は推奨されない（FDA）。やむを得ず使用する場合は消化器系副作用に留意し低用量（1日1回4mg）で開始、1日8mg（1回4mgを1日2回）での維持も考慮、最大1日16mg（EO）。白鷺13版も禁忌とはしていない'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日8mgで開始→4週後16mg、最大24mg/日'},{min:30,max:45,st:'caution',lb:'最大16mg/日',dose:'最大1日16mg（FDA）。中等度（CCr30〜60）のAUCは1.38倍'},{min:0,max:30,st:'warning',lb:'使用を避ける',dose:'治療上やむを得ないと判断される場合を除き使用は避ける（添）／推奨されない（FDA）'}],
+   dial:{st:'warning',lb:'使用は推奨されない（FDA）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'通常投与可',dose:'8mg/日 分2から→最大24mg/日'},{min:9,max:30,st:'caution',lb:'慎重に増量',dose:'用量調節の記載はないがAUCが1.6倍に上昇する可能性'},{min:0,max:9,st:'warning',lb:'原則避ける',dose:'投与経験がなく安全性が確立していない（絶対禁忌ではない）'}],
+   dial:{st:'warning',lb:'禁忌ではない。やむを得ない場合は可'}},
+ },
+ note:'腎排泄型（約20〜25%）。両ガイドラインとも透析患者を禁忌としていない点に注意（旧版の「透析＝禁忌」は誤り）。消化器症状・徐脈のモニタリングを。'},
 
 // ---- 追加：循環器薬 ----
 {id:'digoxin',cat:'cv_arrhythmia',name:'ジゴキシン',yomi:'じごきしん',
@@ -5228,10 +5394,19 @@ const DRUGS = [
  brand:['アーチスト'],
  cls:'α/β遮断薬（心不全・高血圧）',metric:'egfr',
  thr:[
-  {min:10,max:999,st:'ok',      lb:'調節不要', dose:'心不全: 1.25mgから開始→漸増。高血圧: 10〜20mg/日'},
-  {min:0, max:10, st:'caution', lb:'75%に減量', dose:'白鷺13版: Ccr<10は75%に減量（腎機能低下でAUCが増加）'},
+  {min:45,max:999,st:'ok',lb:'調節不要',dose:'①②本態性/腎実質性高血圧症 1日1回10〜20mg ③狭心症 1日1回20mg ④慢性心不全 1回1.25mgから開始、維持量1回2.5〜10mgを1日2回・食後 ⑤頻脈性心房細動 1日1回5mgから開始し10mg、20mgへ段階的に増量（最大20mg/日）'},
+  {min:10,max:45,st:'caution',lb:'半量から開始',dose:'JSNP第39版: eGFR45mL/min/1.73m²未満の患者では、S体のAUCが増加し、結果としてβ遮断作用が増強することから、半量より開始し漸増する（J Clin Pharmacol 60:75-85, 2020）。白鷺13版はCcr10以上を調節不要としており、JSNPのほうが厳しい'},
+  {min:0,max:10,st:'caution',lb:'少量から開始',dose:'JSNP第39版: SCr6mg/dL以上の患者で血中濃度の上昇が報告されている。特に慢性心不全の患者では腎機能が悪化するおそれがある（添）。腎機能正常者より少量から投与を開始する（EO）。白鷺13版: Ccr<10は75%に減量'},
  ],
- dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節不要'},
+ dial:{st:'caution',lb:'少量から開始',dose:'JSNP第39版: 腎機能正常者より少量から投与を開始する（EO）。SCr6mg/dL以上で血中濃度の上昇が報告されている'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:45,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'高血圧1日1回10〜20mg、心不全1回1.25mgから開始'},{min:0,max:45,st:'caution',lb:'半量から開始',dose:'eGFR45未満ではS体のAUCが増加しβ遮断作用が増強するため半量より開始し漸増'}],
+   dial:{st:'caution',lb:'腎機能正常者より少量から開始'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:10,max:999,st:'ok',lb:'調節不要',dose:'常用量'},{min:0,max:10,st:'caution',lb:'75%に減量',dose:'腎機能低下でAUCが増加'}],
+   dial:{st:'ok',lb:'通常投与可'}},
+ },
  note:'肝代謝主体（CYP2D6）。腎機能による調節不要。肝代謝主体。腎機能による調節不要。心不全治療の基本薬。白鷺13版（保存期CKD）: Ccr<10は75%に減量（腎機能低下でAUCが増加）。透析患者は常用量で使用可だがHD中の血圧低下に注意し、HD前投与は血管再充填率を下げるため避ける。'},
 
 {id:'isosorbide_mn',cat:'cv_coronary',name:'一硝酸イソソルビド',yomi:'いっしょうさんいそそるびど',
@@ -5867,12 +6042,14 @@ const DRUGS = [
  brand:['ドグマチール'],
  cls:'定型抗精神病薬（ベンザミド系）／消化管運動調整薬',metric:'egfr',
  thr:[
-  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'白鷺13版: Ccr50mL/min超は常用量の50〜100%量。①胃・十二指腸潰瘍150mg/日 分3 ②統合失調症300〜600mg/日 ③うつ病150〜300mg/日'},
-  {min:10,max:50,st:'caution',lb:'20〜50%に減量',dose:'白鷺13版: Ccr10〜50は常用量の20〜50%に減量（別報告としてCcr30〜60で70%減量、Ccr10〜30で50%減量との記載あり）。錐体外路症状のモニタリング必須'},
-  {min:0,max:10,st:'warning',lb:'投与間隔延長',dose:'白鷺13版: Ccr10mL/min未満は1回量を2〜3日毎（別報告では35%に減量）。流涎・嚥下困難など錐体外路症状のリスクが高く慎重に'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'①胃・十二指腸潰瘍 1日150mg 分3 ②統合失調症 1日300〜600mgを分割（1日1200mgまで）③うつ病・うつ状態 1日150〜300mgを分割（1日600mgまで）'},
+  {min:45,max:60,st:'caution',lb:'常用量の50〜75%',dose:'JSNP第39版: ①②③とも常用量の50〜75%に減量（＝常用量の0.5〜0.75倍を投与）。高い血中濃度が持続するおそれがある'},
+  {min:30,max:45,st:'caution',lb:'常用量の50%',dose:'JSNP第39版: ①②③とも常用量の50%に減量。白鷺13版はCcr10〜50で常用量の20〜50%としており、より低い量も許容される。錐体外路症状のモニタリング必須'},
+  {min:15,max:30,st:'caution',lb:'常用量の25%',dose:'JSNP第39版: ①②③とも常用量の25%に減量。白鷺13版はCcr10〜50で20〜50%。錐体外路症状（流涎・嚥下困難・振戦）に厳重注意'},
+  {min:0,max:15,st:'warning',lb:'1日1回25mg',dose:'JSNP第39版: ①②③とも1日1回25mg。白鷺13版はCcr10mL/min未満で1回量を2〜3日毎とし、より厳しい'},
  ],
- dial:{st:'caution',lb:'25〜50%に減量',dose:'25%に減量（EO）。透析での除去は少ない。錐体外路症状注意'},
- note:'CCr31〜60で半減期1.8倍、CCr11〜30で2.0倍、CCr<10で5.1倍。腎排泄型。腎機能低下で高い血中濃度が持続。統合失調症・消化器用と適応が広い。src:JSNP第39版'},
+ dial:{st:'caution',lb:'1日1回25mg（HD後）',dose:'JSNP第39版: 1日1回25mg、HD日はHD後。もしくは1回50mgを週3回HD後。白鷺13版も同一（除去率33.6%で透析により除去される）'},
+ note:'CCr31〜60で半減期1.8倍、CCr11〜30で2.0倍、CCr<10で5.1倍。腎排泄型。腎機能低下で高い血中濃度が持続。統合失調症・消化器用と適応が広い。「50%に減量」は常用量の半量を投与する意味（0.5倍）。src:JSNP第39版・白鷺13版'},
 
 {id:'gabapentin_enacarbil',cat:'epilepsy',name:'ガバペンチンエナカルビル',yomi:'がばぺんちんえなかるびる',
  brand:['レグナイト'],
@@ -5906,21 +6083,38 @@ const DRUGS = [
   {min:35,max:75, st:'caution', lb:'1日1回100mg', dose:'CCr35〜75: 1日1回100mg（添付文書）'},
   {min:25,max:35, st:'caution', lb:'100mg 隔日', dose:'CCr25〜35: 1回100mgを2日毎（添付文書）'},
   {min:15,max:25, st:'caution', lb:'100mg 3日毎', dose:'CCr15〜25: 1回100mgを3日毎（添付文書）'},
-  {min:0, max:15, st:'prohibited',lb:'禁忌', dose:'CCr<15または無尿では禁忌（添付文書）'},
+  {min:0, max:15, st:'warning',lb:'100mgを7日毎', dose:'JSNP第39版: 1回100mgを7日毎。白鷺13版: 50〜100mg（または100mg）を7日毎。両ガイドラインとも末期腎不全を禁忌とはしておらず、禁忌と明記しているのは透析患者のみ。蓄積による精神神経症状（幻覚・せん妄・ミオクローヌス）に厳重注意'},
  ],
- dial:{st:'prohibited',lb:'禁忌',dose:'透析患者は禁忌（添付文書）。腎排泄型で蓄積→精神神経症状'},
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版・白鷺13版とも透析患者は禁忌。腎排泄型で蓄積→精神神経症状'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:75,max:999,st:'ok',lb:'通常投与可',dose:'PD: 初期量100mg/日→維持200mg/日 分2、最大300mg/日'},{min:35,max:75,st:'caution',lb:'1日1回100mg',dose:'CCr35〜75mL/min/1.73m²（添）'},{min:25,max:35,st:'caution',lb:'100mgを2日毎',dose:'CCr25〜35mL/min/1.73m²（添）'},{min:15,max:25,st:'caution',lb:'100mgを3日毎',dose:'CCr15〜25mL/min/1.73m²（添）'},{min:0,max:15,st:'warning',lb:'100mgを7日毎',dose:'末期腎不全は1回100mgを7日毎'}],
+   dial:{st:'prohibited',lb:'禁忌'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:75,max:999,st:'ok',lb:'通常投与可',dose:'100〜300mg/日 分1〜3'},{min:35,max:75,st:'caution',lb:'1日1回100mg',dose:'添付文書に準じる'},{min:25,max:35,st:'caution',lb:'100mgを2日毎',dose:'添付文書に準じる'},{min:15,max:25,st:'caution',lb:'100mgを3日毎',dose:'添付文書に準じる'},{min:0,max:15,st:'warning',lb:'50〜100mgを7日毎',dose:'禁忌と明記しているのは透析患者のみ'}],
+   dial:{st:'prohibited',lb:'禁忌'}},
+ },
  note:'腎排泄型（>90%未変化体）。CCr35〜75: 1日1回100mg。CCr25〜35: 1回100mg 2日毎。CCr15〜25: 3日毎（標準化mCCr(J)基準）。腎排泄型。CCrに応じた詳細な段階的減量が添付文書で規定されている。インフルエンザには他剤優先（EO）。src:JSNP第39版'},
 
 {id:'mirtazapine',cat:'antidep_sleep',name:'ミルタザピン',yomi:'みるたざぴん',
  brand:['リフレックス','レメロン'],
  cls:'NaSSA（ノルアドレナリン作動性・特異的セロトニン作動性抗うつ薬）',metric:'egfr',
  thr:[
-  {min:40,max:999,st:'ok',lb:'通常投与可',dose:'白鷺13版: Ccr40〜79は常用量。15mg/日 就寝前から開始、維持15〜30mg/日、最大45mg/日'},
-  {min:10,max:40,st:'caution',lb:'2/3に減量',dose:'白鷺13版: Ccr11〜39は2/3を目安に減量。eGFR<30は15mgから開始して慎重に増量'},
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日1回15mgを初期用量とし1日15〜30mg、就寝前、最大45mg/日。増量は1週間以上の間隔をあけて1日15mgずつ'},
+  {min:40,max:45,st:'caution',lb:'15〜30mg/日',dose:'JSNP第39版: 中等度〜高度低下はクリアランスが低下する可能性があり1日1回15〜30mg（EO）、AUCは健常者の1.5倍。白鷺13版はCcr40〜79を常用量としており、JSNPのほうが厳しい'},
+  {min:10,max:40,st:'caution',lb:'2/3に減量',dose:'白鷺13版: Ccr11〜39は2/3を目安に減量。JSNP第39版は1日1回15〜30mg（AUC1.5倍）。eGFR<30は15mgから開始して慎重に増量'},
   {min:0,max:10,st:'caution',lb:'1/2に減量',dose:'白鷺13版: Ccr10以下は1/2を目安に減量。半減期は変わらずAUCが増大するため蓄積に注意'},
  ],
- dial:{st:'caution',lb:'15〜30mg/日',dose:'透析患者でAUCは健常者の2.2倍。低用量から慎重に'},
- note:'腎機能低下でAUC上昇（透析で2.2倍）。鎮静・体重増加・過鎮静に注意。src:JSNP第39版'},
+ dial:{st:'caution',lb:'常用量の1/2（7.5〜15mg/日）',dose:'白鷺13版: 透析患者は常用量の1/2を目安に減量（維持15〜30mg/日に対し7.5〜15mg/日相当）。JSNP第39版は1日1回15mgとしており、白鷺のほうが厳しい。透析患者のAUCは健常者の2.2倍（ただし薬物動態に影響ないという症例報告もある）'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日1回15mgで開始、15〜30mg 就寝前、最大45mg/日'},{min:30,max:45,st:'caution',lb:'15〜30mg/日',dose:'クリアランスが低下する可能性（添）。AUCは1.5倍'},{min:0,max:30,st:'caution',lb:'1日1回15mg',dose:'AUCは2.2倍（透析患者で影響ないという症例報告もある）'}],
+   dial:{st:'caution',lb:'1日1回15mg'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:40,max:999,st:'ok',lb:'常用量',dose:'Ccr40〜79は常用量。15mg/日 就寝前から開始'},{min:10,max:40,st:'caution',lb:'2/3に減量',dose:'Ccr11〜39は常用量の2/3を目安に減量'},{min:0,max:10,st:'caution',lb:'1/2に減量',dose:'Ccr10以下は常用量の1/2を目安に減量'}],
+   dial:{st:'caution',lb:'常用量の1/2'}},
+ },
+ note:'腎機能低下でAUC上昇（中等度〜高度低下で1.5倍、高度低下以降で2.2倍）。鎮静・体重増加・過鎮静に注意。'},
 
 {id:'lisdexamfetamine',cat:'psychiatry',name:'リスデキサンフェタミン',yomi:'りすできさんふぇたみん',
  brand:['ビバンセ'],
@@ -6021,7 +6215,7 @@ const DRUGS = [
 
 // ---- 抗不整脈薬 ----
 {id:'sotalol',cat:'cv_arrhythmia',name:'ソタロール',yomi:'そたろーる',
- brand:[],
+ brand:['ソタコール'],
  cls:'抗不整脈薬（クラスⅢ群・β遮断作用合わせ持つ）',metric:'ccr',
  thr:[
   {min:60,max:999,st:'ok',      lb:'通常投与可', dose:'80mgから開始し320mgまで漸増、1日2回'},
@@ -6029,7 +6223,15 @@ const DRUGS = [
   {min:10,max:30, st:'caution', lb:'投与間隔を36〜48時間に延長', dose:'CCr10〜29: 初回80mg→36〜48時間毎（FDA）。少なくとも5回投与後に漸増'},
   {min:0, max:10, st:'prohibited',lb:'禁忌', dose:'腎から排泄されるため血中濃度が高くなり重篤な副作用発現リスク（添付文書上禁忌）'},
  ],
- dial:{st:'warning',lb:'80〜160mg 48〜72時間毎（添文は禁忌）',dose:'白鷺13版: HDは80〜160mgを48〜72時間毎（HD日はHD後）、PDは48〜72時間毎。ただし添付文書上はCcr<10が禁忌のため、使用は心電図監視下で専門医判断のもとに限る'},
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 末期腎不全・透析は禁忌（腎臓から排泄されるため血中濃度が高くなることにより、重篤な副作用が発現するおそれがある）。白鷺13版はHDで80〜160mgを48〜72時間毎（HD日はHD後）としているが、JSNPのほうが厳しい'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日80mgから開始し1日320mgまで漸増、分2'},{min:30,max:60,st:'caution',lb:'24時間毎',dose:'初回80mg、その後CCr30〜59では24時間毎（FDA）。SCr1.2〜2.2mg/dLは通常用量の3/4（添）'},{min:10,max:30,st:'caution',lb:'36〜48時間毎',dose:'初回80mg、その後CCr10〜29では36〜48時間毎。少なくとも5回の投与後に漸増（FDA）。SCr2.3〜3.3mg/dLは通常用量の1/2（添）'},{min:0,max:10,st:'prohibited',lb:'禁忌',dose:'SCr3.4〜5.6mg/dLは通常用量の1/4（添）。1/3〜2/3に減量（EO）とする記載もあるが末期腎不全は禁忌'}],
+   dial:{st:'prohibited',lb:'禁忌（重篤な副作用のおそれ）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'80〜320mg/日 分2'},{min:30,max:60,st:'caution',lb:'24時間毎',dose:'投与間隔を延長'},{min:10,max:30,st:'caution',lb:'36〜48時間毎',dose:'投与間隔を延長'},{min:0,max:10,st:'prohibited',lb:'禁忌',dose:'添付文書上禁忌'}],
+   dial:{st:'warning',lb:'80〜160mgを48〜72時間毎'}},
+ },
  warning_factors:[
   {title:'⚠️ QT延長・Torsades de Pointes（TdP）リスク',
    items:['腎機能低下でソタロール蓄積→QT延長→TdP（致死的不整脈）リスク大増','投与前・投与中のQTc間隔確認必須（QTc>500msで中止）','低K・低Mg血症はQT延長を増悪→電解質補正が先決','心電図モニタリング下での用量漸増が原則']},
@@ -6056,9 +6258,9 @@ const DRUGS = [
  thr:[
   {min:50,max:999,st:'ok',lb:'通常投与可（慎重）',dose:'白鷺13版: Ccr>50は1回250mgを1日2〜3回、または常用量を6時間ごと。①緑内障250〜1000mg/日 ②てんかん250〜750mg/日 ③肺気腫・メニエル250〜500mg/日'},
   {min:10,max:50,st:'caution',lb:'125〜375mg/日',dose:'白鷺13版: Ccr10〜50は125〜375mg/日、または常用量を12時間ごと（GFR10〜50は250mgを12時間おき）'},
-  {min:0,max:10,st:'warning',lb:'原則回避',dose:'白鷺13版: Ccr<10は125mgを48時間毎、または投与を避ける（GFR<10は避ける）。添付文書: 無尿・急性腎不全患者は禁忌。代謝性アシドーシス・電解質異常に注意'},
+  {min:0,max:10,st:'warning',lb:'1回125mg（週3回も可）',dose:'JSNP第39版: 高度低下は1回125mg、末期腎不全は1回125mgを週3回（EO）。白鷺13版: Ccr<10は125mgを48時間毎、または投与を避ける。腎機能低下患者ではTDMの実施が推奨される（特定薬剤治療管理料はてんかんに用いる場合のみ算定可）。代謝性アシドーシス・電解質異常に注意'},
  ],
- dial:{st:'prohibited',lb:'禁忌（無尿・急性腎不全）',dose:'無尿または急性腎不全は禁忌。排泄遅延により副作用が強くあらわれる（添付文書）'},
+ dial:{st:'warning',lb:'1回125mgを週3回',dose:'JSNP第39版: 末期腎不全は1回125mgを週3回（EO）。ただし無尿または急性腎不全の患者は禁忌（排泄遅延により副作用が強くあらわれるおそれがある）（添）。腎機能低下患者ではTDMの実施が推奨される'},
  note:'腎排泄型。無尿・急性腎不全は禁忌。重篤腎障害では腎機能をさらに悪化させるおそれ（添付文書）（eCCr基準）。無尿・急性腎不全は添付文書上禁忌。重篤な腎障害患者では腎機能悪化のリスクあり。代謝性アシドーシスに注意。TDM実施推奨（てんかん）。src:JSNP第39版'},
 
 // ---- 抗結核薬（内服）----
@@ -6196,21 +6398,21 @@ const DRUGS = [
  brand:['パキシル','パキシルCR'],
  cls:'SSRI（抗うつ薬・不安障害）',metric:'egfr',
  thr:[
-  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'うつ病: 20mg/日（就寝前）から開始→最大50mg/日（CR錠: 12.5mgから→最大50mg）。パニック障害・OCD等は用量が異なる'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'いずれも夕食後。うつ病: 1日1回20〜40mg（1回10〜20mgから開始し1週毎に10mg/日ずつ増量、最大40mg/日）。パニック障害30mg・強迫性障害40mg・社会不安障害20mg・PTSD20mgと適応で用量が異なる。CR錠は12.5mgから→最大50mg'},
   {min:50,max:60,st:'caution',lb:'10mgから開始',dose:'白鷺13版: GFR<60（Ccr≦60）は10mg/日から開始して慎重に増量。Ccr30〜60で血中濃度が健常人の2倍に上昇'},
   {min:10,max:50,st:'caution',lb:'50〜75%に減量',dose:'白鷺13版: GFR10〜50（Ccr10〜50）は50〜75%に減量。10mg/日から開始して慎重に増量'},
   {min:0,max:10,st:'caution',lb:'50%に減量',dose:'白鷺13版: GFR<10（Ccr<10）は50%に減量。添付文書: 重度腎障害は10mgから開始し最大40mg/日'},
  ],
- dial:{st:'caution',lb:'10mgから',dose:'10mgから開始。慎重に増量'},
- note:'肝代謝（CYP2D6）主体。腎機能による調節は原則不要（eCCr基準）。CYP2D6強力阻害→多くの薬と相互作用あり。腎機能低下で血中濃度上昇。急激な中断で離脱症状（シャンティング）。src:JSNP第39版'},
+ dial:{st:'caution',lb:'通常量の50%',dose:'白鷺13版: HD・PDとも通常量の50%に減量。1日1回10mgから開始し夕食後'},
+ note:'肝代謝（CYP2D6）主体。腎機能による調節は原則不要（eCCr基準）。投与タイミングはJSNP第39版・白鷺13版とも夕食後。CYP2D6強力阻害→多くの薬と相互作用あり。腎機能低下で血中濃度上昇。急激な中断で離脱症状（シャンティング）。src:JSNP第39版'},
 
 {id:'fluvoxamine',cat:'antidep_sleep',name:'フルボキサミン',yomi:'ふるぼきさみん',
  brand:['デプロメール','ルボックス'],
  cls:'SSRI（抗うつ薬・強迫性障害）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'調節不要（慎重）', dose:'50mg/日から開始（就寝前）。維持150〜200mg/日 分2。最大250mg/日'},
+  {min:0,max:999,st:'ok',lb:'調節不要', dose:'1日50mgを初期用量とし、1日150mgまで増量、分2。最大150mg/日'},
  ],
- dial:{st:'caution',lb:'低用量から',dose:'低用量から慎重に。肝代謝主体だが透析患者では注意'},
+ dial:{st:'ok',lb:'通常投与可',dose:'常用量（50〜150mg/日 分2）。開始50mg、増量は4〜7日経過後'},
  note:'肝代謝（CYP1A2）主体。腎機能による調節不要（eCCr基準）。肝代謝（CYP1A2強力阻害）。CYP1A2基質との相互作用多数（チオキサンテン系・テオフィリン等）。腎機能による調節は原則不要だが高度障害では慎重。src:JSNP第39版'},
 
 // ---- 睡眠薬・抗不安薬 ----
@@ -6227,9 +6429,9 @@ const DRUGS = [
  brand:['デパス'],
  cls:'チエノジアゼピン系（抗不安薬・睡眠薬）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'0.5mg 1日1〜3回'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1日3mgまでを分3（神経症・うつ病）。高齢者は1日1.5mgが上限'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝主体'},
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（最大3mg/日、高齢者1.5mg/日）。肝代謝主体'},
  note:'肝代謝主体。腎機能による調節は原則不要（eCCr基準）。チエノジアゼピン系。依存性が強く長期投与は避ける。腎機能低下で代謝物蓄積→過鎮静。高齢者・腎障害患者での使用は特に慎重に。src:JSNP第39版'},
 
 {id:'suvorexant',cat:'sleep_orexin',name:'スボレキサント',yomi:'すぼれきさんと',
@@ -6349,7 +6551,7 @@ const DRUGS = [
  cls:'β1選択性遮断薬（α2部分作動・血管拡張作用あり）',metric:'egfr',
  thr:[
   {min:10,max:999,st:'ok',      lb:'腎機能正常者と同じ', dose:'100〜200mg 1日1回'},
-  {min:0, max:10, st:'caution', lb:'50〜75%に減量', dose:'白鷺13版: Ccr<10は50〜75%に減量（常用量とする報告もあり）'},
+  {min:0,max:10,st:'caution',lb:'50〜75%に減量',dose:'JSNP第39版: SCr4.0mg/dL以上では減量など慎重投与（添）。ただし腎機能正常者と同じでよいとする報告もある（Eur J Clin Pharmacol 39:573-576, 1990）。白鷺13版: Ccr<10は50〜75%に減量'},
  ],
  dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能による調節不要'},
  note:'β1選択性＋α2作動（血管拡張）。肝代謝・胆汁排泄主体。腎機能による調節不要。src:JSNP第39版。白鷺13版（保存期CKD）: Ccr<10は50〜75%に減量（常用量とする報告もあり）。水溶性で蛋白結合率も高くなく、ある程度は透析されると考えられる。'},
@@ -6361,7 +6563,15 @@ const DRUGS = [
   {min:40,max:999,st:'ok',lb:'PT-INRで調節',dose:'白鷺13版: eGFR40以上はPT-INRにより投与量を決定。初回1〜5mg/日。非弁膜症性心房細動: INR1.6〜2.6を目標（なるべく2に近く）。機械弁・僧帽弁狭窄: INR2.0〜3.0'},
   {min:0,max:40,st:'caution',lb:'INR管理を厳密に',dose:'白鷺13版: eGFR40未満（透析例を含む）もPT-INRにより決定するが、出血リスクが高まるため測定間隔を短縮する。添付文書上は重篤な腎障害が禁忌とされており、適応は慎重に判断する'},
  ],
- dial:{st:'caution',lb:'慎重投与',dose:'心房細動アブレーション周術期・機械弁術後・脳梗塞既往を除き、維持透析患者への使用は推奨されない（JCS/JHRSガイドライン2024）。使用する場合はPT-INR<2.0に維持'},
+ dial:{st:'prohibited',lb:'禁忌（やむを得ない場合のみ）',dose:'JSNP第39版: 末期腎不全・透析は禁忌（重篤な腎障害患者では代謝・排泄の遅延で出血することがある）（添）。ただし心房細動アブレーション周術期・機械弁術後・脳梗塞既往などやむを得ない場合は、PT-INR<2.0に維持して使用する（日本透析医学会ガイドライン）。維持透析患者への安易な使用は行わない'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:0,max:999,st:'ok',lb:'PT-INRで調節',dose:'PT-INRのモニタリングで投与量を決定。非弁膜症性心房細動の機械弁では1.6〜2.6（なるべく2に近く）、高リスク（CHADS2スコア3点以上）の70歳未満は2.0〜3.0'}],
+   dial:{st:'prohibited',lb:'禁忌（添）'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:40,max:999,st:'ok',lb:'PT-INRで調節',dose:'eGFR40以上はPT-INRにより投与量を決定'},{min:0,max:40,st:'caution',lb:'INR管理を厳密に',dose:'出血リスクが高まるため測定間隔を短縮する'}],
+   dial:{st:'caution',lb:'PT-INR<2.0で慎重投与'}},
+ },
  note:'PT-INRでモニタリング。腎機能による用量調節規定なし。透析患者への使用はJCS/JHRSガイドライン2024で原則不推奨（出血リスク大）。腎機能による用量調節不要。PT-INRによるモニタリング必須。透析患者は原則DOACまたは抗凝固なしを推奨（出血リスク>血栓予防）。src:JSNP第39版'},
 
 // ---- 抗不整脈薬（内服）----
@@ -6381,10 +6591,11 @@ const DRUGS = [
  cls:'抗不整脈薬（クラスⅠc群）',metric:'ccr',
  thr:[
   {min:50,max:999,st:'ok',lb:'通常投与可',dose:'白鷺13版: Ccr>50は100〜150mg/日（50mg 1日3回・食後）。別記でCcr>70は1回50mgを8時間毎、70≧Ccr>50は1回50mgを12時間毎'},
-  {min:10,max:50,st:'caution',lb:'25〜50mg 1日1〜2回',dose:'白鷺13版: Ccr10〜50は25〜50mgを1日1〜2回（別記で50≧Ccr>30は1回50mgを24時間毎）。高齢者はより低用量から開始'},
-  {min:0,max:10,st:'warning',lb:'25mg 48時間毎から',dose:'白鷺13版: Ccr<10は25mgを48時間毎から開始し、効果不十分なら1日1回50mgまで増量。添付文書: 透析を必要とする腎不全患者は1日25mgから開始。心電図モニタリング必須'},
+  {min:30,max:50,st:'caution',lb:'1日1回50mg',dose:'JSNP第39版: 軽度〜中等度低下は1日1回50mg（EO）。投与量を減量するか投与間隔をあけて使用し、頻回に心電図検査を実施する（添）。白鷺13版はCcr10〜50で25〜50mgを1日1〜2回'},
+  {min:15,max:30,st:'caution',lb:'1日1回25mg',dose:'JSNP第39版: 中等度〜高度低下は1日1回25mg（EO）。CCr20〜49mL/minの腎障害患者の半減期は健常者の2倍になる'},
+  {min:0,max:15,st:'warning',lb:'25mgを48時間毎',dose:'JSNP第39版: 高度低下以降は1回25mgを48時間毎（EO）。CCr<20mL/minの腎障害患者の半減期は健常者の5倍になる。白鷺13版も同様に25mgを48時間毎から開始。心電図モニタリング必須'},
  ],
- dial:{st:'warning',lb:'25mg/日から',dose:'添付文書：透析を必要とする腎不全患者では1日25mgから開始し慎重に投与。白鷺13版は25mgを週3回（HD後）または25mgを1日おきを記載'},
+ dial:{st:'warning',lb:'25mgを48時間毎',dose:'JSNP第39版: 1日25mgから開始し（添）、1回25mgを48時間毎（Pharma Medica 21:165-171, 2003）。白鷺13版は25mgを週3回（HD後）または25mgを1日おきを記載。半減期が健常者の5倍に延びるため心電図モニタリング必須'},
  note:'腎排泄型（約80%）の抗不整脈薬。CCr20〜50: 1回50mg 1日1〜2回（eCCr基準）。腎機能低下で著明に蓄積→QRS延長・催不整脈。CCrに応じた厳密な用量調節が必須。添付文書の禁忌は「うっ血性心不全のある患者」「高度の房室ブロック、高度の洞房ブロックのある患者」のみで腎機能障害の禁忌記載はなく、「透析を必要とする腎不全患者では、1日25mgから投与を開始するなど、患者の状態を観察しながら慎重に投与すること」と規定されている。従来、透析患者を原則禁忌としていたが慎重投与（25mg/日から）に修正した。白鷺13版は25mgを週3回（HD後）を記載し、有効血中濃度0.2〜0.9μg/mL、体重60kg以下は過剰投与リスクが高いと注意喚起。src:JSNP第39版＋添付文書＋白鷺13版'},
 
 {id:'mexiletine',cat:'cv_arrhythmia',name:'メキシレチン',yomi:'めきしれちん',
@@ -6394,7 +6605,7 @@ const DRUGS = [
   {min:10,max:999,st:'ok',      lb:'腎機能正常者と同じ', dose:'100mg 1日3回（食後）'},
   {min:0, max:10, st:'caution', lb:'50〜75%に減量', dose:'白鷺13版: GFR<10で50〜75%に減量。透析患者も通常量の50〜75%でHD後の補充投与は不要'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'透析で除去されにくい。腎機能正常者と同じ用量で使用可。TDM推奨（Clin Pharmacol Ther,80:597-606,2006）'},
+ dial:{st:'caution',lb:'1日200mgを分2',dose:'JSNP第39版: 末期腎不全は①頻脈性不整脈②糖尿病性神経障害とも1日200mgを分2。抗不整脈薬として使用する場合にはTDMにて調整する（EO）。血中濃度が上昇することがある（添）。CCr<10mL/minの腎障害患者の半減期は健常者の1.3〜1.5倍になる'},
  note:'肝代謝（CYP2D6）主体。腎排泄は少なく、CCr全域で腎機能正常者と同じ用量使用可（Br J Clin Pharmacol,14:431-435,1982）。透析で除去されにくい。TDM推奨。糖尿病性神経障害にも使用（保険適応）。白鷺13版（保存期CKD）: GFR<10で50〜75%に減量。透析患者も通常量の50〜75%で、HD後の補充投与は不要。除去率33〜42%。'},
 
 // ---- 抗ウイルス｜インフルエンザ ----
@@ -6473,7 +6684,7 @@ const DRUGS = [
  brand:['トレドミン'],
  cls:'SNRI（抗うつ薬）',metric:'ccr',
  thr:[
-  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'白鷺13版: Ccr60mL/min以上は減量の必要なし。25mgから開始→25〜50mg 1日2〜3回、最大200mg/日'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日25mgを初期用量とし1日100mgまで漸増、分2〜3・食後。高齢者は1日60mgまで（最大100mg/日）'},
   {min:30,max:60,st:'caution',lb:'25mg 1日2回',dose:'白鷺13版: Ccr30〜59は25mgを1日2回（GFR30〜60は25mgから開始し慎重に増量）。AUCは健常者の約1.5倍'},
   {min:5,max:30,st:'caution',lb:'25mg 1日1回',dose:'白鷺13版: Ccr10〜29は25mgを1日1回、Ccr5〜29は50%に減量（eGFR<30は25〜50mg/日）。AUCは健常者の約2倍'},
   {min:0,max:5,st:'warning',lb:'原則回避',dose:'白鷺13版: Ccr5mL/min未満は投与を避ける。やむを得ず使用する場合は25mg/日以下で慎重に'},
@@ -6485,9 +6696,9 @@ const DRUGS = [
  brand:['ロナセン'],
  cls:'非定型抗精神病薬（D2・5-HT2拮抗）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'調節不要（慎重）', dose:'4mg 1日2回（食後）から開始→8mg 1日2回へ。最大24mg/日'},
+  {min:0,max:999,st:'ok',lb:'調節不要', dose:'1回4mgを1日2回・食後から開始。維持量8〜16mg/日 分2・食後、最大24mg/日'},
  ],
- dial:{st:'caution',lb:'低用量から',dose:'透析患者での使用経験限られる。低用量から慎重に'},
+ dial:{st:'ok',lb:'通常投与可',dose:'JSNP第39版は全腎機能域で腎機能正常者と同じ。白鷺13版もPKから常用量（8〜16mg/日、最大24mg/日）'},
  note:'肝代謝（CYP3A4）主体。腎機能による調節不要。QT延長・錐体外路症状に注意。グレープフルーツ禁忌。src:JSNP第39版'},
 
 // ---- パーキンソン病薬 追加（画像3より）----
@@ -6498,14 +6709,22 @@ const DRUGS = [
   {min:30,max:999,st:'ok',      lb:'通常投与可', dose:'①PD: 0.25mg 1日3回から開始→漸増。最大15mg/日 ②RLS: 0.25mg 就寝前から開始→最大4mg/日'},
   {min:0, max:30, st:'caution', lb:'慎重投与', dose:'重度腎障害ではAUC上昇（約1.8倍）。低用量から開始し慎重に増量（EO）'},
  ],
- dial:{st:'caution',lb:'低用量から',dose:'透析患者ではデータ限定。低用量から専門医管理下で'},
+ dial:{st:'caution',lb:'低用量から',dose:'白鷺13版: Ccr30未満は使用経験がなく安全性が確立していない。JSNP第39版はHD患者でHDによる用量調節の必要性はないとしており、白鷺のほうが厳しい'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照。HD患者もHDによる用量調節の必要性はない'}],
+   dial:{st:'ok',lb:'HDによる用量調節の必要性はない'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'通常投与可',dose:'Ccr30〜50は体内動態に変化なし'},{min:0,max:30,st:'caution',lb:'慎重投与',dose:'Ccr30未満は使用経験がなく安全性が確立していない'}],
+   dial:{st:'caution',lb:'Ccr30未満は安全性未確立'}},
+ },
  note:'ドパミンD2/D3作動薬。肝代謝（CYP1A2）主体だが腎排泄の代謝物あり。高度腎障害でAUC約1.8倍。悪心・過眠・幻覚・衝動制御障害に注意。src:JSNP第39版'},
 
 {id:'entacapone',cat:'dementia_pd',name:'エンタカポン',yomi:'えんたかぽん',
  brand:['コムタン'],
  cls:'COMT阻害薬（パーキンソン病・レボドパ補助）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'調節不要', dose:'100〜200mg レボドパ/カルビドパ・レボドパ/ベンセラジド各用量に合わせて1日最大10回まで'},
+  {min:0,max:999,st:'ok',lb:'調節不要', dose:'1回100mg（症状により200mg）をレボドパ・カルビドパまたはレボドパ・ベンセラジドと併用。1日8回まで（最大1600mg/日）'},
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'胆汁排泄主体。腎機能による調節不要'},
  note:'肝代謝主体。腎機能による調節不要（eCCr基準）。レボドパ製剤と必ず併用（単独では効果なし）。胆汁排泄主体。腎機能による調節不要。尿・汗が橙赤色になる（無害）。src:JSNP第39版'},
@@ -6617,19 +6836,19 @@ const DRUGS = [
  brand:['リーゼ'],
  cls:'チエノジアゼピン系抗不安薬（短時間型）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'5mg 1日3回'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1日15〜30mgを分3。麻酔前投薬は1日1回10〜15mgを就寝前または手術前'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝主体'},
- note:'チエノジアゼピン系。短時間型で比較的蓄積リスク低め。腎機能低下では依然として過鎮静に注意。依存性あり。src:添付文書'},
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（15〜30mg/日 分3）。肝代謝主体'},
+ note:'チエノジアゼピン系。短時間型で比較的蓄積リスク低め。JSNP第39版・白鷺13版とも15〜30mg/日で一致。腎機能低下では依然として過鎮静に注意。依存性あり。src:添付文書'},
 
 {id:'bromazepam',cat:'sleep_bz',name:'ブロマゼパム',yomi:'ぶろまぜぱむ',
  brand:['レキソタン','セニラン'],
  cls:'ベンゾジアゼピン系抗不安薬（中時間型）',metric:'egfr',
  thr:[
-  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1.5〜3mg 1日3回'},
+  {min:0,max:999,st:'ok',lb:'腎機能正常者と同じ', dose:'1日3〜15mgを分2〜3'},
  ],
- dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝主体'},
- note:'中時間型BZ系抗不安薬。肝代謝だが高度腎障害では蓄積リスクあり。過鎮静・転倒注意。依存性あり長期投与回避。src:添付文書'},
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（3〜15mg/日 分2〜3）。肝代謝主体'},
+ note:'中時間型BZ系抗不安薬。JSNP第39版は添付文書参照とし全腎機能域で調節不要、白鷺13版は常用量3〜15mg/日。肝代謝だが高度腎障害では蓄積リスクあり。過鎮静・転倒注意。依存性あり長期投与回避。src:添付文書'},
 
 {id:'lorazepam',cat:'sleep_bz',name:'ロラゼパム',yomi:'ろらぜぱむ',
  brand:['ワイパックス'],
@@ -7075,7 +7294,7 @@ const DRUGS = [
  cls:'中枢性筋弛緩薬（α2作動薬）',metric:'ccr',
  thr:[
   {min:25,max:999,st:'ok',      lb:'通常投与可', dose:'3mg/日を分3（食後）。最大9mg/日'},
-  {min:0, max:25, st:'caution', lb:'低用量から', dose:'白鷺13版: Ccr 25mL/min以下では低用量から開始し、必要に応じて投与間隔より1回量を増やす'},
+  {min:0,max:25,st:'caution',lb:'低用量から',dose:'JSNP第39版: 腎臓からの排泄が遅延し、高い血中濃度が持続するとの報告がある。CCr25mL/min以下の患者で、腎機能正常者に比べAUCが6.5倍、半減期が7倍延長しており、排泄時間の遅延が認められている。白鷺13版: 低用量から開始し、必要に応じて1回量より投与間隔を調整する'},
  ],
  dial:{st:'caution',lb:'2mgを24時間毎',dose:'白鷺13版: 2mgを24時間毎、または3mg/日を慎重投与（個別対応が必要）'},
  note:'α2作動性の中枢性筋弛緩薬。Vdが大きいため血液透析では効率的に除去できない。腎機能低下例では血圧低下・傾眠が強く出るため低用量から開始する。シプロフロキサシン・フルボキサミンなどCYP1A2阻害剤との併用で血中濃度が著しく上昇し、重篤な低血圧・徐脈を招くため併用は避ける。src:白鷺13版'},
@@ -7203,10 +7422,19 @@ const DRUGS = [
  brand:['ルネスタ'],
  cls:'非ベンゾジアゼピン系睡眠薬',metric:'egfr',
  thr:[
-  {min:30,max:999,st:'ok',      lb:'通常投与可', dose:'2mg 1日1回就寝直前（高齢者は1mg、最大2mg）'},
-  {min:0, max:30, st:'caution', lb:'1mgから開始', dose:'白鷺13版: 1mgから開始し最大2mg。腎機能低下でCmax・AUC・半減期が上昇'},
+  {min:60,max:999,st:'ok',      lb:'通常投与可', dose:'1日1回2mgを就寝前（高齢者は1mg）。最大1回3mg、高齢者は最大1回2mg'},
+  {min:30,max:60, st:'caution', lb:'1mgから開始', dose:'白鷺13版: 保存期CKD全体で1mgから開始し最大2mg。JSNP第39版はeGFR30以上を腎機能正常者と同じ（2mg、最大3mg）としており、白鷺のほうが厳しい'},
+  {min:0, max:30, st:'caution', lb:'1mg（最大2mg）', dose:'JSNP第39版・白鷺13版とも1回1mg、最大1回2mg。AUCは健常者の1.5倍、半減期が1.8時間延長する'},
  ],
- dial:{st:'caution',lb:'1mg（最大2mg）',dose:'白鷺13版: 1mg、最大2mg'},
+ dial:{st:'caution',lb:'1mg（最大2mg）',dose:'JSNP第39版・白鷺13版とも1回1mg、最大1回2mg'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回2mg（高齢者1mg）就寝前、最大1回3mg（高齢者2mg）'},{min:0,max:30,st:'caution',lb:'1mg（最大2mg）',dose:'AUCは1.5倍、半減期が1.8時間延長する'}],
+   dial:{st:'caution',lb:'1回1mg、最大1回2mg'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:60,max:999,st:'ok',lb:'通常投与可',dose:'2mg 1日1回就寝直前'},{min:0,max:60,st:'caution',lb:'1mgから開始',dose:'保存期CKD全体で1mgから開始し最大2mg'}],
+   dial:{st:'caution',lb:'1mg、最大2mg'}},
+ },
  note:'非ベンゾジアゼピン系（Z-drug）の睡眠薬。ゾピクロンの光学異性体で作用時間はやや長め。腎機能低下により薬物動態パラメータ（Cmax・AUC・半減期）が上昇するため低用量から開始する。翌日への効果の持ち越しがあり、高齢者では転倒・ふらつきに注意。最も頻繁な副作用は口中の苦味で、クエン酸を含む飲料により軽減する可能性がある。src:白鷺13版'},
 
 {id:'ramelteon',cat:'sleep_orexin',name:'ラメルテオン',yomi:'らめるておん',
@@ -7255,7 +7483,15 @@ const DRUGS = [
   {min:30,max:999,st:'ok',      lb:'調節不要', dose:'1回6〜12mg 1日3回（食後）'},
   {min:0, max:30, st:'caution', lb:'慎重投与', dose:'白鷺13版: 適正量は不明だが常用量で適用されている。尿中排泄率が高く減量の必要性も示唆される'},
  ],
- dial:{st:'caution',lb:'慎重投与',dose:'白鷺13版: 常用量（1回6〜12mg、1日3回）適用の可能性。尿中排泄率が高いため減量の必要性も示唆されるが確定的なデータはない'},
+ srcs:{
+  jsnp:{verified:'photo',
+   thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回6〜12mgを1日3回、食後'}],
+   dial:{st:'ok',lb:'腎機能正常者と同じ'}},
+  shirasagi:{verified:'pdf',
+   thr:[{min:30,max:999,st:'ok',lb:'調節不要',dose:'1回6〜12mg 1日3回（食後）'},{min:0,max:30,st:'caution',lb:'慎重投与',dose:'尿中排泄率が高く減量の必要性も示唆される'}],
+   dial:{st:'caution',lb:'尿中排泄率が高く減量の必要性も示唆される'}},
+ },
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版は全腎機能域で腎機能正常者と同じ。白鷺13版: 常用量（1回6〜12mg、1日3回）適用の可能性。尿中排泄率が高いため減量の必要性も示唆されるが確定的なデータはない'},
  note:'メニエール病・眩暈症に用いる内耳循環改善薬。内耳の微小循環を改善しヒスタミン様作用を示す。腎不全患者での薬物動態報告と透析患者での使用例の報告がなく臨床的エビデンスが限定的。尿中排泄率が高いため腎機能低下例では減量の必要性が示唆されるが、実際には常用量で使用されている。消化性潰瘍・気管支喘息・褐色細胞腫のある患者は慎重投与。src:白鷺13版'},
 
 // ---- ビタミン・鉄剤 ----
@@ -7379,6 +7615,1444 @@ const DRUGS = [
  ],
  dial:{st:'ok',lb:'通常投与可',dose:'腎機能による調節は不要。ただしTDMにより血中濃度を確認しながら投与する'},
  note:'キサンチン誘導体の気管支拡張薬。主に肝臓のCYP1A2で代謝されるため、全ての腎機能において腎機能正常者と同じ用量でよい。ただし治療域が狭く中毒域と近接しているためTDM（目標血中濃度5〜15μg/mL）が必要。中毒症状として悪心・嘔吐・頻脈・不整脈・痙攣がある。喫煙・飲酒・発熱・心不全・肝障害、およびシプロフロキサシン・エノキサシン・クラリスロマイシン等の併用でクリアランスが大きく変動する。高齢者では中毒を起こしやすい。src:JSNP第39版'},
+
+// ============================================================
+// JSNP第39版 p.28〜77の写真から追加（2026-10-08）
+// 片頭痛治療薬・制吐薬・めまい治療薬・抗精神病薬・睡眠薬・認知症薬
+// ============================================================
+
+// ---- 腎機能により禁忌・大幅制限になる薬 ----
+{id:'paliperidone',cat:'psychiatry',name:'パリペリドン',yomi:'ぱりぺりどん',
+ brand:['インヴェガ'],
+ cls:'非定型抗精神病薬（リスペリドンの活性代謝物）',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回6mgより開始し最大1日12mg、いずれも朝食後。増量は5日以上の間隔をあけて1日3mgずつ'},
+  {min:50,max:60,st:'caution',lb:'3mg開始・最大6mg/日',dose:'JSNP第39版: 1日1回3mgから開始し最大1日6mg。健康者と比較してクリアランスが32%低下する'},
+  {min:0,max:50,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 中等度〜高度低下以降は禁忌（本剤の排泄が遅延し血中濃度が上昇するおそれがある）。添付文書もCCr50mL/min未満の患者を禁忌としている'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'透析患者は禁忌。徐放性製剤のため血中濃度上昇が遷延する'},
+ note:'リスペリドンの活性代謝物（9-ヒドロキシリスペリドン）そのものの製剤で、大部分が腎から未変化体で排泄される。そのためリスペリドンより腎機能の影響が大きく、CCr50mL/min未満が禁忌。浸透圧ポンプ型の徐放錠（OROS）で、錠剤の殻がそのまま便中に排泄されるが問題ない。リスペリドンからの切り替え時は腎機能を必ず確認する。src:JSNP第39版'},
+
+{id:'naratriptan',cat:'migraine',name:'ナラトリプタン',yomi:'ならとりぷたん',
+ brand:['アマージ'],
+ cls:'トリプタン系（5-HT1B/1D受容体作動薬）',metric:'ccr',
+ thr:[
+  {min:75,max:999,st:'ok',lb:'通常投与可',dose:'1回2.5mgを片頭痛の頭痛発現時に。追加投与は前回投与から4時間以上あける。最大1日総投与量5mg'},
+  {min:15,max:75,st:'caution',lb:'1日総量2.5mgまで',dose:'JSNP第39版: 1日の総投与量を2.5mgとする（＝追加投与は行わない）。軽度（CCr45〜75）・中等度（CCr15〜39）の腎障害患者のAUCはそれぞれ健常者の2.0、2.3倍になる'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（血中濃度が上昇するおそれがある）。添付文書も重篤な腎障害のある患者を禁忌としている'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（血中濃度が上昇するおそれがある）'},
+ note:'トリプタンの中で唯一、腎機能による用量制限と禁忌が設定されている。他のトリプタン（スマトリプタン・ゾルミトリプタン・エレトリプタン・リザトリプタン）は全腎機能域で調節不要なので、腎機能低下例ではそちらへの変更を検討する。半減期が約5時間と長く効果が持続するのが特徴。src:JSNP第39版'},
+
+{id:'difenidol',cat:'misc',name:'ジフェニドール',yomi:'じふぇにどーる',
+ brand:['セファドール'],
+ cls:'めまい治療薬（抗めまい薬）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1回25〜50mgを1日3回'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'添付文書: 重篤な腎障害のある患者は禁忌（排泄が低下し蓄積する）。ただしJSNP第39版は「蓄積する根拠となるデータはない」（EO）と注記しており、臨床的な必要性が高い場合は専門医と相談する'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'添付文書上、重篤な腎障害として禁忌に該当する'},
+ note:'添付文書で重篤な腎障害が禁忌とされている数少ないめまい治療薬。ただしJSNP第39版は蓄積の根拠データがないと明記しており、禁忌の根拠は弱い。腎機能低下例ではベタヒスチン（メリスロン）やイソプレナリン（インメニール）への変更が現実的。抗コリン作用があり緑内障・前立腺肥大にも注意。src:JSNP第39版'},
+
+{id:'ergotamine_combo',cat:'migraine',name:'エルゴタミン配合剤',yomi:'えるごたみんはいごうざい',
+ brand:['クリアミン配合錠A','クリアミン配合錠S'],
+ cls:'エルゴタミン製剤（エルゴタミン酒石酸塩・無水カフェイン・イソプロピルアンチピリン配合）',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1回[A]1錠・[S]2錠を1日2〜3回。頭痛発作時は1回[A]1〜2錠・[S]2〜4錠を頓用。最大1週間[A]10錠・[S]20錠'},
+  {min:0,max:60,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 腎機能低下例は禁忌（エルゴタミンによる麦角中毒を起こすおそれがある）。添付文書の禁忌は「重篤な腎障害のある患者」'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'禁忌（麦角中毒のおそれ）'},
+ note:'麦角アルカロイド製剤。腎機能低下で血中濃度が上昇し、麦角中毒（四肢の虚血・冷感・チアノーゼ・壊疽）を起こすおそれがある。アプリでは安全側に立ちeGFR60未満を禁忌としている（添付文書の禁忌は「重篤な腎障害」）。片頭痛にはトリプタン系やCGRP関連薬が第一選択で、本剤の出番は限定的。CYP3A4阻害薬（マクロライド・アゾール系）との併用も禁忌。src:JSNP第39版'},
+
+{id:'rimegepant',cat:'migraine',name:'リメゲパント',yomi:'りめげぱんと',
+ brand:['ナルティーク'],
+ cls:'CGRP受容体拮抗薬（ゲパント系）',metric:'egfr_std',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'①急性期治療: 1回75mgを片頭痛発作時に ②発症抑制: 1回75mgを隔日'},
+  {min:15,max:30,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 非結合形の血漿中濃度が上昇するおそれがある。重度（eGFR<30mL/min/1.73m²）の腎障害患者のAUCは健常者の2.6倍になる（中等度eGFR30〜59では1.8倍）'},
+  {min:0,max:15,st:'warning',lb:'投与を避ける',dose:'JSNP第39版: 末期腎不全では投与を避けることが望ましい（副作用が増強されるおそれがある。末期腎不全を対象にした臨床試験は実施していない）'},
+ ],
+ dial:{st:'warning',lb:'投与を避ける',dose:'JSNP第39版: 投与を避けることが望ましい。末期腎不全を対象にした臨床試験は実施していない'},
+ note:'腎機能指標は【標準化eGFR（mL/min/1.73m²）】。急性期治療と発症抑制の両方に使える経口CGRP関連薬。腎機能低下でAUCが大きく上昇する（重度で2.6倍）ため、末期腎不全では避ける。トリプタンが使えない虚血性心疾患例の選択肢。src:JSNP第39版'},
+
+{id:'lurasidone',cat:'psychiatry',name:'ルラシドン',yomi:'るらしどん',
+ brand:['ラツーダ'],
+ cls:'非定型抗精神病薬（統合失調症・双極性障害のうつ症状）',metric:'ccr',
+ thr:[
+  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'いずれも食後。①統合失調症: 1日1回40mg、最大1日80mg ②双極性障害におけるうつ症状: 1日1回20〜60mg（開始20mg、増量幅1日20mg、最大1日60mg）'},
+  {min:30,max:50,st:'caution',lb:'開始量・増量幅を減らす',dose:'JSNP第39版: ①1日1回40mg食後（開始20mg、増量幅1日20mg、最大1日60mg）②開始10mg、増量幅1日10mg、最大1日60mg。健常者に比べAUCが1.9倍になる'},
+  {min:0,max:30,st:'caution',lb:'1日1回20mg',dose:'JSNP第39版: ①1日1回20mg食後（開始20mg、増量幅1日10mg、最大1日60mg）②開始10mg、増量幅1日10mg、最大1日60mg。健常者に比べAUCが2.0倍になる'},
+ ],
+ dial:{st:'caution',lb:'低用量から',dose:'高度低下に準じ1日1回20mg食後から。増量幅は1日10mgとし最大1日60mg'},
+ note:'腎機能指標は【eCCr（Cockcroft-Gault、実測体重）】。食事の影響が大きく、350kcal以上の食後に服用しないと吸収が半減するため「食後」が必須。CYP3A4で代謝され、クラリスロマイシン・アゾール系との併用は禁忌。錐体外路症状・アカシジアは比較的多いが体重増加・糖代謝異常は少ない。src:JSNP第39版'},
+
+{id:'guanfacine',cat:'psychiatry',name:'グアンファシン',yomi:'ぐあんふぁしん',
+ brand:['インチュニブ'],
+ cls:'選択的α2A受容体作動薬（ADHD治療薬）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1日2mgより開始し、1週間以上の間隔をあけて1mgずつ、1日4〜6mgの維持用量まで増量。最大1日6mg。いずれも1日1回'},
+  {min:0,max:30,st:'caution',lb:'1mgより開始',dose:'JSNP第39版: 高度低下では1日1mgより開始する（クリアランスが低下することにより血中濃度が上昇する可能性がある）'},
+ ],
+ dial:{st:'caution',lb:'1mgより開始',dose:'高度低下に準じ1日1mgより開始し、増量間隔を十分にあける'},
+ note:'腎機能指標は【個別化eGFR】。非中枢刺激性のADHD治療薬で、徐放錠のため粉砕・半割不可。血圧低下・徐脈・傾眠が主な副作用で、腎機能低下例では蓄積により増強しやすい。中止時は血圧リバウンドを避けるため漸減する。src:JSNP第39版'},
+
+// ---- 片頭痛治療薬（腎機能による調節不要） ----
+{id:'rizatriptan',cat:'migraine',name:'リザトリプタン',yomi:'りざとりぷたん',
+ brand:['マクサルト','マクサルトRPD'],
+ cls:'トリプタン系（5-HT1B/1D受容体作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回10mgを片頭痛発作時に。追加投与は前回投与から2時間以上あける。最大1日総投与量20mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1回10mg、最大20mg/日）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。口腔内崩壊錠（RPD錠）は水なしで服用でき、発作時に便利。プロプラノロールとの併用時は1回5mgに減量する。腎機能低下例でも使えるトリプタン。src:JSNP第39版'},
+
+{id:'sumatriptan',cat:'migraine',name:'スマトリプタン',yomi:'すまとりぷたん',
+ brand:['イミグラン','イミグラン点鼻液','イミグランキット皮下注'],
+ cls:'トリプタン系（5-HT1B/1D受容体作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠: 添付文書参照（1回50mg、最大200mg/日）。点鼻液: 1回20mgを頭痛発現時に鼻腔内、追加は2時間以上あけ最大1日40mg。皮下注: 1回3mgを皮下注、最大1日6mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は錠・点鼻液・皮下注のいずれも全腎機能域で腎機能正常者と同じとしている。嘔吐を伴う発作では点鼻液や皮下注が有用。MAO阻害薬との併用は禁忌。虚血性心疾患・脳血管障害・コントロール不良の高血圧がある場合は禁忌。src:JSNP第39版'},
+
+{id:'zolmitriptan',cat:'migraine',name:'ゾルミトリプタン',yomi:'ぞるみとりぷたん',
+ brand:['ゾーミッグ','ゾーミッグRM'],
+ cls:'トリプタン系（5-HT1B/1D受容体作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回2.5mg、効果不十分なら1回5mgまで、最大10mg/日）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。RM錠は口腔内崩壊錠。活性代謝物を持ち効果が比較的長い。src:JSNP第39版'},
+
+{id:'eletriptan',cat:'migraine',name:'エレトリプタン',yomi:'えれとりぷたん',
+ brand:['レルパックス'],
+ cls:'トリプタン系（5-HT1B/1D受容体作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回20mg、効果不十分なら1回40mgまで、最大40mg/日）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。CYP3A4で代謝されるため、強いCYP3A4阻害薬（クラリスロマイシン・イトラコナゾール等）との併用は禁忌。効果発現が速い。src:JSNP第39版'},
+
+{id:'lasmiditan',cat:'migraine',name:'ラスミジタン',yomi:'らすみじたん',
+ brand:['レイボー'],
+ cls:'5-HT1F受容体作動薬（ジタン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回100mg、効果不十分なら1回50mgまたは200mgへ、最大200mg/日）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。血管収縮作用を持たないため、トリプタンが禁忌となる虚血性心疾患・脳血管障害の患者にも使える。服用後8時間は自動車運転などを行わないこと（めまい・傾眠）。src:JSNP第39版'},
+
+{id:'lomerizine',cat:'migraine',name:'ロメリジン',yomi:'ろめりじん',
+ brand:['ミグシス','テラナス'],
+ cls:'Ca拮抗薬（片頭痛発作発症抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回5mgを1日2回、朝食後及び夕食後あるいは就寝前。最大1日20mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1回5mg 1日2回、最大20mg/日）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。片頭痛の予防薬で、発作時には効かない。効果判定には2〜3カ月の継続が必要。パーキンソン症候群（薬剤性）に注意し、長期投与例では定期的に確認する。src:JSNP第39版'},
+
+{id:'dimethotiazine',cat:'migraine',name:'ジメトチアジン',yomi:'じめとちあじん',
+ brand:['ミグリステン'],
+ cls:'抗セロトニン薬（片頭痛発作発症抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日60mgを分3。最大1日120mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（60mg/日 分3、最大120mg/日）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。フェノチアジン系の構造を持つ片頭痛予防薬。眠気・口渇などの抗コリン作用に注意。src:JSNP第39版'},
+
+{id:'galcanezumab',cat:'migraine',name:'ガルカネズマブ',yomi:'がるかねずまぶ',
+ brand:['エムガルティ'],
+ cls:'抗CGRPモノクローナル抗体（片頭痛発作発症抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'初回に240mg、以後は1カ月間隔で120mgを皮下注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗体医薬は分子量が大きく腎から排泄されないため、腎機能低下例・透析患者でも用量調節が不要。片頭痛予防の自己注射製剤で、腎機能低下例の片頭痛には有力な選択肢。src:JSNP第39版'},
+
+{id:'fremanezumab',cat:'migraine',name:'フレマネズマブ',yomi:'ふれまねずまぶ',
+ brand:['アジョビ'],
+ cls:'抗CGRPモノクローナル抗体（片頭痛発作発症抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回225mgを4週間に1回、又は1回675mgを12週間に1回、いずれも皮下注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗体医薬のため腎排泄されず用量調節不要。4週間隔と12週間隔を選べるのが特徴。src:JSNP第39版'},
+
+{id:'erenumab',cat:'migraine',name:'エレヌマブ',yomi:'えれぬまぶ',
+ brand:['アイモビーグ'],
+ cls:'抗CGRP受容体モノクローナル抗体（片頭痛発作発症抑制）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回70mgを4週間に1回、皮下注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗体医薬のため腎排泄されず用量調節不要。CGRPそのものではなく受容体に結合する点が他の2剤と異なる。便秘が比較的多い。src:JSNP第39版'},
+
+// ---- めまい・制吐薬（腎機能による調節不要） ----
+{id:'ondansetron',cat:'misc',name:'オンダンセトロン',yomi:'おんだんせとろん',
+ brand:['オンダンセトロン注','オンダンセトロンOD錠'],
+ cls:'5-HT3受容体拮抗型制吐薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回4mgを緩徐に静注。効果不十分な場合は同用量を追加可。OD錠も1日1回4mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1日1回4mg）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗悪性腫瘍薬投与に伴う悪心・嘔吐に用いる。肝代謝主体で腎機能の影響を受けにくい。便秘・頭痛・QT延長に注意。src:JSNP第39版'},
+
+{id:'dimenhydrinate',cat:'misc',name:'ジメンヒドリナート',yomi:'じめんひどりなーと',
+ brand:['ドラマミン'],
+ cls:'抗ヒスタミン系鎮暈薬（動揺病・メニエール症候群）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回50mgを1日3〜4回。動揺病の予防には乗物に乗る30分から1時間前に50〜100mg、最大1日200mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。ジフェンヒドラミンと8-クロロテオフィリンの塩。抗コリン作用があり、緑内障・前立腺肥大・高齢者では眠気や尿閉に注意。src:JSNP第39版'},
+
+{id:'diphenhydramine_dipro',cat:'misc',name:'ジフェンヒドラミン・ジプロフィリン配合',yomi:'じふぇんひどらみんじぷろふぃりん',
+ brand:['トラベルミン配合錠','トラベルミン注'],
+ cls:'抗ヒスタミン・キサンチン配合鎮暈薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'配合錠: 1回1錠を1日3〜4回。注: 1回1mLを皮下注又は筋注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。動揺病・メニエール症候群によるめまい・悪心に用いる。眠気が強く、服用中の自動車運転は避ける。src:JSNP第39版'},
+
+{id:'taltirelin',cat:'misc',name:'タルチレリン',yomi:'たるちれりん',
+ brand:['セレジスト','セレジストOD'],
+ cls:'TRH誘導体（脊髄小脳変性症における運動失調改善）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回5mgを1日2回、朝・夕食後'},
+  {min:0,max:30,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 重度の腎障害患者1名で血漿中濃度が4.2倍上昇した報告がある。腎排泄型のため蓄積に注意し、減量または投与間隔の延長を考慮する'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'腎排泄型で蓄積のおそれ。低用量から慎重に'},
+ note:'脊髄小脳変性症の運動失調に用いるTRH誘導体。腎排泄型で、JSNP第39版は重度腎障害例で血漿中濃度が4.2倍に上昇した症例を挙げている。具体的な推奨用量の記載はないため、腎機能低下例では専門医と相談のうえ慎重に。悪心・食欲不振・AST/ALT上昇に注意。src:JSNP第39版'},
+
+// ---- 認知症治療薬（抗アミロイドβ抗体・腎機能による調節不要） ----
+{id:'lecanemab',cat:'dementia_pd',name:'レカネマブ',yomi:'れかねまぶ',
+ brand:['レケンビ'],
+ cls:'抗アミロイドβ抗体（アルツハイマー型認知症進行抑制薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回10mg/kgを2週間に1回、約1時間かけて点滴静注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗体医薬は腎から排泄されないため用量調節不要。ARIA（アミロイド関連画像異常：浮腫・微小出血）のモニタリングが必要で、定期的なMRIを行う。APOE ε4ホモ接合体でARIAリスクが高い。src:JSNP第39版'},
+
+{id:'donanemab',cat:'dementia_pd',name:'ドナネマブ',yomi:'どなねまぶ',
+ brand:['ケサンラ'],
+ cls:'抗アミロイドβ抗体（アルツハイマー型認知症進行抑制薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回700mgを4週間隔で3回、その後は1回1,400mgを4週間隔、少なくとも30分かけて点滴静注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗体医薬のため腎排泄されず用量調節不要。レカネマブと同様にARIAのモニタリング（定期MRI）が必要。アミロイドPETで一定の除去が確認されれば投与終了を検討できる点が特徴。src:JSNP第39版'},
+
+// ---- パーキンソン病治療薬 ----
+{id:'zonisamide_pd',cat:'dementia_pd',name:'ゾニサミド（パーキンソン病用量）',yomi:'ぞにさみどぱーきんそん',
+ brand:['トレリーフ'],
+ cls:'パーキンソン病治療薬（レボドパ賦活薬）／抗てんかん薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'パーキンソン病（トレリーフ）: 添付文書参照（1日1回25mg、効果不十分なら50mg）。CCr<20の患者のAUCは健常者の1.4倍になるが、てんかんの用量よりも少ないため減量は不要と考えられる（EO）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'パーキンソン病の用量（25〜50mg/日）では減量不要。ただし透析性があるため透析後の補充を考慮する'},
+ note:'JSNP第39版はパーキンソン病用量（トレリーフ）について全腎機能域で腎機能正常者と同じとしている。CCr<20でAUCが1.4倍になるが、てんかん用量（エクセグラン: 100〜600mg/日）よりはるかに少ないため減量不要と判断されている。てんかん用量（エクセグラン）は腎機能で減量が必要なので、本アプリでは「ゾニサミド（てんかん用量）」として別に収載している。弱い炭酸脱水酵素阻害作用があり、腎・尿路結石、代謝性アシドーシス、発汗減少があらわれることがある。腎障害があらわれることがあるため、開始前および投与中に定期的に腎機能検査を行う。src:JSNP第39版'},
+
+// ---- 睡眠薬・抗不安薬（腎機能による調節不要） ----
+{id:'loflazepate',cat:'sleep_bz',name:'ロフラゼプ酸エチル',yomi:'ろふらぜぷさんえちる',
+ brand:['メイラックス'],
+ cls:'ベンゾジアゼピン系抗不安薬（超長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日2mgを分1〜2'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1日2mg 分1〜2）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。半減期が約122時間と極めて長い超長時間型で、1日1回投与でよい。長時間型ゆえに高齢者・腎機能低下例では日中の眠気・ふらつき・転倒が遷延しやすく、蓄積に注意する。中止時は離脱症状が出にくいのが利点。src:JSNP第39版'},
+
+{id:'lormetazepam',cat:'sleep_bz',name:'ロルメタゼパム',yomi:'ろるめたぜぱむ',
+ brand:['エバミール','ロラメット'],
+ cls:'ベンゾジアゼピン系睡眠薬（短時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回1〜2mgを就寝前。高齢者は1回2mgまで'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1〜2mg 就寝前）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。グルクロン酸抱合のみで代謝され、活性代謝物を持たず、CYPをほとんど介さないため相互作用が少ない。肝機能低下例・腎機能低下例・多剤併用例で使いやすい短時間型睡眠薬。src:JSNP第39版'},
+
+// ---- 自律神経作用薬 ----
+{id:'bethanechol',cat:'uro_other',name:'ベタネコール',yomi:'べたねこーる',
+ brand:['ベサコリン'],
+ cls:'コリン作動薬（排尿障害・腸管麻痺）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'調節不要と考えられる',dose:'1日30〜50mgを分3〜4。JSNP第39版: 減量する必要がないと思われるが、薬物動態データがほとんどなく不明（EO）'}],
+ dial:{st:'ok',lb:'調節不要と考えられる',dose:'JSNP第39版: 減量する必要がないと思われるが、薬物動態データがほとんどなく不明（EO）'},
+ note:'JSNP第39版は「減量する必要がないと思われるが、薬物動態データがほとんどなく不明」と注記している。低緊張性膀胱による排尿困難や手術後の腸管麻痺に用いる。コリン作動性クリーゼ（発汗・腹痛・下痢・徐脈）に注意し、気管支喘息・消化管閉塞・甲状腺機能亢進症では禁忌。src:JSNP第39版'},
+
+// ---- ARB配合剤（JSNP第39版 p.131〜135の写真より追加）----
+{id:'candesartan_hctz',cat:'cv_arb',xcat:['cv_diuretic'],name:'カンデサルタン・ヒドロクロロチアジド配合',yomi:'かんでさるたんひどろくろろちあじど',
+ brand:['エカード配合錠LD','エカード配合錠HD','カデチア配合錠LD','カデチア配合錠HD'],
+ cls:'ARB・サイアザイド系利尿薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP/EX）は低用量規格で効果不十分な場合に用いる'},
+  {min:30,max:60,st:'caution',lb:'低用量から慎重に',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与（低用量から開始）。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: SCr値が2.0mg/dLを超える腎機能障害患者においては、治療上やむを得ないと判断される場合を除き使用は避ける。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又は透析患者は禁忌。サイアザイド系利尿薬は無尿では効果が期待できず、腎機能を更に悪化させるおそれがある'},
+ note:'ARBとサイアザイド系利尿薬の配合剤。透析患者・無尿患者は禁忌で、SCr2.0mg/dL超でも原則避ける。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。高カリウム血症（ARB）と低カリウム血症・高尿酸血症（利尿薬）が打ち消し合うとは限らないので、電解質・尿酸・腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'telmisartan_hctz',cat:'cv_arb',xcat:['cv_diuretic'],name:'テルミサルタン・ヒドロクロロチアジド配合',yomi:'てるみさるたんひどろくろろちあじど',
+ brand:['ミコンビ配合錠AP','ミコンビ配合錠BP','テルチア配合錠AP','テルチア配合錠BP'],
+ cls:'ARB・サイアザイド系利尿薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP/EX）は低用量規格で効果不十分な場合に用いる'},
+  {min:30,max:60,st:'caution',lb:'低用量から慎重に',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与（低用量から開始）。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: SCr値が2.0mg/dLを超える腎機能障害患者においては、治療上やむを得ないと判断される場合を除き使用は避ける。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又は透析患者は禁忌。サイアザイド系利尿薬は無尿では効果が期待できず、腎機能を更に悪化させるおそれがある'},
+ note:'ARBとサイアザイド系利尿薬の配合剤。透析患者・無尿患者は禁忌で、SCr2.0mg/dL超でも原則避ける。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。高カリウム血症（ARB）と低カリウム血症・高尿酸血症（利尿薬）が打ち消し合うとは限らないので、電解質・尿酸・腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'valsartan_hctz',cat:'cv_arb',xcat:['cv_diuretic'],name:'バルサルタン・ヒドロクロロチアジド配合',yomi:'ばるさるたんひどろくろろちあじど',
+ brand:['コディオ配合錠MD','コディオ配合錠EX','バルヒディオ配合錠MD','バルヒディオ配合錠EX'],
+ cls:'ARB・サイアザイド系利尿薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP/EX）は低用量規格で効果不十分な場合に用いる'},
+  {min:30,max:60,st:'caution',lb:'低用量から慎重に',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与（低用量から開始）。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: SCr値が2.0mg/dLを超える腎機能障害患者においては、治療上やむを得ないと判断される場合を除き使用は避ける。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又は透析患者は禁忌。サイアザイド系利尿薬は無尿では効果が期待できず、腎機能を更に悪化させるおそれがある'},
+ note:'ARBとサイアザイド系利尿薬の配合剤。透析患者・無尿患者は禁忌で、SCr2.0mg/dL超でも原則避ける。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。高カリウム血症（ARB）と低カリウム血症・高尿酸血症（利尿薬）が打ち消し合うとは限らないので、電解質・尿酸・腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'losartan_hctz',cat:'cv_arb',xcat:['cv_diuretic'],name:'ロサルタンカリウム・ヒドロクロロチアジド配合',yomi:'ろさるたんひどろくろろちあじど',
+ brand:['プレミネント配合錠LD','プレミネント配合錠HD','ロサルヒド配合錠LD','ロサルヒド配合錠HD'],
+ cls:'ARB・サイアザイド系利尿薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP/EX）は低用量規格で効果不十分な場合に用いる'},
+  {min:30,max:60,st:'caution',lb:'低用量から慎重に',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与（低用量から開始）。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: SCr値が2.0mg/dLを超える腎機能障害患者においては、治療上やむを得ないと判断される場合を除き使用は避ける。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又は透析患者は禁忌。サイアザイド系利尿薬は無尿では効果が期待できず、腎機能を更に悪化させるおそれがある'},
+ note:'ARBとサイアザイド系利尿薬の配合剤。透析患者・無尿患者は禁忌で、SCr2.0mg/dL超でも原則避ける。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。高カリウム血症（ARB）と低カリウム血症・高尿酸血症（利尿薬）が打ち消し合うとは限らないので、電解質・尿酸・腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'irbesartan_trichlormethiazide',cat:'cv_arb',xcat:['cv_diuretic'],name:'イルベサルタン・トリクロルメチアジド配合',yomi:'いるべさるたんとりくろるめちあじど',
+ brand:['イルトラ配合錠LD','イルトラ配合錠HD'],
+ cls:'ARB・サイアザイド系利尿薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP/EX）は低用量規格で効果不十分な場合に用いる'},
+  {min:30,max:60,st:'caution',lb:'低用量から慎重に',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与（低用量から開始）。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: SCr値が2.0mg/dLを超える腎機能障害患者においては、治療上やむを得ないと判断される場合を除き使用は避ける。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又は透析患者は禁忌。サイアザイド系利尿薬は無尿では効果が期待できず、腎機能を更に悪化させるおそれがある'},
+ note:'ARBとサイアザイド系利尿薬の配合剤。透析患者・無尿患者は禁忌で、SCr2.0mg/dL超でも原則避ける。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。高カリウム血症（ARB）と低カリウム血症・高尿酸血症（利尿薬）が打ち消し合うとは限らないので、電解質・尿酸・腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'azilsartan_amlodipine',cat:'cv_arb',xcat:['cv_ccb'],name:'アジルサルタン・アムロジピン配合',yomi:'あじるさるたんあむろじぴん',
+ brand:['ザクラス配合錠LD','ザクラス配合錠HD','ジルムロ配合錠LD','ジルムロ配合錠HD','ジルムロ配合OD錠LD','ジルムロ配合OD錠HD'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'irbesartan_amlodipine',cat:'cv_arb',xcat:['cv_ccb'],name:'イルベサルタン・アムロジピン配合',yomi:'いるべさるたんあむろじぴん',
+ brand:['アイミクス配合錠LD','アイミクス配合錠HD','イルアミクス配合錠LD','イルアミクス配合錠HD'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'olmesartan_azelnidipine',cat:'cv_arb',xcat:['cv_ccb'],name:'オルメサルタン・アゼルニジピン配合',yomi:'おるめさるたんあぜるにじぴん',
+ brand:['レザルタス配合錠LD','レザルタス配合錠HD'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'candesartan_amlodipine',cat:'cv_arb',xcat:['cv_ccb'],name:'カンデサルタン・アムロジピン配合',yomi:'かんでさるたんあむろじぴん',
+ brand:['ユニシア配合錠LD','ユニシア配合錠HD','カムシア配合錠LD','カムシア配合錠HD'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'telmisartan_amlodipine',cat:'cv_arb',xcat:['cv_ccb'],name:'テルミサルタン・アムロジピン配合',yomi:'てるみさるたんあむろじぴん',
+ brand:['ミカムロ配合錠AP','ミカムロ配合錠BP','テラムロ配合錠AP','テラムロ配合錠BP'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'valsartan_amlodipine',cat:'cv_arb',xcat:['cv_ccb'],name:'バルサルタン・アムロジピン配合',yomi:'ばるさるたんあむろじぴん',
+ brand:['エックスフォージ配合錠','エックスフォージ配合OD錠','アムバロ配合錠','アムバロ配合OD錠'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'valsartan_cilnidipine',cat:'cv_arb',xcat:['cv_ccb'],name:'バルサルタン・シルニジピン配合',yomi:'ばるさるたんしるにじぴん',
+ brand:['アテディオ配合錠'],
+ cls:'ARB・Ca拮抗薬配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。高用量規格（HD/BP）は低用量規格で効果不十分な場合に用いる'},
+  {min:0,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ARB成分により腎機能悪化・高カリウム血症のおそれがあるため、開始後2週間を目安に血清カリウムとSCrを確認する。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。利尿薬を含まないため透析患者の禁忌にはあたらないが、ARB成分による高カリウム血症に注意する'},
+ note:'ARBとCa拮抗薬の配合剤。利尿薬を含まないため、ARB・利尿薬配合剤と違って透析患者が禁忌にはならない。腎機能低下例でも用量調節は不要だが、ARB成分による高カリウム血症と腎機能悪化に注意し、開始後2週間を目安に採血で確認する。配合剤は用量を細かく調節できないため、腎機能低下例では各成分を個別の製剤で調節するのが原則。src:JSNP第39版'},
+
+{id:'telmisartan_amlodipine_hctz',cat:'cv_arb',xcat:['cv_ccb','cv_diuretic'],name:'テルミサルタン・アムロジピン・ヒドロクロロチアジド配合',yomi:'てるみさるたんあむろじぴんひどろくろろちあじど',
+ brand:['ミカトリオ配合錠'],
+ cls:'ARB・Ca拮抗薬・サイアザイド系利尿薬の3剤配合剤',metric:'egfr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'1日1回1錠。3成分すべてを個別に併用して安定している患者にのみ切り替える'},
+  {min:30,max:60,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。配合剤は用量調節ができないため、まず各成分を個別に調節してから切り替える'},
+  {min:0,max:30,st:'warning',lb:'原則使用を避ける',dose:'JSNP第39版: 急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）。利尿薬を含むため腎機能低下例では原則として各成分を個別の製剤で調節する'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿患者又はHD患者は禁忌'},
+ note:'3成分の配合剤で、用量調節が一切できない。無尿患者・HD患者は禁忌。3成分すべてを個別に併用して血圧が安定している患者にのみ切り替えるという位置づけで、腎機能低下例では各成分を個別の製剤に戻して調節するのが原則。src:JSNP第39版'},
+
+
+// ============================================================
+// JSNP第39版 p.74〜163の写真から追加（2026-10-08・循環器／鎮痛／血液）
+// ============================================================
+
+// ---- オピオイド（非麻薬）----
+{id:'tramadol_sr',cat:'analgesic_opioid',name:'トラマドール徐放錠',yomi:'とらまどーるじょほうじょう',
+ brand:['ワントラム錠','ツートラム錠'],
+ cls:'オピオイド（非麻薬）・徐放性製剤',metric:'egfr',
+ thr:[
+  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'ワントラム: 1日1回100〜300mg、最大400mg/日。ツートラム: 1日100〜300mgを分2、1回最大200mg・1日最大400mg。いずれも75歳以上の高齢者では最大300mg/日'},
+  {min:30,max:50,st:'caution',lb:'低用量から漸増',dose:'JSNP第39版: 投与間隔を延長するなど慎重に投与する。高い血中濃度が持続し作用及び副作用が増強するおそれがある（添）。低用量より開始し漸増、依存性に配慮し長期投与は避ける（EO）。トラマドール・活性代謝物M1のAUCはそれぞれ健常者の2.0、2.2倍になる'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（徐放性製剤のため、作用及び副作用が増強、遅延しやすい）。速放製剤（トラマールOD錠）であれば最大1日200mgを12時間毎で使用できる（FDA）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 徐放性製剤のため禁忌。速放製剤（トラマールOD錠）に変更し、白鷺13版の50mgを12時間毎（HD日はHD後）に従う'},
+ note:'トラマドールの徐放錠（ワントラム＝1日1回、ツートラム＝1日2回）は、eGFR30未満では徐放性ゆえに作用・副作用が増強し遅延するため禁忌。速放製剤のトラマール（OD錠・注）は禁忌ではないので、腎機能低下例では速放製剤への変更を検討する。この「同じ成分でも徐放錠だけ禁忌」というパターンは、ミラペックスLA・リスモダンR・ミケランLAなどにも共通する。src:JSNP第39版'},
+
+{id:'tramcet',cat:'analgesic_opioid',name:'トラマドール・アセトアミノフェン配合',yomi:'とらまどーるあせとあみのふぇん',
+ brand:['トラムセット配合錠'],
+ cls:'オピオイド（非麻薬）・アセトアミノフェン配合剤',metric:'egfr',
+ thr:[
+  {min:50,max:999,st:'ok',lb:'通常投与可',dose:'①非がん性慢性疼痛: 1回1錠を1日4回、投与間隔は4時間以上。最大1回2錠・1日8錠 ②抜歯後の疼痛: 1回2錠、追加投与は4時間以上あけ1日8錠まで'},
+  {min:0,max:50,st:'caution',lb:'減量・間隔延長',dose:'JSNP第39版: 投与量の減量、投与間隔の延長を考慮する。また高い血中濃度が持続し作用及び副作用が増強するおそれがある（添）。低用量より開始し漸増、依存性に配慮し長期投与は避ける（EO）。トラマドール・活性代謝物M1のAUCはそれぞれ健常者の2.0、2.2倍になる'},
+ ],
+ dial:{st:'caution',lb:'減量・間隔延長',dose:'トラマドール成分の活性代謝物M1が蓄積するため、1日量を減らし投与間隔をあける。傾眠・痙攣を観察する'},
+ note:'トラマドール37.5mgとアセトアミノフェン325mgの配合錠。腎機能低下では活性代謝物M1が蓄積するため、1日量の減量と投与間隔の延長を考慮する。配合剤のためトラマドールだけを減らすことができず、アセトアミノフェンの1日上限（配合錠8錠で2,600mg）も同時に効いてくる点に注意。徐放錠（ワントラム・ツートラム）と違い禁忌ではない。src:JSNP第39版'},
+
+{id:'buprenorphine',cat:'analgesic_opioid',name:'ブプレノルフィン',yomi:'ぶぷれのるふぃん',
+ brand:['ノルスパンテープ','レペタン注','レペタン坐剤'],
+ cls:'オピオイド（非麻薬・部分作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'ノルスパンテープ: 前胸部・上背部・上腕外部又は側胸部に貼付し7日毎に貼り替え。初回貼付用量は5mgとし最大20mg。注・坐剤は添付文書参照'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。胆汁排泄主体で活性代謝物の蓄積がない'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。胆汁排泄が主体で腎機能の影響をほとんど受けないため、腎機能低下例・透析患者で使いやすいオピオイド。日本緩和医療学会のガイドライン2020年版では、がん疼痛（中等度から高度）のある高度の腎障害（eGFR<30mL/min）患者で、初回投与のオピオイドとして注射剤の投与が推奨されている。ノルスパンテープは非オピオイド鎮痛薬で効果不十分な変形性関節症・腰痛症に用いる。src:JSNP第39版'},
+
+{id:'pentazocine',cat:'analgesic_opioid',name:'ペンタゾシン',yomi:'ぺんたぞしん',
+ brand:['ソセゴン錠','ソセゴン注射液'],
+ cls:'オピオイド（非麻薬・拮抗性鎮痛薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠: 1回25〜50mg。必要に応じ追加投与する場合は3〜5時間の間隔をおく。注射液は添付文書参照'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。κ作動・μ拮抗の拮抗性鎮痛薬で、μ作動薬との併用で離脱症状を起こすことがある。依存性があり長期投与は避ける。幻覚・不快気分などの精神症状に注意。src:JSNP第39版'},
+
+// ---- 中枢性筋弛緩薬 ----
+{id:'baclofen',cat:'muscle_relax',name:'バクロフェン',yomi:'ばくろふぇん',
+ brand:['ギャバロン錠','リオレサール錠','ギャバロン髄注'],
+ cls:'中枢性筋弛緩薬（GABA-B受容体作動薬）',metric:'ccr',
+ thr:[
+  {min:80,max:999,st:'ok',lb:'通常投与可',dose:'初回量として1日5〜15mgを分1〜3、食後。以後2〜3日毎に1日5〜10mgずつ増量し、標準用量は1日30mg'},
+  {min:50,max:80,st:'caution',lb:'2/3に減量',dose:'JSNP第39版: 低用量から投与を開始する（添）。1日10〜20mgを分1〜2（EO）。eCCr50〜80mL/minでは2/3に減量（J Clin Pharmacol 54:584-592, 2014）'},
+  {min:30,max:50,st:'caution',lb:'1/2に減量',dose:'JSNP第39版: eCCr30〜50mL/minでは1/2に減量。1日10〜20mgを分1〜2（EO）'},
+  {min:15,max:30,st:'warning',lb:'1日5mgから開始',dose:'JSNP第39版: eCCr30mL/min未満では1/3に減量。高度低下では1日5mgから開始する。eGFR30mL/min/1.73m²未満の患者では1日7.5mgから開始する（Nefrologia 40:543-551, 2020）'},
+  {min:0,max:15,st:'warning',lb:'1日2.5mgから開始',dose:'JSNP第39版: 末期腎不全は1日2.5mgから開始する。1日5mgから開始し最大1日1回10mg（EO）とする記載もある。腎排泄率が高く脳症のリスクがあるため少量から'},
+ ],
+ dial:{st:'warning',lb:'1日2.5〜5mgから開始',dose:'JSNP第39版: 1日2.5mgから開始する。高齢HD患者で1日20mg（中央値）の投与により脳症による入院リスクが増加する（Kidney Int 97:979-988, 2020）。意識障害・けいれん・呼吸抑制を観察し、中止時は漸減する'},
+ note:'腎排泄型で、大部分が未変化体のまま尿中に排泄される。腎機能低下例ではバクロフェン脳症（意識障害・けいれん・呼吸抑制・徐脈）のリスクが高く、HD患者では1日20mg程度でも入院リスクが増加したという報告がある。明確な減量基準が定められていないため、少量から開始して反応を見ながら慎重に増量する。急な中止で痙攣・幻覚などの離脱症状が出るため、中止するときは必ず漸減する。髄注製剤は別の用量体系なので添付文書を参照。src:JSNP第39版'},
+
+{id:'afloqualone',cat:'muscle_relax',name:'アフロクアロン',yomi:'あふろくあろん',
+ brand:['アロフト錠'],
+ cls:'中枢性筋弛緩薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日60mgを分3'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（60mg/日 分3）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。眠気・ふらつきが出やすく、高齢者では転倒に注意する。src:JSNP第39版'},
+
+{id:'chlorphenesin',cat:'muscle_relax',name:'クロルフェネシンカルバミン酸エステル',yomi:'くろるふぇねしんかるばみんさんえすてる',
+ brand:['リンラキサー錠'],
+ cls:'中枢性筋弛緩薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回250mgを1日3回'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可（1回250mg 1日3回）'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。腰背痛症・頸肩腕症候群の筋緊張に用いる。src:JSNP第39版'},
+
+// ---- 慢性心不全・肺高血圧症 ----
+{id:'vericiguat',cat:'cv_other',name:'ベルイシグアト',yomi:'べるいしぐあと',
+ brand:['ベリキューボ錠'],
+ cls:'sGC（可溶性グアニル酸シクラーゼ）刺激薬・慢性心不全治療薬',metric:'egfr_std',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回2.5mgから開始し、2週間間隔で1回5mg及び10mgに段階的に増量。いずれも食後。中等度（eGFR30〜59）・重度（eGFR<30）腎障害患者（非心不全）のAUCはそれぞれ健常者の1.8、2.3倍になるが、心不全患者では腎機能によるAUCへの影響は認められなかったとされる'},
+  {min:0,max:15,st:'warning',lb:'投与の適否を慎重に判断',dose:'JSNP第39版: 末期腎不全では投与の適否を慎重に判断し、投与する場合には患者の状態を十分に観察する。血中濃度が上昇するおそれがある。臨床試験では除外されている'},
+ ],
+ dial:{st:'warning',lb:'投与の適否を慎重に判断',dose:'JSNP第39版: 臨床試験では除外されており、投与の適否を慎重に判断する。血中濃度が上昇するおそれがある'},
+ note:'腎機能指標は【標準化eGFR（mL/min/1.73m²）】。HFrEFの慢性心不全に用いるsGC刺激薬で、eGFR15以上であれば腎機能による用量調節は不要。非心不全の腎障害患者ではAUCが上昇するが、心不全患者では腎機能の影響が認められなかったとされている点が特徴。低血圧・貧血に注意し、PDE5阻害薬（シルデナフィル等）やリオシグアトとの併用は禁忌。食後投与が必須（空腹時は吸収が落ちる）。src:JSNP第39版'},
+
+{id:'selexipag',cat:'cv_other',name:'セレキシパグ',yomi:'せれきしぱぐ',
+ brand:['ウプトラビ錠'],
+ cls:'選択的IP受容体作動薬（肺動脈性肺高血圧症治療薬）',metric:'egfr_std',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回0.2mgから開始し、7日以上の間隔で1回0.2mgずつ増量して維持用量を決定。最大1回1.6mg。いずれの用量においても1日2回、食後'},
+  {min:0,max:15,st:'caution',lb:'慎重投与',dose:'JSNP第39版: 血中濃度が上昇することが認められている。重度（GFR15〜29mL/min/1.73m²）腎障害患者のセレキシパグ、活性代謝物MRE-269のAUCはそれぞれ健常者の1.7、1.6倍になる'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: 透析中の患者を対象とした有効性及び安全性を指標とした臨床試験は実施していない。血中濃度が上昇することが認められている'},
+ note:'腎機能指標は【標準化eGFR（mL/min/1.73m²）】。肺動脈性肺高血圧症に用いる経口プロスタサイクリン受容体作動薬。eGFR15以上は用量調節不要で、それ未満でもAUCの上昇は1.7倍程度にとどまる。頭痛・下顎痛・下痢・悪心が高頻度に出るため、忍容性を見ながら7日以上の間隔で漸増する。食後投与。src:JSNP第39版'},
+
+{id:'nitroprusside',cat:'cv_other',name:'ニトロプルシドナトリウム',yomi:'にとろぷるしど',
+ brand:['ニトプロ持続静注液'],
+ cls:'血管拡張薬（NO供与体・手術時の低血圧維持／急性心不全）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（0.5μg/kg/minから開始し、血圧を見ながら調節）'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（重篤な腎障害患者では血管拡張作用により腎循環が抑制され、腎障害を悪化させるおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 重篤な腎障害患者は禁忌。代謝物チオシアン酸が腎排泄のため蓄積し中毒を起こす'},
+ note:'重篤な腎障害が禁忌。代謝過程で生じるシアンが肝臓でチオシアン酸に変換されたあと腎から排泄されるため、腎機能低下例ではチオシアン酸中毒（意識障害・けいれん・代謝性アシドーシス）を起こす。手術時の低血圧維持や急性心不全に用いる注射薬で、持続投与中は血圧と血中チオシアン酸濃度を監視する。src:JSNP第39版'},
+
+// ---- β遮断薬・αβ遮断薬 ----
+{id:'carteolol',cat:'cv_beta',name:'カルテオロール',yomi:'かるておろーる',
+ brand:['ミケラン錠','ミケランLAカプセル'],
+ cls:'β遮断薬（ISA＋）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日10〜15mgより開始し、効果が不十分な場合には30mgまで漸増、分2〜3。LAカプセルは1日1回15mg朝食後、1日1回30mgまで増量可'},
+  {min:15,max:45,st:'caution',lb:'50%に減量',dose:'JSNP第39版: 重篤な腎障害患者では副作用が出現するおそれがある（添）。50%に減量（Eur J Clin Pharmacol 29:461-465, 1985）'},
+  {min:0,max:15,st:'caution',lb:'25%に減量',dose:'JSNP第39版: 高度低下〜末期腎不全は25%に減量。LAカプセルは減量が必要であるが、徐放性製剤のため分割使用に適さない（EO）ので普通錠に変更する'},
+ ],
+ dial:{st:'caution',lb:'25%に減量',dose:'JSNP第39版: 常用量の25%に減量。LAカプセル（徐放）は分割できないため普通錠を用いる'},
+ note:'腎排泄型のβ遮断薬で、腎機能に応じて50%→25%と段階的に減量する。LAカプセルは徐放性製剤のため分割できず、減量が必要な腎機能低下例では普通錠に変更する必要がある。ISA（内因性交感神経刺激作用）を持つため徐脈になりにくい反面、心保護効果は期待しにくい。src:JSNP第39版'},
+
+{id:'betaxolol',cat:'cv_beta',name:'ベタキソロール',yomi:'べたきそろーる',
+ brand:['ケルロング錠'],
+ cls:'β1選択性遮断薬',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①本態性高血圧症 1日1回5〜10mg（最大20mg）②腎実質性高血圧症 1日1回5mg（最大20mg）③狭心症 1日1回10mg（最大20mg）'},
+  {min:0,max:45,st:'caution',lb:'50%に減量',dose:'JSNP第39版: 排泄が遅延するおそれがある（添）。①初回1日1回5mg、増量時は2週間毎に1日5mgずつ増量し最大1日20mg（FDA）。①②③とも50%に減量（EO）。腎障害（平均CCr29mL/min）患者のAUCは健常者の2.1倍になる'},
+ ],
+ dial:{st:'caution',lb:'50%に減量',dose:'常用量の50%に減量し、初回は1日1回5mgから。徐脈・低血圧を観察する'},
+ note:'腎排泄の寄与が大きいβ1選択性遮断薬で、腎機能低下例ではAUCが約2倍になるため50%に減量する。増量するときは2週間以上の間隔をあける。β1選択性だが高用量では選択性が薄れるため、喘息・COPD合併例では注意する。src:JSNP第39版'},
+
+{id:'amosulalol',cat:'cv_beta',name:'アモスラロール',yomi:'あもすらろーる',
+ brand:['ローガン錠'],
+ cls:'αβ遮断薬',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日20mgより開始し、1日60mgまで漸増、分2'},
+  {min:0,max:15,st:'caution',lb:'最大40mg/日',dose:'JSNP第39版: 末期腎不全では最大1日40mg（EO）'},
+ ],
+ dial:{st:'caution',lb:'最大40mg/日',dose:'JSNP第39版: 最大1日40mg（EO）。起立性低血圧に注意'},
+ note:'JSNP第39版は末期腎不全でのみ上限を1日40mgに制限し、それ以外は腎機能正常者と同じとしている。α遮断作用を併せ持つため、投与初期やHD後は起立性低血圧・めまいに注意する。src:JSNP第39版'},
+
+{id:'bevantolol',cat:'cv_beta',name:'ベバントロール',yomi:'べばんとろーる',
+ brand:['カルバン錠'],
+ cls:'β1選択性遮断薬（α1遮断作用併有）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日100mgを分2。最大1日200mg'},
+  {min:0,max:30,st:'caution',lb:'低用量から開始',dose:'JSNP第39版: 重篤な腎障害患者では、低用量から投与を開始することが望ましい。腎障害（SCr1.4〜3.5mg/dL）患者のAUCは健常者の2.6〜2.9倍になる'},
+ ],
+ dial:{st:'caution',lb:'低用量から開始',dose:'AUCが健常者の2.6〜2.9倍になるため低用量から開始する'},
+ note:'JSNP第39版によると腎障害患者でAUCが2.6〜2.9倍に上昇するため、重篤な腎障害では低用量から開始する。具体的な減量率は示されていないので、半量程度から始めて脈拍・血圧を見ながら調節する。src:JSNP第39版'},
+
+// ---- 中枢性α2刺激薬・その他降圧薬 ----
+{id:'clonidine',cat:'cv_other',name:'クロニジン',yomi:'くろにじん',
+ brand:['カタプレス錠'],
+ cls:'中枢性α2刺激薬',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1回75〜150μgを1日3回。重症の高血圧症には1回300μgを1日3回'},
+  {min:30,max:45,st:'caution',lb:'常用量の66.7%',dose:'JSNP第39版: 常用量の66.7%に減量（EO）'},
+  {min:15,max:30,st:'caution',lb:'常用量の50〜66.7%',dose:'JSNP第39版: 常用量の50〜66.7%に減量（EO）'},
+  {min:0,max:15,st:'caution',lb:'常用量の50%',dose:'JSNP第39版: 末期腎不全は常用量の50%に減量（EO）'},
+ ],
+ dial:{st:'caution',lb:'常用量の50%',dose:'JSNP第39版: 常用量の50%に減量。透析後の低血圧に注意する'},
+ note:'腎機能に応じて66.7%→50〜66.7%→50%と段階的に減量する。急に中止すると反跳性高血圧（血圧の急上昇・頻脈・発汗）を起こすため、中止するときは必ず漸減する。口渇・眠気・徐脈が出やすい。src:JSNP第39版'},
+
+{id:'methyldopa',cat:'cv_other',name:'メチルドパ',yomi:'めちるどぱ',
+ brand:['アルドメット錠'],
+ cls:'中枢性α2刺激薬（妊娠高血圧症候群にも使用）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'初期1日250〜750mgから開始し、数日以上の間隔をおいて1日250mgずつ増量。維持量は1日250〜2,000mgを分1〜3'},
+  {min:15,max:45,st:'caution',lb:'1回250〜500mgを1日2〜3回',dose:'JSNP第39版: 中等度〜高度低下は1回250〜500mgを1日2〜3回（EO）'},
+  {min:0,max:15,st:'caution',lb:'1回250〜500mgを1日1〜2回',dose:'JSNP第39版: 末期腎不全は1回250〜500mgを1日1〜2回（EO）'},
+ ],
+ dial:{st:'caution',lb:'1回250〜500mgを1日1〜2回',dose:'JSNP第39版: 1回250〜500mgを1日1〜2回（EO）。透析で除去されるため、HD後の投与を考慮する'},
+ note:'腎機能に応じて投与回数を減らす。妊娠高血圧症候群で使える数少ない降圧薬のひとつ。溶血性貧血・肝障害・薬剤熱が知られており、長期投与では定期的に血液像と肝機能を確認する。尿が放置により黒変することがあるが無害。src:JSNP第39版'},
+
+{id:'methyltyrosine',cat:'cv_other',name:'メチロシン',yomi:'めちろしん',
+ brand:['デムサーカプセル'],
+ cls:'チロシン水酸化酵素阻害薬（褐色細胞腫のカテコールアミン抑制）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1日500mgから開始。3日間以上の間隔をおいて1日250mg又は500mgずつ漸増。最大1日4,000mg・最大1回1,000mg。投与間隔は4時間以上とし、1日500mgは分2、750mgは分3、1,000mg以上は分4'},
+  {min:15,max:30,st:'warning',lb:'低用量から慎重に',dose:'JSNP第39版: 主として腎臓で排泄されるため血中濃度が上昇するおそれがある。副作用の発現リスクが高いと考えられる場合は1日500mgより低用量からの投与開始を考慮する。また3日間以上の間隔をおいて1日250mgずつ慎重に漸増する'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（使用経験がなく、血中濃度が著しく上昇するおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（使用経験がなく、血中濃度が著しく上昇するおそれがある）'},
+ note:'腎機能指標は【個別化eGFR】。褐色細胞腫のカテコールアミン産生を抑える薬で、主として腎排泄のため高度腎機能低下では禁忌。鎮静・錐体外路症状・結晶尿（十分な水分摂取が必要）に注意する。src:JSNP第39版'},
+
+{id:'aliskiren',cat:'cv_arb',name:'アリスキレン',yomi:'ありすきれん',
+ brand:['ラジレス錠'],
+ cls:'直接的レニン阻害薬',metric:'egfr_std',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可（慎重）',dose:'1日1回150mg。最大1日300mg。腎機能正常者と同量を慎重投与'},
+  {min:0,max:60,st:'warning',lb:'ACE阻害薬・ARBとの併用は避ける',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。ただしeGFRが60mL/min/1.73m²未満の腎障害患者へのACE阻害薬又はARBとの併用については、治療上やむを得ないと判断される場合を除き避ける'},
+ ],
+ dial:{st:'caution',lb:'慎重投与',dose:'JSNP第39版: HD患者のAUCは健常者の1.6倍になる。ACE阻害薬・ARBとの併用は避ける'},
+ note:'腎機能指標は【標準化eGFR（mL/min/1.73m²）】。用量そのものは腎機能で調節しないが、eGFR60未満ではACE阻害薬・ARBとの併用を原則避ける点が重要（高カリウム血症・腎機能悪化・低血圧のリスクが上がる）。糖尿病患者へのACE阻害薬・ARBとの併用は禁忌。HD患者のAUCは健常者の1.6倍。src:JSNP第39版'},
+
+{id:'indapamide',cat:'cv_diuretic',name:'インダパミド',yomi:'いんだぱみど',
+ brand:['ナトリックス錠','テナキシル錠'],
+ cls:'非サイアザイド系利尿薬（降圧利尿薬）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回2mg、朝食後。少量から投与を開始して徐々に増量'},
+  {min:0,max:30,st:'warning',lb:'腎機能悪化のおそれ',dose:'JSNP第39版: 重篤な腎障害患者では腎機能を更に悪化させるおそれがある。急性腎不全の患者は禁忌（腎機能を更に悪化させるおそれがある）、無尿の患者は禁忌（効果が期待できない）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌（無尿）',dose:'JSNP第39版: 無尿の患者は禁忌（効果が期待できない）。急性腎不全も禁忌'},
+ note:'サイアザイド類似の降圧利尿薬。無尿では効果が期待できず禁忌、急性腎不全も禁忌。CKDステージG4〜G5では長時間作用型ループ利尿薬が推奨される（エビデンスに基づくCKD診療ガイドライン2023）ため、腎機能低下が進んだ例ではループ利尿薬への変更を検討する。低カリウム血症・高尿酸血症・低ナトリウム血症に注意。src:JSNP第39版'},
+
+{id:'mefruside',cat:'cv_diuretic',name:'メフルシド',yomi:'めふるしど',
+ brand:['バイカロン錠'],
+ cls:'非サイアザイド系利尿薬（降圧利尿薬）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回25〜50mgを1日1〜2回、朝食後又は朝・昼食後'},
+  {min:0,max:30,st:'warning',lb:'腎機能悪化のおそれ',dose:'JSNP第39版: 重篤な腎障害患者では腎機能を更に悪化させるおそれがある。急性腎不全の患者は禁忌、無尿の患者は禁忌（効果が期待できない）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌（無尿）',dose:'JSNP第39版: 無尿の患者は禁忌（効果が期待できない）。急性腎不全も禁忌'},
+ note:'サイアザイド類似の降圧利尿薬。無尿では効果が期待できず禁忌。CKDステージG4〜G5ではループ利尿薬が推奨される。低カリウム血症・高尿酸血症に注意。src:JSNP第39版'},
+
+{id:'canrenoate',cat:'cv_diuretic',name:'カンレノ酸カリウム',yomi:'かんれのさんかりうむ',
+ brand:['ソルダクトン静注用'],
+ cls:'抗アルドステロン薬（注射薬）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回100〜200mgを1日1〜2回、緩徐に静注。最大1日600mg。投与期間は2週間まで'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿又は腎不全の患者、腎機能の進行性悪化状態の患者は禁忌（腎機能を更に悪化させる、高カリウム血症を誘発又は増悪させるおそれがある）。高カリウム血症の患者も禁忌'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 無尿又は腎不全の患者は禁忌。高カリウム血症を誘発又は増悪させるおそれがある'},
+ note:'スピロノラクトンの水溶性プロドラッグで、経口投与ができない場合の注射薬。無尿・腎不全・腎機能の進行性悪化状態・高カリウム血症が禁忌。投与期間は2週間までと定められており、定期的にカリウム検査を行う。src:JSNP第39版'},
+
+// ---- 抗不整脈薬 ----
+{id:'disopyramide',cat:'cv_arrhythmia',name:'ジソピラミド',yomi:'じそぴらみど',
+ brand:['リスモダンカプセル','リスモダンR錠'],
+ cls:'抗不整脈薬（クラスIa群）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'カプセル: 1回100mgを1日3回。R錠（徐放）: 1回150mgを1日2回。参考血中濃度治療域 2〜5μg/mL'},
+  {min:15,max:45,st:'caution',lb:'1回100mgを1日1〜2回',dose:'JSNP第39版: 中等度〜高度低下は1回100mgを1日1〜2回（Renal Pharmacotherapy 2nd ed 2021）。R錠（徐放）は用量調節できないため使用を推奨しない（EO）'},
+  {min:0,max:15,st:'warning',lb:'1回100mgを24〜48時間毎',dose:'JSNP第39版: 末期腎不全は1回100mgを24〜48時間毎。R錠（徐放）は禁忌（腎排泄で徐放性製剤のため適さない）'},
+ ],
+ dial:{st:'warning',lb:'1回100mgを24〜48時間毎',dose:'JSNP第39版: 1回100mgを24〜48時間毎。R錠（徐放）は禁忌。腎不全患者ではタンパク結合率が高くなるため、タンパク結合率の変化を考慮した評価が必要'},
+ note:'腎機能が低下すると活性代謝物 mono-N-dealkyldisopyramide が蓄積し、強力な抗コリン作用（口渇・尿閉・便秘・緑内障悪化）があらわれる。低血糖も起こしうる。徐放錠のリスモダンR錠は用量調節ができないため、末期腎不全では禁忌、中等度低下でも使用を推奨しない。腎不全ではタンパク結合率が上がるため、総血中濃度だけでの評価に注意。src:JSNP第39版'},
+
+{id:'cibenzoline',cat:'cv_arrhythmia',name:'シベンゾリン',yomi:'しべんぞりん',
+ brand:['シベノール錠','シベノール静注'],
+ cls:'抗不整脈薬（クラスIa群）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日300mgを分3、1日450mgまで増量可。参考血中濃度治療域 0.2〜0.8μg/mL'},
+  {min:30,max:45,st:'caution',lb:'1回50mgを1日1〜2回',dose:'JSNP第39版: 軽度〜中等度低下は1回50mgを1日1〜2回（Pharma Medica 20:155-161, 2002）。少量から開始するなど投与量に十分注意し、頻回に心電図検査を実施する（添）'},
+  {min:15,max:30,st:'caution',lb:'1日1回50mg',dose:'JSNP第39版: 中等度〜高度低下は1日1回50mg。軽度〜中等度（SCr1.3〜2.9mg/dL）腎障害患者の半減期は健常者の1.5倍になる'},
+  {min:10,max:15,st:'warning',lb:'1日1回25mg',dose:'JSNP第39版: 高度低下は1日1回25mg。高度（SCr3.0mg/dL以上）腎障害患者の半減期は健常者の3倍になる'},
+  {min:0,max:10,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 末期腎不全は禁忌（低血糖などの重篤な副作用を起こしやすい）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（低血糖などの重篤な副作用を起こしやすい）'},
+ note:'末期腎不全・透析患者は禁忌。腎機能低下例で起こる低血糖が特徴的で、インスリン分泌を促進する作用による。半減期は高度腎障害で健常者の3倍まで延びるため、腎機能に応じて1回50mg→25mgと大幅に減量する。強い抗コリン作用もある。src:JSNP第39版'},
+
+{id:'pirmenol',cat:'cv_arrhythmia',name:'ピルメノール',yomi:'ぴるめのーる',
+ brand:['ピメノールカプセル'],
+ cls:'抗不整脈薬（クラスIa群）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回100mgを1日2回。少量から開始するなど用法・用量を調整するとともに、頻回に心電図検査を実施する（添）。参考血中濃度治療域 0.4μg/mL以上'},
+  {min:0,max:45,st:'caution',lb:'1回50mgを1日2〜3回',dose:'JSNP第39版: 中等度〜高度低下以降は1回50mgを1日2〜3回、TDMにて投与量を調整する（EO）。軽度〜中等度（CCr30〜69mL/min）腎障害患者のAUCは健常者の2倍、高度（CCr<30mL/min）では3倍になる'},
+ ],
+ dial:{st:'caution',lb:'1日1回50mg',dose:'JSNP第39版: HDは1日1回50mg、効果不十分であれば1回50mgを1日2回（Therapeutic Research 20:1141-1146, 1999）'},
+ note:'腎機能低下でAUCが2〜3倍になるため、1回量を50mgに減らしTDMで調整する。抗コリン作用があり口渇・排尿障害に注意。src:JSNP第39版'},
+
+{id:'procainamide',cat:'cv_arrhythmia',name:'プロカインアミド',yomi:'ぷろかいんあみど',
+ brand:['アミサリン錠','アミサリン注'],
+ cls:'抗不整脈薬（クラスIa群）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'錠: 1回250〜500mgを3〜6時間毎。注: 静注200〜1,000mgを50〜100mg/minの速度で投与（最大注入総量1,000mg）、筋注1回500mgを4〜6時間毎。参考血中濃度治療域 4〜10μg/mL'},
+  {min:15,max:45,st:'caution',lb:'12時間毎に延長',dose:'JSNP第39版: 中等度〜高度低下は錠1回250〜500mgを12時間毎、注1回200〜400mgを12時間毎（EO）'},
+  {min:0,max:15,st:'warning',lb:'12〜24時間毎に延長',dose:'JSNP第39版: 高度低下以降は投与量を減量するか投与間隔をあけて使用する。血中濃度が上昇することがある（添）。錠1回250〜500mgを12〜24時間毎、注1回200〜400mgを12〜24時間毎（EO）'},
+ ],
+ dial:{st:'warning',lb:'12〜24時間毎に延長',dose:'JSNP第39版: 1回250〜500mgを12〜24時間毎。活性代謝物NAPAが蓄積するためTDMで確認する'},
+ note:'腎機能低下では投与間隔を延長して対応する（1回量ではなく回数を減らす）。活性代謝物N-アセチルプロカインアミド（NAPA）が腎排泄で蓄積し、QT延長・torsades de pointesを起こす。長期投与で薬剤性ループスが知られている。注射剤では糸球体腎炎などの腎障害があらわれることがあるため、腎機能検査を定期的に行う。src:JSNP第39版'},
+
+{id:'propafenone',cat:'cv_arrhythmia',name:'プロパフェノン',yomi:'ぷろぱふぇのん',
+ brand:['プロノン錠'],
+ cls:'抗不整脈薬（クラスIc群）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回150mgを1日3回。参考血中濃度治療域 0.05〜1μg/mL'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。肝代謝（CYP2D6）主体'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。肝代謝（CYP2D6）主体で腎機能の影響を受けにくい抗不整脈薬。CYP2D6のpoor metabolizerでは血中濃度が上がるため、味覚異常・めまい・徐脈に注意する。src:JSNP第39版'},
+
+{id:'verapamil',cat:'cv_arrhythmia',xcat:['cv_ccb'],name:'ベラパミル',yomi:'べらぱみる',
+ brand:['ワソラン錠','ワソラン静注'],
+ cls:'抗不整脈薬（クラスIV群）・非ジヒドロピリジン系Ca拮抗薬',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'①頻脈性不整脈 1回40〜80mgを1日3回 ②狭心症・心筋梗塞・その他の虚血性心疾患 1回40〜80mgを1日3回。静注は1回5mgを5分以上かけて徐々に静注'},
+  {min:0,max:30,st:'caution',lb:'同量を慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。非腎クリアランス（CYP3A4）が54%低下するという報告もある（Expert Opin Drug Metab Toxicol 4:1065-1074, 2008）'},
+ ],
+ dial:{st:'caution',lb:'同量を慎重投与',dose:'JSNP第39版: 腎機能正常者と同量を慎重投与。徐脈・房室ブロック・低血圧を観察する'},
+ note:'腎機能による用量調節は不要だが、腎不全患者では非腎クリアランス（CYP3A4による代謝）が54%低下するという報告があり、同量でも血中濃度が上がりうる。P-糖蛋白阻害作用が強く、ダビガトラン・ジゴキシンなどとの相互作用が重要（ダビガトランとの併用時は2時間の間隔をあけるか75mg 1日2回へ減量）。徐脈・便秘が出やすい。src:JSNP第39版'},
+
+{id:'bepridil',cat:'cv_arrhythmia',name:'ベプリジル',yomi:'べぷりじる',
+ brand:['ベプリコール錠'],
+ cls:'抗不整脈薬（クラスIV群・多チャネル遮断）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（持続性心房細動では1日100〜200mgを分2）。参考血中濃度治療域 0.2〜0.8μg/mL'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可。ただし透析直後・CAPDによる低カリウム血症には注意する'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。ただし抗不整脈薬の中でQT延長に最も注意すべき薬物とされ、透析直後やCAPDによる低カリウム血症はtorsades de pointesの引き金になるため、透析患者では電解質を特に注意深く見る。間質性肺炎・肝障害の報告もある。src:JSNP第39版'},
+
+// ---- 抗凝固薬 ----
+{id:'enoxaparin',cat:'blood_anticoag',name:'エノキサパリン',yomi:'えのきさぱりん',
+ brand:['クレキサン皮下注キット'],
+ cls:'低分子ヘパリン',metric:'ccr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1回2,000IUを、原則として12時間毎に1日2回、連日皮下注'},
+  {min:15,max:30,st:'caution',lb:'1日1回2,000IU',dose:'JSNP第39版: 1日1回2,000IU（投与回数を半分にする）。抗第Xa因子活性のAUCは健常者の1.2倍になる'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 重度の腎障害では血中濃度が上昇し、出血の危険性が増大するおそれがあるため禁忌。抗第Xa因子活性のAUCは健常者の1.65倍になる'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 重度の腎障害に該当し禁忌。透析患者では未分画ヘパリンを用いる'},
+ note:'腎排泄型の低分子ヘパリンで、重度の腎障害（CCr30mL/min未満）は禁忌。CCr30未満では抗第Xa因子活性のAUCが1.65倍になり出血リスクが増大する。CCr15〜30では1日2回を1日1回に減らす。透析患者や高度腎機能低下例では、半減期が短く中和も可能な未分画ヘパリンを用いる。src:JSNP第39版'},
+
+{id:'fondaparinux',cat:'blood_anticoag',name:'フォンダパリヌクス',yomi:'ふぉんだぱりぬくす',
+ brand:['アリクストラ皮下注'],
+ cls:'合成Xa阻害薬',metric:'ccr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'①急性肺血栓塞栓症及び急性深部静脈血栓症の治療: 体重50kg未満 1日1回5mg、50〜100kg 1日1回7.5mg、100kg超 1日1回10mgを皮下注 ②静脈血栓塞栓症の発症抑制: 1日1回1.5mgまたは2.5mgを皮下注'},
+  {min:20,max:30,st:'warning',lb:'減量を考慮',dose:'JSNP第39版: ①体重100kg超では1日7.5mgへの減量を考慮。②出血の危険が高い場合は1日1回1.5mgを皮下注'},
+  {min:0,max:20,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（腎排泄性であり血中濃度が上昇し出血のリスクが増す）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（腎排泄性であり血中濃度が上昇し出血のリスクが増す）'},
+ note:'腎排泄性の合成Xa阻害薬で、CCr20mL/min未満（治療用量では30mL/min未満）は禁忌。中和薬がなく半減期も長いため、腎機能低下例での出血は遷延しやすい。腎機能が境界域の患者では未分画ヘパリンへの変更を検討する。src:JSNP第39版'},
+
+
+{id:'quetiapine_xr',cat:'psychiatry',xcat:['antidep_sleep'],name:'クエチアピン徐放錠',yomi:'くえちあぴんじょほうじょう',
+ brand:['ビプレッソ徐放錠'],
+ cls:'非定型抗精神病薬（徐放錠・双極性障害のうつ症状）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'調節不要',dose:'双極性障害におけるうつ症状の改善: 1日1回50mgを就寝前（食後2時間以上あけて）から開始し、2日以上の間隔をあけて150mg、300mgへ増量。維持量1日1回300mg'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 末期腎不全は禁忌（腎機能が悪化するおそれがある）。普通錠（セロクエル）は全腎機能域で腎機能正常者と同じなので、普通錠への変更を検討する'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（腎機能が悪化するおそれがある）。普通錠（セロクエル）であれば腎機能による調節は不要'},
+ note:'クエチアピンの徐放錠（ビプレッソ）は末期腎不全が禁忌。同じ成分でも普通錠のセロクエルは全腎機能域で調節不要なので、腎機能低下例では普通錠への変更を検討する。ビプレッソは双極性障害のうつ症状のみの適応で、統合失調症には使えない点にも注意。食後に飲むと血中濃度が上がりすぎるため、食後2時間以上あけて就寝前に服用する。src:JSNP第39版'},
+
+// ---- JSNP第39版 p.28〜61 より追加（全腎機能域で調節不要の薬）----
+{id:'estazolam',cat:'sleep_bz',name:'エスタゾラム',yomi:'えすたぞらむ',
+ brand:['ユーロジン'],
+ cls:'ベンゾジアゼピン系睡眠薬（中間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①不眠症 1日1回1〜4mgを就寝前 ②麻酔前投薬 [麻酔前]1日1回2〜4mg、[手術前夜]1日1回1〜2mgを就寝前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。中間型。持ち越し効果と転倒に注意し、高齢者では低用量から。src:JSNP第39版'},
+
+{id:'flunitrazepam',cat:'sleep_bz',name:'フルニトラゼパム',yomi:'ふるにとらぜぱむ',
+ brand:['サイレース'],
+ cls:'ベンゾジアゼピン系睡眠薬（中間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回0.5〜2mgを就寝前又は手術前。高齢者には1回1mgまで'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。作用が強く、ふらつき・前向性健忘・依存に注意。海外では持ち込み規制がある国も多い。src:JSNP第39版'},
+
+{id:'quazepam',cat:'sleep_bz',name:'クアゼパム',yomi:'くあぜぱむ',
+ brand:['ドラール'],
+ cls:'ベンゾジアゼピン系睡眠薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①不眠症 1日1回20mgを就寝前、最大1日30mg ②麻酔前投薬 [手術前夜]1日1回15〜30mgを就寝前、最大1日30mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。長時間型で半減期が約36時間。食後に服用すると血中濃度が2〜3倍に上がるため、食後2時間以内の服用は避ける。持ち越し・転倒に注意。src:JSNP第39版'},
+
+{id:'flurazepam',cat:'sleep_bz',name:'フルラゼパム',yomi:'ふるらぜぱむ',
+ brand:['ダルメート'],
+ cls:'ベンゾジアゼピン系睡眠薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回10〜30mgを就寝前又は手術前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。長時間型で活性代謝物の半減期が長く、高齢者・腎機能低下例では日中の眠気とふらつきが遷延しやすい。src:JSNP第39版'},
+
+{id:'zopiclone',cat:'sleep_bz',name:'ゾピクロン',yomi:'ぞぴくろん',
+ brand:['アモバン'],
+ cls:'非ベンゾジアゼピン系睡眠薬（超短時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①不眠症 1日1回7.5〜10mgを就寝前、最大1回10mg ②麻酔前投薬 1日1回7.5〜10mgを就寝前又は手術前、最大1回10mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。エスゾピクロン（ルネスタ）のラセミ体。苦味が強いのが特徴。エスゾピクロンは腎機能低下で減量が必要だが、ゾピクロンはJSNP第39版では全腎機能域で調節不要とされている。src:JSNP第39版'},
+
+{id:'daridorexant',cat:'sleep_orexin',name:'ダリドレキサント',yomi:'だりどれきさんと',
+ brand:['クービビック'],
+ cls:'オレキシン受容体拮抗薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回50mgを就寝直前。1回25mgも可'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。オレキシン受容体拮抗薬の3剤目。全腎機能域で用量調節不要。依存性・反跳性不眠が起こりにくく、腎機能低下例でも使いやすい。CYP3A4阻害薬との併用に注意。src:JSNP第39版'},
+
+{id:'vornorexant',cat:'sleep_orexin',name:'ボルノレキサント',yomi:'ぼるのれきさんと',
+ brand:['ボルズィ'],
+ cls:'オレキシン受容体拮抗薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回5mgを就寝直前。最大1日1回10mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。オレキシン受容体拮抗薬の4剤目。全腎機能域で用量調節不要。半減期が短く持ち越しが少ないのが特徴。腎機能低下例・透析患者でも使いやすい。src:JSNP第39版'},
+
+{id:'triclofos',cat:'sleep_bz',name:'トリクロホスナトリウム',yomi:'とりくろほすなとりうむ',
+ brand:['トリクロリールシロップ'],
+ cls:'その他の催眠・鎮静薬（抱水クロラール誘導体）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回1〜2gを就寝前又は検査前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。シロップ剤で、小児の検査時鎮静（脳波・CT・MRI）に用いられることが多い。全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'oxazolam',cat:'sleep_bz',name:'オキサゾラム',yomi:'おきさぞらむ',
+ brand:['セレナール'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①神経症・心身症 1回10〜20mgを1日3回 ②麻酔前投薬 1回1〜2mg/kgを就寝前又は手術前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'cloxazolam',cat:'sleep_bz',name:'クロキサゾラム',yomi:'くろきさぞらむ',
+ brand:['セパゾン'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①神経症・心身症 1日3〜12mgを分3 ②術前の不安除去 1回0.1〜0.2mg/kgを手術前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'clorazepate',cat:'sleep_bz',name:'クロラゼプ酸二カリウム',yomi:'くろらぜぷさんにかりうむ',
+ brand:['メンドン'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日9〜30mgを分2〜4'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'chlordiazepoxide',cat:'sleep_bz',name:'クロルジアゼポキシド',yomi:'くろるじあぜぽきしど',
+ brand:['コントール','バランス'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日20〜60mgを分2〜3'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'diazepam',cat:'sleep_bz',name:'ジアゼパム',yomi:'じあぜぱむ',
+ brand:['セルシン','ホリゾン'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠・散: 添付文書参照（1回2〜5mgを1日2〜4回）。注: 初回10mgをできるだけ緩徐に筋注又は静注、以後必要に応じて3〜4時間毎'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。活性代謝物デスメチルジアゼパムの半減期が長く、高齢者・腎機能低下例では蓄積して過鎮静・転倒を起こしやすい。src:JSNP第39版'},
+
+{id:'medazepam',cat:'sleep_bz',name:'メダゼパム',yomi:'めだぜぱむ',
+ brand:['レスミット'],
+ cls:'ベンゾジアゼピン系抗不安薬（長時間型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日10〜30mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'tandospirone',cat:'sleep_bz',name:'タンドスピロン',yomi:'たんどすぴろん',
+ brand:['セディール'],
+ cls:'セロトニン作動性抗不安薬（5-HT1A部分作動薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30mgを分3。最大1日60mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。ベンゾジアゼピン系ではないため依存性・筋弛緩作用がほとんどなく、高齢者や腎機能低下例でも使いやすい。効果発現に2週間程度かかる。src:JSNP第39版'},
+
+{id:'hydroxyzine',cat:'sleep_bz',name:'ヒドロキシジン',yomi:'ひどろきしじん',
+ brand:['アタラックス','アタラックス-P'],
+ cls:'ヒドロキシジン系抗不安薬（抗ヒスタミン薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（塩酸塩: 1日30〜60mgを分割。パモ酸塩: 1日75〜150mgを分割）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 腎機能正常者と同じ。ただし、ヒドロキシジンの活性代謝産物であるセチリジンの半減期が延長し、蓄積する可能性がある（EO）。セチリジン（ジルテック）自体は腎機能で減量が必要な薬なので、腎機能低下例では眠気・口渇の遷延に注意する。src:JSNP第39版'},
+
+{id:'chlorpromazine',cat:'psychiatry',name:'クロルプロマジン',yomi:'くろるぷろまじん',
+ brand:['コントミン','ウインタミン'],
+ cls:'定型抗精神病薬（フェノチアジン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30〜100mgを分割。精神科領域では1日50〜450mgを分割。筋注は1回10〜50mgを緩徐に'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。起立性低血圧・過鎮静・錐体外路症状に注意。src:JSNP第39版'},
+
+{id:'levomepromazine',cat:'psychiatry',name:'レボメプロマジン',yomi:'れぼめぷろまじん',
+ brand:['ヒルナミン','レボトミン'],
+ cls:'定型抗精神病薬（フェノチアジン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日25〜200mgを分割。筋注は1回25mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。鎮静作用が強く、不眠・不穏目的でも使われる。起立性低血圧に注意。src:JSNP第39版'},
+
+{id:'fluphenazine',cat:'psychiatry',name:'フルフェナジン',yomi:'ふるふぇなじん',
+ brand:['フルメジン','フルデカシン'],
+ cls:'定型抗精神病薬（フェノチアジン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'マレイン酸塩: 1日1〜10mgを分割。デカン酸エステル（フルデカシン筋注）: 1回12.5〜75mgを4週間隔で筋注、初回は可能な限り少量より始め最大50mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'prochlorperazine',cat:'psychiatry',name:'プロクロルペラジン',yomi:'ぷろくろるぺらじん',
+ brand:['ノバミン'],
+ cls:'定型抗精神病薬（フェノチアジン系）・制吐薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日5〜20mgを分割。精神科領域では1日15〜45mgを分割。筋注は1日1回5mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。制吐目的で広く使われる。錐体外路症状（アカシジア・ジストニア）が比較的出やすく、特に若年者と高用量で注意する。src:JSNP第39版'},
+
+{id:'propericiazine',cat:'psychiatry',name:'プロペリシアジン',yomi:'ぷろぺりしあじん',
+ brand:['ニューレプチル'],
+ cls:'定型抗精神病薬（フェノチアジン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日10〜60mgを分割'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'perphenazine',cat:'psychiatry',name:'ペルフェナジン',yomi:'ぺるふぇなじん',
+ brand:['ピーゼットシー','トリラホン'],
+ cls:'定型抗精神病薬（フェノチアジン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日6〜24mgを分割。精神科領域では1日6〜48mgを分割。筋注は1回2〜5mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'haloperidol',cat:'psychiatry',name:'ハロペリドール',yomi:'はろぺりどーる',
+ brand:['セレネース','ハロマンス'],
+ cls:'定型抗精神病薬（ブチロフェノン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠・細粒・内服液: 1日0.75〜2.25mgから始め、維持量として1日3〜6mg。注: 1回5mgを1日1〜2回、筋注又は静注。デカン酸エステル（ハロマンス注）: 1回50〜150mgを4週間隔で筋注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。有効血中濃度は個人差が大きい（報告は3〜22ng/mLと幅がある）。横紋筋融解症による急性腎障害があらわれることがあるため、CK上昇と筋症状に注意する。せん妄にもよく使われる。src:JSNP第39版'},
+
+{id:'bromperidol',cat:'psychiatry',name:'ブロムペリドール',yomi:'ぶろむぺりどーる',
+ brand:['ブロムペリドール錠'],
+ cls:'定型抗精神病薬（ブチロフェノン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日3〜18mg。最大1日36mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。有効血中濃度は12ng/mLを超えても治療効果は増強しない。横紋筋融解症による急性腎障害の報告がある。src:JSNP第39版'},
+
+{id:'spiperone',cat:'psychiatry',name:'スピペロン',yomi:'すぴぺろん',
+ brand:['スピロピタン'],
+ cls:'定型抗精神病薬（ブチロフェノン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'最初約1週間は1日0.5〜1.5mg、以後漸増し1日1.5〜4.5mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'timiperone',cat:'psychiatry',name:'チミペロン',yomi:'ちみぺろん',
+ brand:['チミペロン錠'],
+ cls:'定型抗精神病薬（ブチロフェノン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日0.5〜3mgより始め徐々に増量し、1日3〜12mgを分割'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'pipamperone',cat:'psychiatry',name:'ピパンペロン',yomi:'ぴぱんぺろん',
+ brand:['プロピタン'],
+ cls:'定型抗精神病薬（ブチロフェノン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'最初1〜2週間は1日50〜150mg、以後漸増し1日600mgを分3'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'nemonapride',cat:'psychiatry',name:'ネモナプリド',yomi:'ねものなぷりど',
+ brand:['エミレース'],
+ cls:'定型抗精神病薬（ベンザミド系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日9〜36mgを分割、食後。最大1日60mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。同じベンザミド系でもスルピリド・スルトプリド・チアプリドは腎機能で減量が必要だが、ネモナプリドは全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'clocapramine',cat:'psychiatry',name:'クロカプラミン',yomi:'くろかぷらみん',
+ brand:['クロフェクトン'],
+ cls:'定型抗精神病薬（イミノジベンジル系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30〜150mgを分3'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'mosapramine',cat:'psychiatry',name:'モサプラミン',yomi:'もさぷらみん',
+ brand:['クレミン'],
+ cls:'定型抗精神病薬（イミノジベンジル系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30〜150mgを分3。最大1日300mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'zotepine',cat:'psychiatry',name:'ゾテピン',yomi:'ぞてぴん',
+ brand:['ロドピン'],
+ cls:'定型抗精神病薬（チエピン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日75〜150mgを分割。1日最大450mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'asenapine',cat:'psychiatry',name:'アセナピン',yomi:'あせなぴん',
+ brand:['シクレスト舌下錠'],
+ cls:'非定型抗精神病薬（MARTA）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回5mgを1日2回で開始。維持量は1回5mgを1日2回。最大1回10mgを1日2回'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。舌下錠で、飲み込まずに舌の下で溶かす。服用後10分間は飲食を避ける。口腔内の感覚鈍麻が高頻度。全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'clozapine',cat:'psychiatry',name:'クロザピン',yomi:'くろざぴん',
+ brand:['クロザリル'],
+ cls:'非定型抗精神病薬（MARTA・治療抵抗性統合失調症）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（12.5mgから開始し漸増、維持量200〜400mg/日）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 用量は腎機能正常者と同じ（EO）。ただし稀ながら、間質性腎炎などの腎不全が報告されている（Ment Health Clin 9:124-127, 2019）。無顆粒球症のリスクからCPMS登録と定期的な血液検査が必須。src:JSNP第39版'},
+
+{id:'perospirone',cat:'psychiatry',name:'ペロスピロン',yomi:'ぺろすぴろん',
+ brand:['ルーラン'],
+ cls:'非定型抗精神病薬（SDA）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回4mgを1日3回より開始。維持量として1日12〜48mgを分3、食後。最大1日48mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 腎障害ラットでAUCの増加傾向が認められるが、ヒトの薬物動態データがほとんどなく不明。腎機能低下例では低用量から慎重に。src:JSNP第39版'},
+
+{id:'blonanserin_tape',cat:'psychiatry',name:'ブロナンセリンテープ',yomi:'ぶろなんせりんてーぷ',
+ brand:['ロナセンテープ'],
+ cls:'非定型抗精神病薬（SDA・経皮吸収型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回40mg。最大1回80mg。胸部、腹部、背部のいずれかに貼付'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。経皮吸収型のため、服薬が難しい患者や消化管からの吸収が不安定な患者に使える。全腎機能域で調節不要。貼付部位の皮膚症状に注意し、毎回場所を変える。src:JSNP第39版'},
+
+{id:'risperidone_lai',cat:'psychiatry',name:'リスペリドン持続性注射剤',yomi:'りすぺりどんじぞくせいちゅうしゃざい',
+ brand:['リスパダールコンスタ筋注用'],
+ cls:'非定型抗精神病薬（SDA・持続性注射剤）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回25mgを2週間隔で臀部筋注、最大1回量50mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 半減期の延長及びAUCが増大することがある（添）。投与する前に、少なくとも1日2mgまでの経口リスペリドン製剤により忍容性があることを確認した上で投与する。活性代謝物パリペリドンの蓄積により減量が必要と考えるが、製剤的に分割投与は推奨されていないため、半減期等に基づいて投与間隔の延長を考慮する（EO）。src:JSNP第39版'},
+
+{id:'aripiprazole_lai',cat:'psychiatry',name:'アリピプラゾール持続性注射剤',yomi:'ありぴぷらぞーるじぞくせいちゅうしゃざい',
+ brand:['エビリファイ持続性水懸筋注用'],
+ cls:'非定型抗精神病薬（DPA・持続性注射剤）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回400mgを4週に1回、臀部筋肉内又は三角筋内。1回量300mgに減量可'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。同じ持続性注射剤でもパリペリドン（ゼプリオン）はCCr50未満が禁忌だが、アリピプラゾールは全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'vortioxetine',cat:'antidep_sleep',name:'ボルチオキセチン',yomi:'ぼるちおきせちん',
+ brand:['トリンテリックス'],
+ cls:'抗うつ薬（S-RIM）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回10mg。最大1日20mg。増量は1週間以上の間隔をあけて'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。セロトニン再取り込み阻害に加えて複数のセロトニン受容体を調節するS-RIM。全腎機能域で調節不要で、腎機能低下例の選択肢になる。悪心が初期に出やすい。src:JSNP第39版'},
+
+{id:'trazodone',cat:'antidep_sleep',name:'トラゾドン',yomi:'とらぞどん',
+ brand:['レスリン','デジレル'],
+ cls:'抗うつ薬（SARI）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日75〜100mgを初期用量とし、1日200mgまで増量し、1〜数回に分割'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。鎮静作用が強く、少量（25〜50mg）を不眠に用いることが多い。全腎機能域で調節不要なので、腎機能低下例の不眠にも使いやすい。持続勃起症は稀だが重要な副作用。src:JSNP第39版'},
+
+{id:'amitriptyline',cat:'antidep_sleep',name:'アミトリプチリン',yomi:'あみとりぷちりん',
+ brand:['トリプタノール'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（うつ病: 1日30〜150mgを分割。夜尿症・末梢性神経障害性疼痛にも適応）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗コリン作用（口渇・便秘・尿閉）と起立性低血圧が強く、高齢者では慎重に。神経障害性疼痛にも使われる。src:JSNP第39版'},
+
+{id:'amoxapine',cat:'antidep_sleep',name:'アモキサピン',yomi:'あもきさぴん',
+ brand:['アモキサン'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日25〜150mgを分割、最大300mg/日）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'imipramine',cat:'antidep_sleep',name:'イミプラミン',yomi:'いみぷらみん',
+ brand:['イミドール','トフラニール'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（うつ病: 1日30〜200mgを分割。遺尿症にも適応）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'clomipramine',cat:'antidep_sleep',name:'クロミプラミン',yomi:'くろみぷらみん',
+ brand:['アナフラニール'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠: 添付文書参照（1日50〜100mgを分割、最大225mg/日）。点滴静注液: 1日1回25mgを2〜3時間かけて点滴静注、最大1回75mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'trimipramine',cat:'antidep_sleep',name:'トリミプラミン',yomi:'とりみぷらみん',
+ brand:['スルモンチール'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日50〜100mgを初期用量とし、1日200mgを分割。まれに1日300mgまで増量することもある'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'nortriptyline',cat:'antidep_sleep',name:'ノルトリプチリン',yomi:'のるとりぷちりん',
+ brand:['ノリトレン'],
+ cls:'三環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1回10〜25mgを1日3回。又は1日量を分2。1日最大150mgを分2〜3'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'setiptiline',cat:'antidep_sleep',name:'セチプチリン',yomi:'せちぷちりん',
+ brand:['テシプール'],
+ cls:'四環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日3mgを初期用量とし、1日6mgまで漸増し、分割'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'maprotiline',cat:'antidep_sleep',name:'マプロチリン',yomi:'まぷろちりん',
+ brand:['ルジオミール'],
+ cls:'四環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30〜75mgを分2〜3又は1日1回、夕食後あるいは就寝前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'mianserin',cat:'antidep_sleep',name:'ミアンセリン',yomi:'みあんせりん',
+ brand:['テトラミド'],
+ cls:'四環系抗うつ薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日30mgを初期用量とし、1日60mgまで増量し、分割。又は1日1回夕食後あるいは就寝前'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。鎮静作用があり少量を不眠に使うこともある。ミルタザピン（NaSSA）と構造が近いが、ミルタザピンと違い全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'modafinil',cat:'psychiatry',name:'モダフィニル',yomi:'もだふぃにる',
+ brand:['モディオダール'],
+ cls:'精神刺激薬（ナルコレプシー等の日中過眠）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回200mg、朝。最大1日300mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'pemoline',cat:'psychiatry',name:'ペモリン',yomi:'ぺもりん',
+ brand:['ベタナミン'],
+ cls:'精神刺激薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'atomoxetine',cat:'psychiatry',name:'アトモキセチン',yomi:'あともきせちん',
+ brand:['ストラテラ'],
+ cls:'ADHD治療薬（選択的ノルアドレナリン再取り込み阻害薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日40mgより開始し、1日80mgまで増量。最大1日120mg、分1〜2）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。非中枢刺激性で依存性がない。全腎機能域で調節不要。効果発現に数週間かかる。肝代謝（CYP2D6）主体。src:JSNP第39版'},
+
+{id:'methylphenidate',cat:'psychiatry',name:'メチルフェニデート',yomi:'めちるふぇにでーと',
+ brand:['リタリン','コンサータ'],
+ cls:'中枢刺激薬（ナルコレプシー・ADHD）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'リタリン錠（ナルコレプシー）: 1日20〜60mgを分1〜2。コンサータ錠（ADHD・徐放錠）: 初回用量として1日1回18mg、朝。1週間以上の間隔をあけて1日9mg又は18mgを増量、最大1日72mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。全腎機能域で調節不要。コンサータは流通管理（登録medical institution・薬局）が必要な徐放錠で、噛まずに服用する。食欲低下・不眠・動悸に注意。src:JSNP第39版'},
+
+{id:'perampanel',cat:'epilepsy',name:'ペランパネル',yomi:'ぺらんぱねる',
+ brand:['フィコンパ'],
+ cls:'抗てんかん薬（AMPA受容体拮抗薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日1回2mgより開始、維持量8〜12mg/日、就寝前）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。全腎機能域で調節不要。ただし点滴静注用に含まれる添加物スルホブチルエーテルβ-シクロデキストリンナトリウム（SBECD）の尿細管への蓄積により、腎障害が悪化するおそれがある。参考域の血中濃度0.05〜0.4μg/mL。易怒性・攻撃性の副作用に注意。src:JSNP第39版'},
+
+{id:'brivaracetam',cat:'epilepsy',name:'ブリーバラセタム',yomi:'ぶりーばらせたむ',
+ brand:['ブリィビアクト'],
+ cls:'抗てんかん薬（SV2A結合）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠: 1日50mgを分2。最大1日200mg。静注も同用量'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レベチラセタムと同じSV2Aに結合するが、レベチラセタムが腎機能で大幅な減量を要するのに対し、ブリーバラセタムは全腎機能域で調節不要。腎機能低下例での切り替え先になりうる。参考域の血中濃度0.2〜2μg/mL。src:JSNP第39版'},
+
+{id:'rufinamide',cat:'epilepsy',name:'ルフィナミド',yomi:'るふぃなみど',
+ brand:['イノベロン'],
+ cls:'抗てんかん薬（Lennox-Gastaut症候群）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。全腎機能域で調節不要。参考域の血中濃度30〜40μg/mL。src:JSNP第39版'},
+
+{id:'ethotoin',cat:'epilepsy',name:'エトトイン',yomi:'えとといん',
+ brand:['アクセノン末'],
+ cls:'抗てんかん薬（ヒダントイン系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1〜3gを分4、毎食後及び就寝前。初回より大量投与することは避け、少量より始め、十分な効果が得られるまで漸増'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。src:JSNP第39版'},
+
+{id:'fosphenytoin',cat:'epilepsy',name:'ホスフェニトイン',yomi:'ほすふぇにといん',
+ brand:['ホストイン静注'],
+ cls:'抗てんかん薬（フェニトインのプロドラッグ）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（てんかん重積状態: 初回22.5mg/kgを静注）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 腎機能正常者と同じ。ただしタンパク結合率が低下するため可能であれば遊離型濃度をモニタリングする（EO）。末期腎不全ではタンパク結合率が低下することにより総濃度の有効治療域を5〜10μg/mL程度の低めにする。src:JSNP第39版'},
+
+
+// ---- JSNP第39版 p.28〜61 より追加（腎機能で調節が必要／禁忌になる薬）----
+
+{id:'rilmazafone',cat:'sleep_bz',name:'リルマザホン',yomi:'りるまざほん',
+ brand:['リスミー'],
+ cls:'ベンゾジアゼピン系睡眠薬（短時間型・プロドラッグ）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①不眠症 1日1回1〜2mgを就寝前、高齢者には1回2mgまで ②麻酔前投薬 1日1回2mgを就寝前又は手術前、高齢者には1回2mgまで'}],
+ dial:{st:'caution',lb:'半量を目安に',dose:'JSNP第39版: 腎不全（透析）患者に1mgを単回投与したときの血漿中濃度推移は、健常人に2mgを単回投与したときの推移と類似する（臨床薬理 23:573-580, 1992）。つまり透析患者では同じ用量で約2倍の曝露になるため、半量（1mg）を目安とする'},
+ note:'プロドラッグで、消化管で加水分解されてから活性体になる。JSNP第39版は保存期では調節不要としているが、透析患者では1mgが健常人の2mgに相当する血漿中濃度推移を示すというデータを挙げており、透析患者では半量が目安になる。ふらつき・転倒に注意。src:JSNP第39版'},
+
+{id:'nitrazepam',cat:'sleep_bz',xcat:['epilepsy'],name:'ニトラゼパム',yomi:'にとらぜぱむ',
+ brand:['ベンザリン','ネルボン'],
+ cls:'ベンゾジアゼピン系睡眠薬（中間型）・抗てんかん薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①不眠症 1日1回5〜10mgを就寝前 ②麻酔前投薬 1日1回5〜10mgを就寝前又は手術前 ③異型小発作群、焦点性発作 1日5〜15mgを適宜分割'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。睡眠薬としてだけでなく抗てんかん薬の適応も持つ。抗てんかん薬として用いる場合の参考域の血中濃度は0.02〜0.1μg/mL（てんかん診療ガイドライン2018）。中間型で持ち越し効果があり、高齢者では転倒に注意。src:JSNP第39版'},
+
+{id:'pentobarbital',cat:'sleep_bz',name:'ペントバルビタールカルシウム',yomi:'ぺんとばるびたーるかるしうむ',
+ brand:['ラボナ'],
+ cls:'バルビツール酸系睡眠薬',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回50〜100mgを就寝前）'},
+  {min:0,max:30,st:'warning',lb:'原則投与しない',dose:'JSNP第39版: 治療上やむを得ないと判断される場合を除き投与しない。排泄の遅延により副作用発現のおそれがある（添）。ただし減量の必要はないと思われる（EO）という記載も併記されている'},
+ ],
+ dial:{st:'warning',lb:'原則投与しない',dose:'JSNP第39版: 治療上やむを得ないと判断される場合を除き投与しない（添）'},
+ note:'バルビツール酸系で、呼吸抑制・依存性のリスクが高く現在では使用が限られる。腎機能低下例では排泄が遅延するため原則として投与しない。不眠にはオレキシン受容体拮抗薬やメラトニン受容体作動薬など、より安全な選択肢を優先する。src:JSNP第39版'},
+
+{id:'sultopride',cat:'psychiatry',name:'スルトプリド',yomi:'するとぷりど',
+ brand:['バルネチール'],
+ cls:'定型抗精神病薬（ベンザミド系）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日300〜600mgを分割。最大1日1,800mg'},
+  {min:15,max:45,st:'caution',lb:'常用量の50%',dose:'JSNP第39版: 高い血中濃度が持続するおそれがある（添）。常用量の50%に減量（EO）。腎機能低下患者には、腎機能に応じて減量するとともに、嚥下困難などの錐体外路症状のモニタリングを実施する'},
+  {min:0,max:15,st:'warning',lb:'常用量の33.3%〜1日50〜100mg',dose:'JSNP第39版: 高度低下は常用量の33.3%に減量（EO）。末期腎不全は1日50〜100mg（EO）'},
+ ],
+ dial:{st:'warning',lb:'1日50〜100mg',dose:'JSNP第39版: 1日50〜100mg（EO）。錐体外路症状（嚥下困難・流涎）のモニタリングを実施する'},
+ note:'腎排泄型のベンザミド系抗精神病薬。QT延長のリスクが高く、腎機能低下で血中濃度が持続するため段階的な減量が必要。嚥下困難・流涎などの錐体外路症状を定期的に確認する。同系のスルピリド・チアプリドも同様に腎機能で減量が要る。src:JSNP第39版'},
+
+{id:'tiapride',cat:'psychiatry',name:'チアプリド',yomi:'ちあぷりど',
+ brand:['グラマリール'],
+ cls:'定型抗精神病薬（ベンザミド系・ジスキネジア／脳梗塞後遺症に伴う攻撃性）',metric:'egfr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日75〜150mgを分3。パーキンソニズムに伴うジスキネジアの患者では、1日1回25mgから開始'},
+  {min:15,max:45,st:'caution',lb:'1日50〜75mg 分2〜3',dose:'JSNP第39版: 高い血中濃度が持続するおそれがある（添）。1日50〜75mgを分2〜3（EO）。CCr31〜60、11〜30mL/minの患者の半減期は、それぞれ健常者の1.8、2.0倍になる'},
+  {min:0,max:15,st:'warning',lb:'1日1回25mg（最大50mg）',dose:'JSNP第39版: 1日1回25mg、最大1回50mg（EO）。CCr<10mL/minの患者の半減期は、健常者の5.1倍になる'},
+ ],
+ dial:{st:'warning',lb:'1日1回25mg（最大50mg）',dose:'JSNP第39版: 1日1回25mg、最大1回50mg（EO）。半減期が健常者の5.1倍に延びるため、過鎮静・パーキンソニズムに注意'},
+ note:'腎排泄型。高齢者の脳梗塞後遺症に伴う攻撃性・せん妄やジスキネジアによく使われるが、腎機能低下で半減期が最大5倍に延びるため大幅な減量が必要。過鎮静・パーキンソニズム・嚥下障害に注意する。高齢者は腎機能が低めのことが多く、常用量のまま続けていないか定期的に見直す。src:JSNP第39版'},
+
+{id:'paliperidone_lai',cat:'psychiatry',name:'パリペリドン持続性注射剤',yomi:'ぱりぺりどんじぞくせいちゅうしゃざい',
+ brand:['ゼプリオン水懸筋注シリンジ','ゼプリオンTRI水懸筋注シリンジ'],
+ cls:'非定型抗精神病薬（持続性注射剤・4週間隔／12週間隔）',metric:'ccr',
+ thr:[
+  {min:80,max:999,st:'ok',lb:'通常投与可',dose:'ゼプリオン（4週間隔）: 初回150mg、1週間後に2回目100mgを三角筋内に投与。その後4週に1回75mgを三角筋又は臀部筋内に投与。患者の状態により25〜150mgの範囲で投与するが、増量は1回50mgまで。ゼプリオンTRI（12週間隔）: 4週間隔製剤が4カ月以上継続投与され、最終投与の4週間後から切り替えて使用。最終投与量の3.5倍量を12週間に1回、最大1回350mg'},
+  {min:50,max:80,st:'caution',lb:'減量して開始',dose:'JSNP第39版: 軽度〜中等度低下は初回100mg、1週間後に2回目75mgを三角筋内に投与。その後4週に1回50mgを三角筋又は臀部筋内に投与。患者の症状により25〜100mgの範囲で投与するが、増量は1回25mgまで'},
+  {min:0,max:50,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 中等度〜高度低下以降は禁忌（本剤の排泄が遅延し血中濃度が上昇するおそれがある）。ゼプリオンTRIも同様に禁忌'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（本剤の排泄が遅延し血中濃度が上昇するおそれがある）'},
+ note:'パリペリドン（インヴェガ）の持続性注射剤。経口剤と同じくCCr50mL/min未満が禁忌。持続性注射剤は一度投与すると数週間〜数カ月血中に残るため、腎機能低下例では経口剤以上に慎重な適応判断が必要。投与前に必ず腎機能を確認する。アリピプラゾール持続性注射剤（エビリファイ）は腎機能による制限がないため、代替候補になる。src:JSNP第39版'},
+
+{id:'brexpiprazole',cat:'psychiatry',name:'ブレクスピプラゾール',yomi:'ぶれくすぴぷらぞーる',
+ brand:['レキサルティ'],
+ cls:'非定型抗精神病薬（SDAM）',metric:'ccr',
+ thr:[
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'①統合失調症 1日1回1mgから開始後、4日以上の間隔をあけて増量し1日1回2mg、最大1日1回4mg ②うつ病・うつ状態 1日1回1mg、最大1日1回2mg ③アルツハイマー型認知症に伴う焦燥感・易刺激性・興奮に起因する過活動又は攻撃的言動 1日1回0.5mgから開始後、1週間以上の間隔をあけて増量し1日1回1mg、最大1日1回2mg'},
+  {min:0,max:60,st:'caution',lb:'減量・間隔延長',dose:'JSNP第39版: 減量又は投与間隔の延長などを考慮する（添）。最大量として、大うつ病性障害には1日1回2mg、統合失調症には1日1回3mg（FDA）。遊離型ブレクスピプラゾールのAUCは、健常者の1.7倍になる'},
+ ],
+ dial:{st:'caution',lb:'最大2〜3mg/日',dose:'JSNP第39版: 最大量として、大うつ病性障害には1日1回2mg、統合失調症には1日1回3mg（FDA）。遊離型のAUCが健常者の1.7倍になる'},
+ note:'腎機能指標は【eCCr（Cockcroft-Gault、実測体重）】。CCr60mL/min未満では遊離型のAUCが1.7倍になるため、最大用量を制限する。アルツハイマー型認知症の焦燥感にも適応があり、高齢者に使われることが多いので腎機能の確認が重要。アカシジアが比較的出やすい。src:JSNP第39版'},
+
+{id:'lacosamide',cat:'epilepsy',name:'ラコサミド',yomi:'らこさみど',
+ brand:['ビムパット'],
+ cls:'抗てんかん薬（Naチャネル緩徐不活性化促進）',metric:'ccr',
+ thr:[
+  {min:45,max:999,st:'ok',lb:'通常投与可',dose:'1日100mgより開始し、その後1週間以上の間隔をあけて1日100mg以下ずつ増量し、維持用量を1日200mg。最大1日400mg。いずれも分2'},
+  {min:30,max:45,st:'caution',lb:'慎重に増量',dose:'JSNP第39版: 中等度〜高度低下ではAUCが健常者の1.2倍になる。増量間隔を十分にあけ、めまい・複視・眠気を確認する'},
+  {min:0,max:30,st:'caution',lb:'最大1日300mg',dose:'JSNP第39版: 高度低下〜末期腎不全は最大1日300mg。AUCは健常者の1.6倍になる'},
+ ],
+ dial:{st:'caution',lb:'最大300mg/日＋HD後補充',dose:'JSNP第39版: HD患者では、1日用量に加えて、HD後に最大で1日用量の半量の追加投与を考慮する。最大1日300mg'},
+ note:'腎機能指標は【eCCr（Cockcroft-Gault、実測体重）】。腎排泄の寄与が大きく、CCr30mL/min未満では最大用量を300mg/日に制限する。透析で除去されるため、HD後には1日用量の半量までの補充を考慮する。参考域の血中濃度10〜20μg/mL。PR間隔延長があるため心伝導障害のある患者では心電図を確認する。src:JSNP第39版'},
+
+{id:'clobazam',cat:'epilepsy',name:'クロバザム',yomi:'くろばざむ',
+ brand:['マイスタン'],
+ cls:'抗てんかん薬（ベンゾジアゼピン系）',metric:'ccr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1日10mgより開始。維持量は1日10〜30mgを分1〜3。最大1日40mg'},
+  {min:0,max:30,st:'caution',lb:'低用量から開始',dose:'JSNP第39版: 体内蓄積による副作用の発現に注意する（添）。CCr<30mL/minでは、低用量より開始し、徐々に増量する（Seizure 76:143-152, 2020）'},
+ ],
+ dial:{st:'caution',lb:'低用量から開始',dose:'JSNP第39版: 低用量より開始し、徐々に増量する。体内蓄積による過鎮静に注意'},
+ note:'ベンゾジアゼピン系の抗てんかん薬。CCr30mL/min未満では体内蓄積により過鎮静・運動失調が出やすいため、低用量から開始して徐々に増量する。参考域の血中濃度0.03〜0.3μg/mL。活性代謝物N-デスメチルクロバザムの半減期が長い点にも注意。src:JSNP第39版'},
+
+{id:'vigabatrin',cat:'epilepsy',name:'ビガバトリン',yomi:'びがばとりん',
+ brand:['サブリル散分包'],
+ cls:'抗てんかん薬（GABAトランスアミナーゼ阻害薬・点頭てんかん）',metric:'ccr',
+ thr:[
+  {min:80,max:999,st:'ok',lb:'通常投与可',dose:'1日50mg/kgから開始。3日以上の間隔をあけて1日50mg/kgを超えない範囲で漸増、最大1日150mg/kg又は3gのいずれか低い方、いずれも分2'},
+  {min:51,max:80,st:'caution',lb:'常用量の75%',dose:'JSNP第39版: CCr51〜80mL/minでは75%に減量（FDA）。軽度（CCr51〜80mL/min）腎障害患者のAUCは健常者の1.3倍になる'},
+  {min:31,max:51,st:'caution',lb:'常用量の50%',dose:'JSNP第39版: CCr31〜50mL/minでは50%に減量（FDA）。中等度（CCr31〜50mL/min）腎障害患者のAUCは健常者の2.0倍になる'},
+  {min:0,max:31,st:'warning',lb:'常用量の25%',dose:'JSNP第39版: CCr11〜30mL/minでは25%に減量（FDA）。重度（CCr11〜30mL/min）腎障害患者のAUCは健常者の4.5倍になる。腎機能障害患者では低い用量で反応する可能性があり、慎重に増量する'},
+ ],
+ dial:{st:'warning',lb:'常用量の25%以下',dose:'JSNP第39版: 25%に減量（FDA）に準じる。腎機能障害患者では低い用量で反応する可能性がある'},
+ note:'腎排泄型で、腎機能によって75%→50%→25%と大幅に減量する。重度腎障害ではAUCが4.5倍にもなる。不可逆的な視野狭窄（視野欠損）が特徴的な副作用で、投与前と投与中は定期的に視野検査が必要。参考域の血中濃度2〜36μg/mL。src:JSNP第39版'},
+
+{id:'ethosuximide',cat:'epilepsy',name:'エトスクシミド',yomi:'えとすくしみど',
+ brand:['ザロンチンシロップ','エピレオプチマル散'],
+ cls:'抗てんかん薬（欠神発作）',metric:'ccr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日450〜1,000mgを分2〜3'},
+  {min:0,max:30,st:'caution',lb:'低用量から開始',dose:'JSNP第39版: CCr<30mL/minでは、低用量より開始する（Seizure 76:143-152, 2020）'},
+ ],
+ dial:{st:'caution',lb:'低用量から開始',dose:'JSNP第39版: 低用量より開始する。透析で除去されるため、HD後の補充を考慮する'},
+ note:'欠神発作の第一選択薬。CCr30mL/min未満では低用量から開始する。参考域の血中濃度40〜100μg/mL。ネフローゼ症候群の症例報告があるため、尿蛋白と腎機能を定期的に確認する。src:JSNP第39版'},
+
+{id:'sultiame',cat:'epilepsy',name:'スルチアム',yomi:'するちあむ',
+ brand:['オスポロット'],
+ cls:'抗てんかん薬（炭酸脱水酵素阻害作用）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'1日200〜600mgを分2〜3'},
+  {min:0,max:30,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（腎障害患者では、腎不全を起こすおそれがある）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（腎障害患者では、腎不全を起こすおそれがある）'},
+ note:'腎障害患者は禁忌。炭酸脱水酵素阻害作用を持つため、腎・尿路結石や代謝性アシドーシスを起こしうる。参考域の血中濃度8〜15μg/mL。腎機能低下例ではほかの抗てんかん薬を選ぶ。src:JSNP第39版'},
+
+{id:'trimethadione',cat:'epilepsy',name:'トリメタジオン',yomi:'とりめたじおん',
+ brand:['ミノアレ散'],
+ cls:'抗てんかん薬（オキサゾリジン系・欠神発作）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1.0gを分3、毎食後。最高1日2.0g'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 高度低下〜末期腎不全は禁忌（重篤な腎障害患者: 腎障害が報告されている）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（重篤な腎障害患者には腎障害が報告されている）'},
+ note:'重篤な腎障害は禁忌。致死的なネフローゼ症候群が報告されているため、開始前及び投与中に定期的に腎機能検査（尿蛋白を含む）を行う。古い薬で、現在は他剤無効の欠神発作に限って使われる。src:JSNP第39版'},
+
+{id:'zonisamide_epilepsy',cat:'epilepsy',name:'ゾニサミド（てんかん用量）',yomi:'ぞにさみどてんかん',
+ brand:['エクセグラン'],
+ cls:'抗てんかん薬（多作用機序）',metric:'egfr',
+ thr:[
+  {min:59,max:999,st:'ok',lb:'通常投与可',dose:'最初1日100〜200mgを分1〜3。以後1〜2週毎に増量し、1日200〜400mgを分1〜3。最高1日600mg'},
+  {min:15,max:59,st:'caution',lb:'常用量の75%',dose:'JSNP第39版: GFR15〜59mL/minでは75%に減量（Renal Pharmacotherapy 2nd ed, 2021）。eGFR<50mL/minの患者では、投与量と毒性に関する経験が不十分のため推奨されないという記載もある（FDA）。尿中未変化体排泄率はやや高いため血中濃度に基づき投与量を設定する（EO）'},
+  {min:0,max:15,st:'warning',lb:'常用量の50%',dose:'JSNP第39版: GFR<15mL/minでは50%に減量。CCr<20mL/minの患者のAUCは、健常者の1.35倍になる（FDA）'},
+ ],
+ dial:{st:'caution',lb:'1日1回4〜8mg/kg（HD後）',dose:'JSNP第39版: HDでは1日1回4〜8mg/kg、HD日はHD後（Renal Pharmacotherapy 2nd ed, 2021）。透析で除去される'},
+ note:'てんかん用量（エクセグラン: 100〜600mg/日）は腎機能で減量が必要。パーキンソン病用量（トレリーフ: 25〜50mg/日）はてんかん用量よりはるかに少ないため減量不要とされており、同じ成分でも適応によって扱いが変わる点に注意。参考域の血中濃度10〜40μg/mL（40μg/mL以上で眠気・注意力低下の報告）。弱い炭酸脱水酵素阻害作用があり、腎・尿路結石、代謝性アシドーシス、発汗減少があらわれることがあるため、開始前及び投与中に定期的に腎機能検査を行う。src:JSNP第39版'},
+
+{id:'phenobarbital',cat:'epilepsy',name:'フェノバルビタール',yomi:'ふぇのばるびたーる',
+ brand:['フェノバール'],
+ cls:'抗てんかん薬（バルビツール酸系）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'経口 1日30〜200mgを分1〜4。不眠症の場合は1回30〜200mg、就寝前。注 1回50〜200mgを1日1〜2回、皮下注又は筋注'},
+  {min:0,max:15,st:'warning',lb:'投与間隔を1.5〜2倍に',dose:'JSNP第39版: 症状の悪化、又は血中濃度上昇のおそれがある（添）。末期腎不全では投与間隔を1.5〜2倍にする（EO）'},
+ ],
+ dial:{st:'warning',lb:'投与間隔を1.5〜2倍に',dose:'JSNP第39版: 投与間隔を1.5〜2倍にする（EO）。透析性があるため、HD中の痙攣には他剤の使用を優先する'},
+ note:'末期腎不全では投与間隔を1.5〜2倍に延長する。参考域の血中濃度15〜40μg/mL（35μg/mLを超えると眠気・歩行失調などが発現する）。透析で除去されるため、HD中の痙攣には他剤を優先する。注射剤のノーベルバール（フェノバルビタールナトリウム）は末期腎不全が禁忌とされており、剤形で扱いが異なる点に注意。src:JSNP第39版'},
+
+{id:'phenobarbital_na',cat:'epilepsy',name:'フェノバルビタールナトリウム','yomi':'ふぇのばるびたーるなとりうむ',
+ brand:['ノーベルバール静注用'],
+ cls:'抗てんかん薬（バルビツール酸系・注射剤）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'てんかん重積状態: 1日1回15〜20mg/kg'},
+  {min:0,max:15,st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 末期腎不全は禁忌（重篤な腎障害: 症状の悪化、血中濃度上昇のおそれがある）（添）'},
+ ],
+ dial:{st:'prohibited',lb:'禁忌',dose:'JSNP第39版: 禁忌（重篤な腎障害: 症状の悪化、血中濃度上昇のおそれがある）'},
+ note:'てんかん重積状態に用いる注射剤。重篤な腎障害は禁忌。経口のフェノバール（フェノバルビタール）は禁忌ではなく投与間隔の延長で対応するとされており、同じ成分でも剤形で扱いが異なる。src:JSNP第39版'},
+
+{id:'phenytoin_phenobarbital',cat:'epilepsy',name:'フェニトイン・フェノバルビタール配合',yomi:'ふぇにといんふぇのばるびたーるはいごう',
+ brand:['複合アレビアチン配合錠','ヒダントールD配合錠','ヒダントールE配合錠','ヒダントールF配合錠'],
+ cls:'抗てんかん薬（配合剤）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'複合アレビアチン配合錠: 1日1〜4錠を分割。ヒダントールD・E・F配合錠: 1日6〜12錠を分割'},
+  {min:0,max:15,st:'warning',lb:'添文は禁忌（根拠に乏しい）',dose:'JSNP第39版: 添付文書上は禁忌だが、根拠に乏しい。投与間隔を1.5〜2倍にし、TDMを実施する（EO）。配合剤のため成分ごとの調節ができず、腎機能低下例では各成分を個別の製剤に分けるのが原則'},
+ ],
+ dial:{st:'warning',lb:'添文は禁忌（根拠に乏しい）',dose:'JSNP第39版: 添付文書上は禁忌だが、根拠に乏しい。投与間隔を1.5〜2倍にし、TDMを実施する（EO）'},
+ note:'フェニトインとフェノバルビタールの配合剤。添付文書上は重篤な腎障害が禁忌だが、JSNP第39版は「根拠に乏しい」とし、投与間隔の延長とTDMでの対応を示している。配合剤は成分ごとの調節ができないため、腎機能低下例では各成分を個別の製剤に分けるのが現実的。末期腎不全ではタンパク結合率が低下するため、フェニトインの総濃度の有効治療域を5〜10μg/mL程度の低めにする。src:JSNP第39版'},
+
+{id:'primidone',cat:'epilepsy',name:'プリミドン',yomi:'ぷりみどん',
+ brand:['プリミドン錠','プリミドン細粒'],
+ cls:'抗てんかん薬（バルビツール酸系プロドラッグ）',metric:'egfr',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'通常投与可',dose:'治療初期3日間は1日0.25gを就寝前。以後3日間毎に0.25gずつ増量し、1日1.5gを分2〜3回。最大1日2.0g'},
+  {min:0,max:30,st:'warning',lb:'12〜24時間毎に延長',dose:'JSNP第39版: 症状の悪化、また、血中濃度上昇のおそれがある（添）。臨床データに乏しいが、動物実験において活性代謝物フェニルエチルマロンアミドの尿中排泄が高いため、減量が必要と考えられる（EO）。12〜24時間毎（Drug Prescribing in Renal Failure, 5th ed.）'},
+ ],
+ dial:{st:'warning',lb:'24時間毎（HD後）',dose:'JSNP第39版: 24時間毎。HD患者のHD日はHD後に投与する'},
+ note:'体内でフェノバルビタールとフェニルエチルマロンアミド（PEMA）に代謝される。PEMAの尿中排泄が高いため腎機能低下で蓄積し、投与間隔の延長が必要。参考域の血中濃度5〜12μg/mL。TDMを行う際には代謝物としてのフェノバルビタールのTDMを同時に行うことが求められる。src:JSNP第39版'},
+
+{id:'midazolam_iv',cat:'epilepsy',name:'ミダゾラム（てんかん重積用）',yomi:'みだぞらむてんかん',
+ brand:['ミダフレッサ静注'],
+ cls:'抗てんかん薬（ベンゾジアゼピン系・てんかん重積状態）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'静脈内投与: 0.15mg/kgを1mg/minを目安に投与し、必要に応じ1回0.1〜0.3mg/kgの範囲で追加。初回と追加投与の総量は0.6mg/kgを超えないこと。持続静脈内投与: 0.1mg/kg/hrより開始し、必要に応じて0.05〜0.1mg/kg/hrずつ増量、最大投与量0.4mg/kg/hr'},
+  {min:0,max:15,st:'caution',lb:'維持量を50%に減量',dose:'JSNP第39版: 代謝・排泄が遅延し、作用が強く又は長くあらわれるおそれがある（添）。末期腎不全は維持量を50%に減量（EO）。腎不全患者で活性代謝物が蓄積し、鎮静作用が持続した症例報告がある（Lancet 346:145-147, 1995）'},
+ ],
+ dial:{st:'caution',lb:'維持量を50%に減量',dose:'JSNP第39版: 維持量を50%に減量（EO）。活性代謝物1-ヒドロキシミダゾラムグルクロン酸抱合体が蓄積し鎮静が遷延する'},
+ note:'てんかん重積状態に用いる注射剤。活性代謝物（1-ヒドロキシミダゾラムのグルクロン酸抱合体）が腎排泄のため、腎不全患者では蓄積して鎮静が遷延する。末期腎不全では維持量を半量にする。覚醒遅延がみられたら蓄積を疑う。src:JSNP第39版'},
+
+{id:'fenfluramine',cat:'epilepsy',name:'フェンフルラミン',yomi:'ふぇんふるらみん',
+ brand:['フィンテプラ内用液'],
+ cls:'抗てんかん薬（Dravet症候群・Lennox-Gastaut症候群）',metric:'egfr_std',
+ thr:[
+  {min:30,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'①Dravet症候群でスチリペントールを併用する場合 1日0.2mg/kgを分2、1日0.4mg/kgを超えない範囲で適宜増減、最大1日17mg ②併用しない場合 1日0.2mg/kgを分2、1日0.7mg/kgを超えない範囲、最大1日26mg ③Lennox-Gastaut症候群 1回0.2mg/kgで開始し1日0.7mg/kgまで増量可、最大1日26mg。増量は1週間以上の間隔をあけて行う'},
+  {min:15,max:30,st:'caution',lb:'最大17〜20mg/日',dose:'JSNP第39版: 高度低下は①最大1日17mg、②最大1日20mg（FDA）。重度腎障害（eGFR<30mL/min/1.73m²）患者のフェンフルラミン、活性代謝物ノルフェンフルラミンのAUCは、健常者のそれぞれ1.9倍、1.1倍になる'},
+  {min:0,max:15,st:'warning',lb:'検討されていない',dose:'JSNP第39版: 末期腎不全での使用は検討されていない（FDA）'},
+ ],
+ dial:{st:'warning',lb:'検討されていない',dose:'JSNP第39版: 検討されていない（FDA）'},
+ note:'腎機能指標は【標準化eGFR（mL/min/1.73m²）】。Dravet症候群・Lennox-Gastaut症候群に用いる。心臓弁膜症・肺動脈性肺高血圧症のリスクがあり、投与前と投与中は定期的な心エコー検査が必要（登録制）。高度腎機能低下では最大用量を制限する。src:JSNP第39版'},
+
+{id:'stiripentol',cat:'epilepsy',name:'スチリペントール',yomi:'すちりぺんとーる',
+ brand:['ディアコミット'],
+ cls:'抗てんかん薬（Dravet症候群）',metric:'egfr',
+ thr:[{min:0,max:999,st:'caution',lb:'腎機能検査を定期的に',dose:'添付文書参照（1日50mg/kgを分2〜3）。JSNP第39版: 腎障害があらわれるおそれがあるので、定期的に腎機能検査を行う'}],
+ dial:{st:'caution',lb:'腎機能検査を定期的に',dose:'腎障害があらわれるおそれがあるので、定期的に腎機能検査を行う'},
+ note:'Dravet症候群にクロバザム・バルプロ酸と併用する。腎機能による用量調節の記載はないが、腎障害があらわれるおそれがあるため定期的な腎機能検査が必要。参考域の血中濃度4〜22μg/mL。CYP阻害作用が強く併用薬の血中濃度を上げる。src:JSNP第39版'},
+
+{id:'acetylpheneturide',cat:'epilepsy',name:'アセチルフェネトライド',yomi:'あせちるふぇねとらいど',
+ brand:['クランポール'],
+ cls:'抗てんかん薬',metric:'egfr',
+ thr:[{min:0,max:999,st:'caution',lb:'データなし・慎重に',dose:'1日0.3〜0.4gを分3、毎食後より始め、1日0.1gずつ漸増。維持量1日0.6〜1.2g。JSNP第39版: 薬物動態データがほとんどなく不明'}],
+ dial:{st:'caution',lb:'データなし・慎重に',dose:'JSNP第39版: 薬物動態データがほとんどなく不明'},
+ note:'薬物動態データがほとんどなく、腎機能低下時の扱いが不明。他剤で効果不十分な場合に限って使い、腎機能低下例では少量から慎重に増量して副作用を観察する。src:JSNP第39版'},
+
+{id:'selegiline',cat:'dementia_pd',name:'セレギリン',yomi:'せれぎりん',
+ brand:['エフピーOD錠'],
+ cls:'パーキンソン病治療薬（MAO-B阻害薬）',metric:'egfr',
+ thr:[
+  {min:15,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日2.5mgより開始し、2週ごとに2.5mgずつ増量、維持量1日7.5〜10mgを分1〜2、朝・昼）'},
+  {min:0,max:15,st:'caution',lb:'中枢作用に注意',dose:'JSNP第39版: 重篤な腎障害のある患者では、代謝物であるメタンフェタミン及びアンフェタミンの蓄積による中枢作用が生じるおそれがある'},
+ ],
+ dial:{st:'caution',lb:'中枢作用に注意',dose:'JSNP第39版: 代謝物のメタンフェタミン・アンフェタミンが蓄積し、不眠・興奮・幻覚などの中枢作用が生じるおそれがある'},
+ note:'代謝物がメタンフェタミン及びアンフェタミンで、重篤な腎障害では蓄積して不眠・興奮・幻覚などの中枢作用を起こすおそれがある。覚醒剤原料に該当するため取り扱いに注意（譲受・譲渡の記録が必要）。同じMAO-B阻害薬でもラサギリン（アジレクト）・サフィナミド（エクフィナ）はこの代謝物を生じず、全腎機能域で調節不要。src:JSNP第39版'},
+
+
+// ---- パーキンソン病治療薬ほか（JSNP第39版 p.58〜61より・全腎機能域で調節不要）----
+{id:'rotigotine',cat:'dementia_pd',name:'ロチゴチン',yomi:'ろちごちん',
+ brand:['ニュープロパッチ'],
+ cls:'ドパミン受容体作動薬（経皮吸収型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（パーキンソン病: 1日1回2.25mgから開始し、4.5mgずつ増量、維持量9〜36mg。RLS: 1日1回2.25mgから開始、最大6.75mg）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。貼付剤のため服薬が難しい患者にも使える。JSNP第39版によるとHD患者ではHDによる用量調節の必要性はない（臨床試験は実施していない）。貼付部位の皮膚症状に注意し毎回場所を変える。src:JSNP第39版'},
+
+{id:'ropinirole_patch',cat:'dementia_pd',name:'ロピニロール（貼付剤）',yomi:'ろぴにろーるちょうふざい',
+ brand:['ハルロピテープ'],
+ cls:'ドパミン受容体作動薬（経皮吸収型）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日1回8mgから開始し、維持量8〜64mg）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。経口のレキップは白鷺13版でCcr30未満の安全性が未確立とされているが、貼付剤は全腎機能域で調節不要とされている。src:JSNP第39版'},
+
+{id:'safinamide',cat:'dementia_pd',name:'サフィナミド',yomi:'さふぃなみど',
+ brand:['エクフィナ'],
+ cls:'パーキンソン病治療薬（MAO-B阻害薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回50mg。最大1日1回100mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レボドパ含有製剤と併用して wearing-off を改善する。セレギリンと違いアンフェタミン系の代謝物を生じないため、腎機能低下例でも中枢作用の蓄積を心配しなくてよい。src:JSNP第39版'},
+
+{id:'rasagiline',cat:'dementia_pd',name:'ラサギリン',yomi:'らさぎりん',
+ brand:['アジレクト'],
+ cls:'パーキンソン病治療薬（MAO-B阻害薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'1日1回1mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。セレギリンと違いアンフェタミン系の代謝物を生じず、全腎機能域で調節不要。単剤でも併用でも使える。src:JSNP第39版'},
+
+{id:'opicapone',cat:'dementia_pd',name:'オピカポン',yomi:'おぴかぽん',
+ brand:['オンジェンティス'],
+ cls:'パーキンソン病治療薬（COMT阻害薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日1回25mg、食事の前後1時間以上あけて就寝前）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。エンタカポン（コムタン）が毎回のレボドパに合わせて1日最大8回必要なのに対し、オピカポンは1日1回でよい。全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'istradefylline',cat:'dementia_pd',name:'イストラデフィリン',yomi:'いすとらでふぃりん',
+ brand:['ノウリアスト'],
+ cls:'パーキンソン病治療薬（アデノシンA2A受容体拮抗薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'レボドパ含有製剤と併用し、1日1回20mg。最大1日1回40mg'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レボドパ併用下の wearing-off を改善する。全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'trihexyphenidyl',cat:'dementia_pd',name:'トリヘキシフェニジル',yomi:'とりへきしふぇにじる',
+ brand:['アーテン','セドリーナ','パーキネス'],
+ cls:'パーキンソン病治療薬（抗コリン薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日1mgから開始し、数日毎に2mgずつ増量、維持量2〜10mgを分3〜4）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。抗コリン作用が強く、高齢者では口渇・便秘・尿閉・認知機能低下・せん妄に注意する。薬剤性パーキンソニズムにも使われる。src:JSNP第39版'},
+
+{id:'biperiden',cat:'dementia_pd',name:'ビペリデン',yomi:'びぺりでん',
+ brand:['アキネトン'],
+ cls:'パーキンソン病治療薬（抗コリン薬）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'錠・細粒: 初回2mgを分2、維持量3〜6mgを分3。注: 1回5〜10mgを筋注。特殊な場合にのみ1回5〜10mgを5mgにつき約3分かけて徐々に静注'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。急性ジストニアの治療にも使う。抗コリン作用による口渇・尿閉・せん妄に注意。src:JSNP第39版'},
+
+{id:'bromocriptine',cat:'dementia_pd',name:'ブロモクリプチン',yomi:'ぶろもくりぷちん',
+ brand:['パーロデル'],
+ cls:'ドパミン受容体作動薬（麦角系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（パーキンソン病: 1日1.25mgから開始し、維持量15〜22.5mgを分2〜3。高プロラクチン血症にも適応）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。麦角系のため心臓弁膜症・肺線維症・後腹膜線維症のリスクがあり、定期的な心エコーが推奨される。src:JSNP第39版'},
+
+{id:'pergolide',cat:'dementia_pd',name:'ペルゴリド',yomi:'ぺるごりど',
+ brand:['ペルマックス'],
+ cls:'ドパミン受容体作動薬（麦角系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。JSNP第39版: 減量する必要がないと思われるが、薬物動態データがほとんどなく不明（EO）。麦角系のため心臓弁膜症のリスクがあり定期的な心エコーが推奨される。src:JSNP第39版'},
+
+{id:'cabergoline',cat:'dementia_pd',name:'カベルゴリン',yomi:'かべるごりん',
+ brand:['カバサール'],
+ cls:'ドパミン受容体作動薬（麦角系）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（パーキンソン病: 1日1回0.25mgから開始し、維持量2〜4mg。高プロラクチン血症にも適応）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。麦角系のため心臓弁膜症のリスクがあり、定期的な心エコーが推奨される。1日1回でよい。src:JSNP第39版'},
+
+{id:'apomorphine',cat:'dementia_pd',name:'アポモルヒネ',yomi:'あぽもるひね',
+ brand:['アポカイン皮下注'],
+ cls:'ドパミン受容体作動薬（レスキュー用皮下注）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回1mgから開始し、1回最大6mg、1日最大5回・計30mg）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。オフ症状のレスキューに患者自身が皮下注する。強い悪心があるため制吐薬（ドンペリドン）の前投与が必要。5-HT3拮抗薬との併用は禁忌（重度の低血圧）。src:JSNP第39版'},
+
+{id:'levodopa',cat:'dementia_pd',name:'レボドパ',yomi:'れぼどぱ',
+ brand:['ドパストン'],
+ cls:'パーキンソン病治療薬（レボドパ単剤）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'静注: 1日25〜50mgを分1〜2、静注又は点滴静注。散: 1日250〜750mgを分1〜3、食直後。その後2〜3日毎に1日250mgずつ増量し維持量とする（標準維持量1日1.5〜3.5g）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。ドパ脱炭酸酵素阻害薬を含まない単剤のため、配合剤より高用量が必要。src:JSNP第39版'},
+
+{id:'levodopa_benserazide',cat:'dementia_pd',name:'レボドパ・ベンセラジド配合',yomi:'れぼどぱべんせらじどはいごう',
+ brand:['マドパー配合錠L','ネオドパゾール配合錠','イーシー・ドパール配合錠'],
+ cls:'パーキンソン病治療薬（レボドパ・DCI配合剤）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1日100〜300mgを分1〜3から開始し、維持量1日300〜600mg）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レボドパ・カルビドパ配合剤（メネシットなど）と並ぶ標準治療。全腎機能域で調節不要。src:JSNP第39版'},
+
+{id:'levodopa_carbidopa_entacapone',cat:'dementia_pd',name:'レボドパ・カルビドパ・エンタカポン配合',yomi:'れぼどぱかるびどぱえんたかぽんはいごう',
+ brand:['スタレボ配合錠L'],
+ cls:'パーキンソン病治療薬（レボドパ・DCI・COMT阻害薬の3剤配合）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（1回1錠、1日8回まで）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レボドパ・カルビドパ配合剤にエンタカポンを加えた3剤配合錠。エンタカポン単剤と同じく1日8回までが上限。尿・汗が橙赤色になる（無害）。src:JSNP第39版'},
+
+{id:'foslevodopa',cat:'dementia_pd',name:'ホスレボドパ・ホスカルビドパ配合',yomi:'ほすれぼどぱほすかるびどぱはいごう',
+ brand:['ヴィアレブ配合持続皮下注'],
+ cls:'パーキンソン病治療薬（持続皮下注）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（24時間持続皮下投与）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。レボドパ・カルビドパのプロドラッグを24時間持続皮下投与する製剤。進行期で内服による変動が大きい症例に用いる。注入部位の皮膚トラブルに注意。src:JSNP第39版'},
+
+{id:'duodopa',cat:'dementia_pd',name:'レボドパ・カルビドパ配合経腸用液',yomi:'れぼどぱかるびどぱけいちょうようえき',
+ brand:['デュオドーパ配合経腸用液'],
+ cls:'パーキンソン病治療薬（経腸持続投与）',metric:'egfr',
+ thr:[{min:0,max:999,st:'ok',lb:'腎機能正常者と同じ',dose:'添付文書参照（胃瘻から空腸へ持続投与）'}],
+ dial:{st:'ok',lb:'腎機能正常者と同じ',dose:'腎機能正常者と同じ用量で使用可'},
+ note:'JSNP第39版は全腎機能域で腎機能正常者と同じとしている。胃瘻から空腸にカテーテルを留置して持続投与する。進行期パーキンソン病で、内服では症状の変動が抑えられない症例に用いる。src:JSNP第39版'},
+
 ];
 
 
@@ -7470,7 +9144,8 @@ const catLb = {
   antidep_sleep:        '抗うつ薬',
   sleep_bz:             '睡眠薬・抗不安薬（BZ系）',
   sleep_orexin:         '睡眠薬（オレキシン・メラトニン）',
-  misc:                 'めまい治療薬',
+  migraine:             '片頭痛治療薬',
+  misc:                 'めまい・制吐薬',
 
   // 🩹 疼痛・鎮痛
   analgesic_nsaid:      'NSAIDs・解熱鎮痛薬',
@@ -7500,7 +9175,7 @@ const catOrd = [
   'antiviral_herpes','antiviral_hepatitis','antiviral_flu','antifungal',
   'allergy_h1','allergy_lt',
   'immuno_dmard','immuno_jak','immuno_suppress',
-  'epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin','misc',
+  'epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin','migraine','misc',
   'analgesic_nsaid','analgesic_opioid','analgesic_neuro','muscle_relax',
   'bone','thyroid',
   'onco_cytotoxic','onco_kinase','onco_other',
@@ -7544,7 +9219,7 @@ const GRP_DEF = [
 
   // --- 4行目: 神経・その他 ---
   { id:'neuro',      label:'🧠 精神・神経',     color:'#4338ca', bg:'#eef2ff',
-    cats:['epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin','misc'] },
+    cats:['epilepsy','dementia_pd','psychiatry','antidep_sleep','sleep_bz','sleep_orexin','migraine','misc'] },
   { id:'pain',       label:'🩹 疼痛・鎮痛',     color:'#0f766e', bg:'#f0fdfa',
     cats:['analgesic_nsaid','analgesic_opioid','analgesic_neuro','muscle_relax'] },
   { id:'bone_endo',  label:'🦴 骨・内分泌',     color:'#92400e', bg:'#fffbeb',
@@ -7698,14 +9373,90 @@ const ALT_MAP = {
   escitalopram:   {label:'エスシタロプラムを減量する場合',alts:['sertraline']},
   mirtazapine:    {label:'ミルタザピンを減量する場合',alts:['sertraline','escitalopram']},
   venlafaxine:    {label:'ベンラファキシンを減量する場合',alts:['duloxetine','sertraline']},
+  paliperidone:   {label:'パリペリドンが使えない場合（CCr50未満は禁忌）',
+                   alts:['risperidone','quetiapine','olanzapine']},
+
+  quetiapine_xr:  {label:'クエチアピン徐放錠（ビプレッソ）が使えない場合（末期腎不全は禁忌）',
+                   alts:['quetiapine','olanzapine']},
+
+  // ===== 神経・精神（腎機能で禁忌・減量になる薬の代替）=====
+  paliperidone_lai:{label:'ゼプリオンが使えない場合（CCr50未満は禁忌）',
+                   alts:['aripiprazole_lai','risperidone_lai']},
+  sultiame:       {label:'スルチアムが使えない場合（腎障害は禁忌）',
+                   alts:['valproate','lamotrigine','perampanel']},
+  trimethadione:  {label:'トリメタジオンが使えない場合（重篤な腎障害は禁忌）',
+                   alts:['valproate','lamotrigine']},
+  phenobarbital_na:{label:'ノーベルバールが使えない場合（重篤な腎障害は禁忌）',
+                   alts:['phenobarbital','midazolam_iv']},
+  zonisamide_epilepsy:{label:'ゾニサミド（てんかん用量）を減量する場合',
+                   alts:['valproate','lamotrigine','perampanel']},
+  vigabatrin:     {label:'ビガバトリンを大幅減量する場合',
+                   alts:['valproate','lamotrigine']},
+  lacosamide:     {label:'ラコサミドを減量する場合',
+                   alts:['brivaracetam','perampanel','lamotrigine']},
+  sultopride:     {label:'スルトプリドを減量する場合',
+                   alts:['risperidone','quetiapine','olanzapine']},
+  tiapride:       {label:'チアプリドを減量する場合',
+                   alts:['quetiapine','olanzapine']},
+  selegiline:     {label:'セレギリンを避ける場合（代謝物の蓄積）',
+                   alts:['rasagiline','safinamide']},
+  pentobarbital:  {label:'ペントバルビタールを避ける場合',
+                   alts:['lemborexant','suvorexant','daridorexant','ramelteon']},
+  eszopiclone:    {label:'エスゾピクロンを減量する場合',
+                   alts:['lemborexant','suvorexant','daridorexant','vornorexant','ramelteon']},
+
+  // ===== オピオイド =====
+  tramadol_sr:    {label:'トラマドール徐放錠が使えない場合（eGFR30未満は禁忌）',
+                   alts:['tramadol','buprenorphine','tramcet']},
+  tramadol:       {label:'トラマドールを減量・回避する場合',alts:['buprenorphine','pentazocine']},
+
+  // ===== ARB配合剤（利尿薬配合は透析で禁忌）=====
+  candesartan_hctz:{label:'利尿薬配合のARBが使えない場合（無尿・透析は禁忌）',
+                   alts:['candesartan','candesartan_amlodipine']},
+  telmisartan_hctz:{label:'利尿薬配合のARBが使えない場合（無尿・透析は禁忌）',
+                   alts:['telmisartan','telmisartan_amlodipine']},
+  valsartan_hctz: {label:'利尿薬配合のARBが使えない場合（無尿・透析は禁忌）',
+                   alts:['valsartan','valsartan_amlodipine']},
+  losartan_hctz:  {label:'利尿薬配合のARBが使えない場合（無尿・透析は禁忌）',
+                   alts:['losartan']},
+  irbesartan_trichlormethiazide:{label:'利尿薬配合のARBが使えない場合（無尿・透析は禁忌）',
+                   alts:['irbesartan','irbesartan_amlodipine']},
+  telmisartan_amlodipine_hctz:{label:'3剤配合錠が使えない場合（無尿・HDは禁忌）',
+                   alts:['telmisartan_amlodipine','telmisartan','amlodipine']},
+
+  // ===== 抗不整脈薬 =====
+  cibenzoline:    {label:'シベンゾリンが使えない場合（末期腎不全は禁忌）',
+                   alts:['amiodarone','bepridil','propafenone']},
+  sotalol:        {label:'ソタロールが使えない場合（末期腎不全・透析は禁忌）',
+                   alts:['amiodarone','bepridil']},
+  disopyramide:   {label:'ジソピラミドを減量・回避する場合',alts:['propafenone','amiodarone']},
+
+  // ===== 抗凝固薬 =====
+  enoxaparin:     {label:'エノキサパリンが使えない場合（CCr30未満は禁忌）',
+                   alts:['fondaparinux']},
+
+  // ===== 片頭痛治療薬 =====
+  naratriptan:    {label:'ナラトリプタンが使えない場合（高度腎機能低下で禁忌）',
+                   alts:['sumatriptan','rizatriptan','lasmiditan','galcanezumab']},
+  ergotamine_combo:{label:'エルゴタミン配合剤が使えない場合（腎障害で禁忌）',
+                   alts:['sumatriptan','rizatriptan','lasmiditan']},
+  rimegepant:     {label:'リメゲパントを避ける場合（末期腎不全）',
+                   alts:['sumatriptan','lasmiditan','galcanezumab']},
+
+  // ===== めまい・制吐薬 =====
+  difenidol:      {label:'ジフェニドールが使えない場合（重篤な腎障害で禁忌）',
+                   alts:['betahistine','diphenhydramine_dipro']},
 
   // ===== 抗てんかん薬 =====
-  levetiracetam:  {label:'レベチラセタムを減量する場合',alts:['valproate','lamotrigine']},
+  levetiracetam:  {label:'レベチラセタムを減量する場合（腎排泄型）',alts:['brivaracetam','valproate','lamotrigine']},
   gabapentin:     {label:'ガバペンチンを減量する場合（抗てんかん薬として）',alts:['valproate','lamotrigine']},
   topiramate:     {label:'トピラマートを減量する場合',alts:['valproate','lamotrigine']},
 
   // ===== 認知症・パーキンソン =====
   memantine:      {label:'メマンチンを減量する場合',alts:['donepezil','galantamine']},
+  galantamine:    {label:'ガランタミンを減量・回避する場合',alts:['donepezil','rivastigmine']},
+  gabapentin_enacarbil:{label:'ガバペンチンエナカルビルが使えない場合（CCr30未満は禁忌）',
+                   alts:['pramipexole','ropinirole']},
   pramipexole:    {label:'プラミペキソールを減量する場合',alts:['ropinirole']},
   ropinirole:     {label:'ロピニロールを減量する場合',alts:['pramipexole']},
 
@@ -7788,7 +9539,7 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.11.0',
+  app: '1.14.0',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
@@ -7827,6 +9578,66 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.14.0',
+    date: '2026-10-08',
+    title: '精神・神経領域に97剤を追加（505剤に）',
+    items: [
+      { type: 'add', text: '<b>オレキシン受容体拮抗薬が4剤そろいました</b>。従来のベルソムラ・デエビゴに加えて、<b>クービビック（ダリドレキサント）</b>と<b>ボルズィ（ボルノレキサント）</b>を追加。いずれも全腎機能域で用量調節が不要で、腎機能低下例・透析患者の不眠に使いやすい薬です。' },
+      { type: 'add', text: '<b>睡眠薬・抗不安薬を15剤追加</b>しました。ゾピクロン（アモバン）、フルニトラゼパム（サイレース）、ニトラゼパム（ベンザリン）、エスタゾラム（ユーロジン）、クアゼパム（ドラール）、フルラゼパム（ダルメート）、リルマザホン（リスミー）、ジアゼパム（セルシン・ホリゾン）、タンドスピロン（セディール）、ヒドロキシジン（アタラックス）など。<b>リルマザホンは透析患者で1mgが健常人の2mg相当</b>になるため半量が目安です。' },
+      { type: 'add', text: '<b>抗精神病薬を25剤追加</b>しました。ハロペリドール（セレネース）、クロルプロマジン（コントミン）、レボメプロマジン（ヒルナミン）、プロクロルペラジン（ノバミン）、ペロスピロン（ルーラン）、アセナピン（シクレスト）、クロザピン（クロザリル）、ブレクスピプラゾール（レキサルティ）、ロナセンテープ、持続性注射剤3種など。' },
+      { type: 'add', text: '<b>ゼプリオン（パリペリドン持続性注射剤）はCCr50未満が禁忌</b>です。持続性注射剤は一度打つと数週間〜数カ月残るため、投与前の腎機能確認が特に重要。エビリファイ持続性水懸筋注は腎機能の制限がないので、代替候補としてサジェストに入れてあります。' },
+      { type: 'data', text: '<b>チアプリド（グラマリール）とスルトプリド（バルネチール）は腎機能で大幅な減量</b>が必要です。チアプリドはCCr10未満で半減期が健常者の5.1倍になり、末期腎不全では1日1回25mgまで。高齢者のせん妄・ジスキネジアで常用量のまま続いていないか確認してください。' },
+      { type: 'add', text: '<b>抗うつ薬を11剤追加</b>しました。<b>ボルチオキセチン（トリンテリックス）</b>とトラゾドン（レスリン）はいずれも全腎機能域で調節不要で、腎機能低下例の選択肢になります。ほか三環系6剤・四環系3剤。' },
+      { type: 'add', text: '<b>抗てんかん薬を20剤追加</b>しました。<b>ラコサミド（ビムパット）はCCr30未満で最大300mg/日、HD後に1日量の半量まで補充</b>。<b>ビガバトリン（サブリル）は75%→50%→25%と大幅減量</b>。<b>スルチアム（オスポロット）とトリメタジオン（ミノアレ）は腎障害で禁忌</b>です。ブリーバラセタム（ブリィビアクト）はレベチラセタムと同じ作用点ながら調節不要なので、腎機能低下例の切り替え先になります。' },
+      { type: 'fix', text: '<b>ゾニサミドを適応別に分けました</b>。てんかん用量（エクセグラン: 100〜600mg/日）は<b>GFR15〜59で75%、15未満で50%に減量</b>が必要ですが、パーキンソン病用量（トレリーフ: 25〜50mg/日）は調節不要です。同じ成分でも適応で扱いが変わります。' },
+      { type: 'add', text: '<b>パーキンソン病治療薬を18剤追加</b>しました。ロチゴチン（ニュープロパッチ）、サフィナミド（エクフィナ）、ラサギリン（アジレクト）、オピカポン（オンジェンティス）、イストラデフィリン（ノウリアスト）、トリヘキシフェニジル（アーテン）など。<b>セレギリン（エフピー）だけは代謝物がメタンフェタミン・アンフェタミン</b>で、重篤な腎障害では蓄積による中枢作用に注意が必要です。' },
+      { type: 'add', text: '<b>ADHD・精神刺激薬を4剤追加</b>: アトモキセチン（ストラテラ）、メチルフェニデート（リタリン・コンサータ）、モダフィニル（モディオダール）、ペモリン（ベタナミン）。いずれも調節不要です。' },
+    ],
+  },
+  {
+    v: '1.13.1',
+    date: '2026-10-08',
+    title: 'ビプレッソ徐放錠を追加',
+    items: [
+      { type: 'add', text: '<b>クエチアピン徐放錠（ビプレッソ）</b>を追加しました。<b>末期腎不全が禁忌</b>です。同じ成分でも普通錠のセロクエルは全腎機能域で調節不要なので、腎機能低下例では普通錠への変更を検討します。トラマドール徐放錠・リスモダンR錠・ミケランLAカプセル・ミラペックスLAと同じ「徐放錠だけ禁忌」のパターンです。' },
+    ],
+  },
+  {
+    v: '1.13.0',
+    date: '2026-10-08',
+    title: '循環器・鎮痛領域の見直しと、よく出る配合剤・新薬の追加',
+    items: [
+      { type: 'add', text: '<b>ARB配合剤を13剤まとめて追加</b>しました。エカード／カデチア、ミコンビ／テルチア、コディオ／バルヒディオ、プレミネント／ロサルヒド、イルトラ、ザクラス／ジルムロ、アイミクス／イルアミクス、レザルタス、ユニシア／カムシア、ミカムロ／テラムロ、エックスフォージ／アムバロ、アテディオ、ミカトリオ。<b>利尿薬を含む配合剤は無尿患者・透析患者が禁忌</b>で、Ca拮抗薬配合はそうではない、という違いがそのまま判定に出ます。' },
+      { type: 'fix', text: '<b>カルベジロール（アーチスト）</b>: JSNP第39版は<b>eGFR45未満で半量から開始</b>としています（S体のAUCが増加しβ遮断作用が増強するため）。従来はCCr10以上を調節不要としていました。' },
+      { type: 'add', text: '<b>トラマドール徐放錠（ワントラム・ツートラム）を別建てにしました。eGFR30未満は禁忌</b>です（徐放性製剤のため作用・副作用が増強・遅延する）。速放製剤のトラマールは禁忌ではないため、代替薬サジェストから切り替え先をたどれます。従来は速放・徐放を1項目にまとめ「徐放製剤も使用可」としていました。' },
+      { type: 'fix', text: '<b>透析が禁忌だった3剤</b>: ソタロール（ソタコール）、ワルファリン、アピキサバン（エリキュース）は、JSNP第39版では透析患者が禁忌です。従来は警告どまりでした。いずれもやむを得ず使う場合の条件を本文に書いてあります。' },
+      { type: 'add', text: '<b>腎機能で禁忌になる薬をさらに追加</b>: メチロシン（デムサー）、ニトロプルシド（ニトプロ）、シベンゾリン（シベノール）、エノキサパリン（クレキサン）、フォンダパリヌクス（アリクストラ）、カンレノ酸カリウム（ソルダクトン）、インダパミド（ナトリックス）、メフルシド（バイカロン）。' },
+      { type: 'add', text: '<b>バクロフェン（ギャバロン・リオレサール）を追加</b>しました。腎排泄型でバクロフェン脳症のリスクがあり、eGFRに応じて2/3→1/2→1/3と減量、末期腎不全は1日2.5mgから開始します。高齢HD患者では1日20mg程度でも脳症による入院リスクが上がるという報告を本文に入れてあります。' },
+      { type: 'add', text: '<b>新薬・よく出る薬を追加</b>: ベルイシグアト（ベリキューボ）、セレキシパグ（ウプトラビ）、トラムセット配合錠、ノルスパンテープ、ペンタゾシン、アリスキレン（ラジレス）、ベラパミル（ワソラン）、ベプリジル（ベプリコール）、ジソピラミド（リスモダン）、ピルメノール、プロカインアミド、プロパフェノン、カルテオロール、ベタキソロール、アモスラロール、ベバントロール、クロニジン、メチルドパ、アフロクアロン、クロルフェネシン。収載薬剤は<b>407剤</b>になりました。' },
+      { type: 'data', text: '<b>腎機能別の用量を細かく修正</b>: ピルシカイニド（サンリズム）はeGFR15〜30で1日1回25mg、15未満で48時間毎。メキシレチンの透析時は1日200mg 分2（従来は常用量のまま）。チザニジンはCCr25以下でAUCが6.5倍・半減期が7倍になることを追記。' },
+      { type: 'data', text: '<b>リスモダンR錠・ミケランLAカプセル</b>など、徐放性製剤だけが腎機能低下で使えなくなるケースを本文に明記しました。普通錠への変更が必要になります。' },
+    ],
+  },
+  {
+    v: '1.12.0',
+    date: '2026-10-08',
+    title: '出典の二本立て化と、精神科・神経・片頭痛領域の全面見直し',
+    items: [
+      { type: 'feat', text: '<b>出典ごとのデータを別々に保持</b>するようにしました。JSNP第39版と白鷺病院13版の記載が食い違う薬は、腎機能を入力すると詳細画面に<b>両方の記載を並べた比較表</b>が出ます。判定そのものは<b>常に厳しい方を自動採用</b>します。' },
+      { type: 'feat', text: '各出典に<b>「どうやって確認したか」</b>を持たせました。✓は原典PDF／Web版で確認済み、!は書籍写真からの読み取りで未検証です。<b>未検証の出典だけで判定が決まっている場合は警告が出ます</b>。' },
+      { type: 'fix', text: '<b>HIF-PH阻害薬5剤の投与頻度</b>を修正しました。週3回投与なのはロキサデュスタットのみで、<b>ダプロデュスタット・バダデュスタット・モリデュスタット・エナロデュスタットはすべて1日1回</b>です。従来は5剤とも週1回と表示しており、約1/7の著しい過少投与になっていました。' },
+      { type: 'data', text: '<b>過量だった4剤を修正</b>: クエチアピン（開始50〜200mg→<b>1回25mgを1日2〜3回</b>、維持300〜750→150〜600mg/日）、フルボキサミン（最大250→<b>150mg/日</b>）、ミルナシプラン（最大200→<b>100mg/日</b>、高齢者60mg）、エンタカポン（1日最大10回→<b>8回</b>）。' },
+      { type: 'data', text: '<b>判定を厳しくした3剤</b>: ベンラファキシンは<b>eGFR30未満が禁忌</b>（JSNP第39版。従来は15未満のみ禁忌）、デュロキセチンは<b>CCr30未満が禁忌</b>（従来は警告どまり）、ガランタミンは<b>GFR30〜44で最大16mg/日</b>の上限を追加。' },
+      { type: 'fix', text: '<b>過剰に制限していた2件を緩和</b>: ガランタミンの透析「禁忌」は誤りで、両ガイドラインとも禁忌としていません（推奨されない・原則避ける）。アマンタジンも<b>末期腎不全は禁忌ではなく「100mgを7日毎」</b>で、禁忌は透析患者のみです。' },
+      { type: 'data', text: '<b>用量が少なすぎた薬を修正</b>: トリアゾラム（最大0.5mg）、クロチアゼパム（15〜30mg/日 分3）、ブロマゼパム（3〜15mg/日）、エチゾラム（最大3mg/日）、トピラマートの開始量（25→<b>1回50mg</b>）、ラモトリギンのGFR10未満（2日おき→<b>1日1回100mg</b>）、ブロナンセリンの透析（低用量→常用量）。' },
+      { type: 'data', text: '<b>表記の誤りを修正</b>: スルピリドの「70%減量」は<b>「常用量の50〜75%に減量」</b>の意味でした（減量後の割合）。パロキセチンの服用タイミングは就寝前ではなく<b>夕食後</b>です。' },
+      { type: 'data', text: '<b>白鷺側が厳しかった薬を安全側に</b>: エスゾピクロン（保存期CKDは1mgから開始・最大2mg）、ゾルピデム（保存期・透析とも5mgから開始）、ミルタザピンの透析（15〜30→<b>常用量の1/2＝7.5〜15mg/日</b>）。' },
+      { type: 'add', text: '<b>腎機能で禁忌になる薬を4剤追加</b>しました。<b>パリペリドン（インヴェガ）</b>はCCr50未満が禁忌、<b>ナラトリプタン（アマージ）</b>は高度腎機能低下で禁忌、<b>ジフェニドール（セファドール）</b>は重篤な腎障害で禁忌、<b>クリアミン配合錠</b>は麦角中毒のおそれで禁忌です。' },
+      { type: 'add', text: '<b>片頭痛治療薬のカテゴリを新設</b>し、トリプタン5剤（スマトリプタン・リザトリプタン・ゾルミトリプタン・エレトリプタン・ナラトリプタン）、ラスミジタン、リメゲパント、抗CGRP抗体3剤、ロメリジン、ジメトチアジン、エルゴタミン配合剤を収載しました。<b>ナラトリプタンとエルゴタミン以外は腎機能による調節が不要</b>です。' },
+      { type: 'add', text: 'そのほか<b>ルラシドン・グアンファシン・ゾニサミド・ロフラゼプ酸エチル・ロルメタゼパム・レカネマブ・ドナネマブ・オンダンセトロン・ジメンヒドリナート・トラベルミン配合錠・タルチレリン・ベタネコール</b>を追加。収載薬剤は<b>364剤</b>になりました。' },
+    ],
+  },
   {
     v: '1.11.0',
     date: '2026-10-08',
@@ -9397,6 +11208,92 @@ function renderDoseTable(drug, renal) {
   </table>`;
 }
 
+// =============================================
+// 出典別の比較表示
+// JSNPと白鷺で記載が異なる薬剤に対し、両者の記載を並べて示す。
+// 判定は「厳しい方」を採用しているが、その根拠が未検証（書籍写真からの
+// 読み取り）である場合は、そのことを明示する。
+// =============================================
+const SRC_META = {
+  shirasagi: { label: '白鷺13版', order: 0 },
+  jsnp:      { label: 'JSNP第39版', order: 1 },
+};
+const VERIFIED_META = {
+  pdf:   { mark: '✓', label: '原典PDF確認済み', cls: 'ok' },
+  web:   { mark: '✓', label: 'Web版で確認済み', cls: 'ok' },
+  photo: { mark: '!', label: '書籍写真からの読み取り・未検証', cls: 'warn' },
+};
+
+/** その腎機能値における出典別の区分を返す */
+function srcStatusAt(srcThr, renal, drug) {
+  if (!srcThr) return undefined;
+  const { val } = judgeValue(drug, renal);
+  if (val === null || val === undefined || isNaN(val)) return undefined;
+  for (const t of srcThr) {
+    const hi = t.max >= 999 ? Infinity : t.max;
+    if (val >= t.min && val < hi) return t;
+  }
+  return undefined;
+}
+function renderSourceCompare(drug, renal) {
+  if (!drug.srcs) return '';
+  const keys = Object.keys(drug.srcs)
+    .filter(k => SRC_META[k])
+    .sort((a, b) => SRC_META[a].order - SRC_META[b].order);
+  if (keys.length < 2) return '';
+
+  const isDial = renal.isDialysis;
+  const rows = keys.map(k => {
+    const s = drug.srcs[k];
+    const entry = isDial ? s.dial : srcStatusAt(s.thr, renal, drug);
+    const v = VERIFIED_META[s.verified] || VERIFIED_META.photo;
+    return { k, s, entry, v };
+  });
+
+  // 判定を動かしているのがどの出典かを調べる
+  const ranks = rows.map(r => (r.entry ? ST_RANK[r.entry.st] : undefined));
+  const defined = ranks.filter(r => r !== undefined);
+  const worst = defined.length ? Math.max(...defined) : undefined;
+  const drivers = rows.filter((r, i) => ranks[i] === worst && worst !== undefined);
+  // 厳しい方が未検証の出典「だけ」に由来する場合に注意を出す
+  const onlyUnverifiedDrives =
+    worst !== undefined &&
+    drivers.length > 0 &&
+    drivers.every(r => r.v.cls === 'warn') &&
+    defined.length > 1 &&
+    Math.min(...defined) !== worst;
+
+  const body = rows.map(r => {
+    const meta = SRC_META[r.k];
+    const badge = r.entry
+      ? `<span class="badge ${badgeClass(r.entry.st)}">${escapeHtml(r.entry.lb || '—')}</span>`
+      : '<span class="badge b-none">記載なし</span>';
+    const dose = r.entry && r.entry.dose ? escapeHtml(r.entry.dose) : '—';
+    return `<tr>
+      <td class="srccmp-name">
+        ${escapeHtml(meta.label)}
+        <span class="srccmp-verified srccmp-verified--${r.v.cls}" title="${escapeHtml(r.v.label)}">${r.v.mark}</span>
+      </td>
+      <td>${badge}</td>
+      <td class="srccmp-dose">${dose}</td>
+    </tr>`;
+  }).join('');
+
+  const warn = onlyUnverifiedDrives
+    ? `<div class="srccmp-warn">⚠️ 現在の判定は<strong>未検証の出典（書籍写真からの読み取り）</strong>の記載で決まっています。実際の投与判断の前に原典でご確認ください。</div>`
+    : '';
+
+  return `<div class="srccmp">
+    <div class="srccmp-head">📚 出典別の記載（${isDial ? '透析時' : '現在の腎機能'}）</div>
+    <table class="srccmp-table">
+      <thead><tr><th>出典</th><th style="width:84px">区分</th><th style="text-align:left">記載</th></tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+    ${warn}
+    <div class="srccmp-foot">判定は両者のうち安全側を採用しています。<span class="srccmp-verified srccmp-verified--ok">✓</span> 確認済み ／ <span class="srccmp-verified srccmp-verified--warn">!</span> 未検証</div>
+  </div>`;
+}
+
 // 警告ファクター
 function renderWarnFactors(drug) {
   if (!drug.warning_factors || !drug.warning_factors.length) return '';
@@ -9483,6 +11380,7 @@ function renderDrugDetail(drug, renal, isSelected = false) {
   html += renderWarnFactors(drug);
   html += renderAltSuggest(drug, status, renal);
   html += renderDoseTable(drug, renal);
+  if (hasInput) html += renderSourceCompare(drug, renal);
 
   // AUC倍率の可視化
   const aucRatios = getDrugAucRatios(drug);
