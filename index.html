@@ -11278,7 +11278,7 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.18.0',
+  app: '1.18.1',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
@@ -11317,6 +11317,14 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.18.1',
+    date: '2026-10-20',
+    title: 'ホーム画面アプリの更新が10分遅れる問題を修正',
+    items: [
+      { type: 'fix', text: 'GitHub Pagesが返す10分間のHTTPキャッシュを、Service Workerが素通りして常に最新を取りに行くようにしました。これまで<b>Safariでは新しいのにホーム画面のアプリだけ古いまま</b>、という状態が起きていました。この版以降は差し替え直後に反映されます。' },
+    ],
+  },
   {
     v: '1.18.0',
     date: '2026-10-20',

@@ -4,7 +4,7 @@
 // - ネット接続時: 毎回最新版を取得（更新ラグなし）
 // - オフライン時: キャッシュから起動
 // =============================================
-const CACHE_NAME = 'renal-checker-v21';
+const CACHE_NAME = 'renal-checker-v22';
 const ASSETS = [
   './',
   './index.html',
@@ -41,8 +41,12 @@ self.addEventListener('fetch', event => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  // GitHub Pages は max-age=600 を返すため、HTTPキャッシュを素通りして常に最新を取る
+  // （ホーム画面アプリはSafariとキャッシュが別で、更新が10分遅れる原因になっていた）
+  const fresh = new Request(req, { cache: 'no-cache' });
+
   event.respondWith(
-    fetch(req).then(res => {
+    fetch(fresh).then(res => {
       // ネットワーク成功 → キャッシュも更新して返す
       if (res && res.status === 200 && res.type === 'basic') {
         const clone = res.clone();
