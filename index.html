@@ -3581,6 +3581,36 @@ section { margin-top: 16px; }
 .guide-cl-item.is-done .guide-cl-txt { opacity: .6; text-decoration: line-through; }
 .guide-cl-txt b { display: block; color: var(--ink); font-size: 13px; }
 
+/* 保存期のアドバイス — 入口 */
+.tool-btn-pill {
+  width: auto; height: 30px; border-radius: 99px;
+  padding: 0 11px 0 9px; gap: 5px;
+  font-size: 11.5px; font-weight: 600; color: var(--brand);
+  border-color: var(--brand-soft); background: var(--brand-tint);
+  white-space: nowrap;
+}
+.tool-btn-pill:hover { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+.guide-banner {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  margin: 18px 0 6px; padding: 14px 14px 14px 16px;
+  background: var(--brand-tint); border: 1px solid var(--brand-soft);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--r-lg); cursor: pointer; text-align: left;
+  color: var(--ink); font: inherit;
+  transition: background .15s var(--ease), transform .15s var(--ease);
+}
+.guide-banner:hover { background: var(--brand-soft); }
+.guide-banner:active { transform: scale(.995); }
+.guide-banner-icon { font-size: 24px; flex-shrink: 0; }
+.guide-banner-txt { flex: 1; min-width: 0; }
+.guide-banner-t { display: block; font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--brand); }
+.guide-banner-d { display: block; font-size: 12px; line-height: 1.55; color: var(--ink-2); margin-top: 2px; }
+.guide-banner-arrow { font-size: 22px; color: var(--brand); flex-shrink: 0; }
+@media (max-width: 400px) {
+  .app-header-inner { align-items: center; }
+  .tool-btn-pill span { display: inline; }
+}
+
 </style>
 </head>
 <body>
@@ -3638,8 +3668,8 @@ section { margin-top: 16px; }
     <h1 class="app-title">腎機能別投与量</h1>
     <div class="header-tools">
       <span class="app-meta" id="app-meta">JSNP 第39版 · 2026</span>
-      <button class="tool-btn" id="guide-toggle" type="button"
-              aria-label="患者指導ガイド" title="患者指導ガイド（食事・生活・薬）">📖</button>
+      <button class="tool-btn tool-btn-pill" id="guide-toggle" type="button"
+              aria-label="保存期のアドバイス" title="保存期のアドバイス（食事・生活・薬）">📖<span>保存期のアドバイス</span></button>
       <button class="tool-btn" id="help-toggle" type="button"
               aria-label="使い方" title="使い方・機能一覧">？</button>
       <button class="tool-btn" id="usage-toggle" type="button"
@@ -3926,6 +3956,16 @@ section { margin-top: 16px; }
     </div>
   </section>
 
+  <!-- ============ 保存期のアドバイス（読み物への入口） ============ -->
+  <button type="button" class="guide-banner" id="guide-banner">
+    <span class="guide-banner-icon" aria-hidden="true">📖</span>
+    <span class="guide-banner-txt">
+      <span class="guide-banner-t">保存期のアドバイス</span>
+      <span class="guide-banner-d">食事・生活・市販薬・シックデイ。薬剤師から患者さんに伝えられることをまとめた読み物です。</span>
+    </span>
+    <span class="guide-banner-arrow" aria-hidden="true">›</span>
+  </button>
+
   <!-- ============ 免責 ============ -->
   <div class="disclaimer">
     <strong>⚠️ 注意:</strong> 本ツールは <strong>JSNP腎機能別薬剤投与量の目安 第39版（2026年改訂）</strong> と <strong>白鷺病院「透析患者に対する投薬ガイドライン」13th Edition</strong> に基づく個人学習・参照用途のみです。両者で記載が異なる場合は用量欄に併記しています。<br>
@@ -3936,7 +3976,7 @@ section { margin-top: 16px; }
   <footer class="app-footer">
     <p id="app-footer-version">JSNP第39版 · 個人学習用</p>
     <div class="footer-links">
-      <button type="button" class="footer-changelog" id="footer-guide">📖 患者指導ガイド</button>
+      <button type="button" class="footer-changelog" id="footer-guide">📖 保存期のアドバイス</button>
       <button type="button" class="footer-changelog" id="footer-help">❓ 使い方・機能一覧</button>
       <button type="button" class="footer-changelog" id="footer-changelog">🆕 更新履歴を見る</button>
     </div>
@@ -11278,7 +11318,7 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.18.1',
+  app: '1.18.2',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
@@ -11317,6 +11357,14 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.18.2',
+    date: '2026-10-20',
+    title: '「保存期のアドバイス」の入口を分かりやすく',
+    items: [
+      { type: 'ui', text: '読み物の名前を<b>「保存期のアドバイス」</b>にしました。ヘッダーのボタンに名前を表示し、画面の下（薬効群の下）にも説明つきの入口を置いています。' },
+    ],
+  },
   {
     v: '1.18.1',
     date: '2026-10-20',
@@ -11781,7 +11829,7 @@ const HELP_SECTIONS = [
 //  sickday タブの rows には drugs（該当薬剤の判定ルール）を付けられる。
 // =============================================
 const GUIDE_META = {
-  eyebrow: '患者指導ガイド',
+  eyebrow: '保存期のアドバイス',
   title: '保存期CKDの食事・生活・薬',
   sub: '薬剤師から患者さんに伝えられること（2026年10月版）',
   sources: [
@@ -15855,7 +15903,7 @@ function applyVersionInfo() {
   });
 
   // 患者指導ガイド（読み物。監査とは独立）
-  ['guide-toggle', 'footer-guide'].forEach(id => {
+  ['guide-toggle', 'footer-guide', 'guide-banner'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', () => openGuide());
   });
