@@ -3495,6 +3495,92 @@ section { margin-top: 16px; }
   border-top: 1px solid var(--rule-2);
 }
 
+/* =============================================
+   患者指導ガイド（読み物）— help-* の枠を流用し、本文用の部品を足す
+   ============================================= */
+.guide-box { width: min(96vw, 640px); max-height: 92vh; }
+.guide-sub { font-size: 11px; opacity: .85; margin-top: 3px; }
+.guide-chip.is-active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.guide-tab { padding: 10px 0 6px; }
+.guide-lead { margin: 6px 0 10px; }
+.guide-h {
+  font-family: var(--font-display);
+  font-size: 14.5px; font-weight: 600; color: var(--ink);
+  margin: 18px 0 6px; padding-left: 9px;
+  border-left: 3px solid var(--brand);
+}
+.guide-h:first-child { margin-top: 6px; }
+.guide-p { font-size: 13px; line-height: 1.75; color: var(--ink-2); margin: 6px 0; }
+.guide-say {
+  position: relative;
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-soft);
+  border-radius: var(--r-lg);
+  padding: 10px 12px 10px 12px;
+  margin: 8px 0;
+  font-size: 14px; line-height: 1.8; color: var(--ink);
+}
+.guide-say-mark {
+  display: block; font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--brand); margin-bottom: 3px;
+}
+#guide-body [data-tab="oneminute"] .guide-say { font-size: 15.5px; }
+.guide-check {
+  background: var(--bg-sunken);
+  border-radius: var(--r-lg);
+  padding: 9px 12px; margin: 8px 0; font-size: 12.5px; line-height: 1.65; color: var(--ink-2);
+}
+.guide-check-t { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--ink-3, var(--ink-2)); margin-bottom: 3px; }
+.guide-check ul, .guide-list ul { margin: 2px 0 0; padding-left: 18px; }
+.guide-check li, .guide-list li { margin: 2px 0; }
+.guide-list { font-size: 13px; line-height: 1.7; color: var(--ink-2); margin: 6px 0; }
+.guide-list-t { font-weight: 600; color: var(--ink); font-size: 12.5px; }
+.guide-src { font-size: 10.5px; color: var(--ink-3, var(--ink-2)); opacity: .8; margin: 12px 0 2px; }
+.guide-disclaimer { margin-bottom: 8px; color: var(--ink-2); }
+.guide-table {
+  width: 100%; border-collapse: collapse; margin: 8px 0;
+  font-size: 12.5px; line-height: 1.55;
+}
+.guide-table th {
+  text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+  color: var(--ink-3, var(--ink-2)); background: var(--bg-sunken);
+  padding: 6px 8px; border-bottom: 1px solid var(--rule);
+}
+.guide-table td { padding: 7px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--ink-2); }
+.guide-td-key { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.guide-sd .guide-td-key { white-space: normal; }
+.guide-sd-grp td {
+  background: var(--brand-tint); color: var(--brand); font-weight: 700; font-size: 11px; letter-spacing: .06em;
+}
+.guide-sd-act { font-weight: 700; color: var(--ink); white-space: nowrap; }
+.guide-sd-why { font-size: 12px; }
+.guide-sd-hit td { background: var(--cau-bg); }
+.guide-sd-hits { font-size: 11.5px; font-weight: 600; color: var(--cau); margin-top: 3px; }
+.guide-sd-hint { font-size: 11.5px; color: var(--ink-3, var(--ink-2)); margin: 4px 0 2px; }
+.guide-cl { margin: 6px 0 10px; }
+.guide-cl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.guide-cl-count { font-family: var(--font-mono, monospace); font-size: 12px; font-weight: 700; color: var(--brand); }
+.guide-cl-reset {
+  background: none; border: 1px solid var(--rule-2); border-radius: 99px;
+  font-size: 11px; color: var(--ink-2); padding: 3px 10px; cursor: pointer;
+}
+.guide-cl-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 9px 4px; border-bottom: 1px solid var(--rule); cursor: pointer;
+  font-size: 12.5px; line-height: 1.5; color: var(--ink-2);
+}
+.guide-cl-item input { position: absolute; opacity: 0; width: 0; height: 0; }
+.guide-cl-box {
+  flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px;
+  border: 2px solid var(--rule-2); border-radius: 6px; background: var(--bg-elev);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #fff;
+}
+.guide-cl-item.is-done .guide-cl-box { background: var(--ok); border-color: var(--ok); }
+.guide-cl-item.is-done .guide-cl-box::after { content: '✓'; font-weight: 700; }
+.guide-cl-item.is-done .guide-cl-txt { opacity: .6; text-decoration: line-through; }
+.guide-cl-txt b { display: block; color: var(--ink); font-size: 13px; }
+
 </style>
 </head>
 <body>
@@ -3552,6 +3638,8 @@ section { margin-top: 16px; }
     <h1 class="app-title">腎機能別投与量</h1>
     <div class="header-tools">
       <span class="app-meta" id="app-meta">JSNP 第39版 · 2026</span>
+      <button class="tool-btn" id="guide-toggle" type="button"
+              aria-label="患者指導ガイド" title="患者指導ガイド（食事・生活・薬）">📖</button>
       <button class="tool-btn" id="help-toggle" type="button"
               aria-label="使い方" title="使い方・機能一覧">？</button>
       <button class="tool-btn" id="usage-toggle" type="button"
@@ -3848,7 +3936,8 @@ section { margin-top: 16px; }
   <footer class="app-footer">
     <p id="app-footer-version">JSNP第39版 · 個人学習用</p>
     <div class="footer-links">
-      <button type="button" class="footer-changelog" id="footer-help">📖 使い方・機能一覧</button>
+      <button type="button" class="footer-changelog" id="footer-guide">📖 患者指導ガイド</button>
+      <button type="button" class="footer-changelog" id="footer-help">❓ 使い方・機能一覧</button>
       <button type="button" class="footer-changelog" id="footer-changelog">🆕 更新履歴を見る</button>
     </div>
   </footer>
@@ -11189,12 +11278,12 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.17.1',
+  app: '1.18.0',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
   // データ最終更新日 (薬剤追加・修正があるたび更新)
-  dataUpdated: '2026-10-09',
+  dataUpdated: '2026-10-20',
   // ソースリポジトリ (任意)
   repo: 'https://github.com/yourname/renal-checker',
 };
@@ -11228,6 +11317,18 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.18.0',
+    date: '2026-10-20',
+    title: '患者指導ガイド（保存期CKDの食事・生活・薬）を追加',
+    items: [
+      { type: 'feat', text: '<b>ヘッダーの 📖 から「患者指導ガイド」が開きます。</b>用量判定とは独立した読み物で、保存期CKDの患者さんに薬剤師から伝えられることを7つのタブにまとめました。<b>1分で説明／食事／生活／市販薬・サプリ／シックデイ／他院受診／チェックリスト</b>。' },
+      { type: 'feat', text: '<b>「1分で説明」</b>は窓口でそのまま読める文章を大きめの文字で並べています。各タブの「患者さんへ」の吹き出しも、そのまま声に出せる言い回しにしてあります。' },
+      { type: 'feat', text: '<b>「シックデイ」タブは、比較に入れている薬のうち該当するものを ▶ で示します。</b>NSAIDs・ビグアナイド・SGLT2阻害薬・活性型ビタミンDは患者自身が休薬、利尿薬・RA系阻害薬は医療機関で判断、という CKD診療ガイド2024 第12章の表そのままです。' },
+      { type: 'feat', text: '<b>チェックリスト</b>は10項目。チェックはこの端末に保存され、リセットで消せます。' },
+      { type: 'data', text: '内容は <b>CKD診療ガイド2024（第6・8・12章）、2026年6月の日本腎臓学会「CKD患者の血圧管理に関するステートメント」（診察室130/80・家庭125/75未満、A1非糖尿病は140/90を中間目標）、食事療法基準2014年版</b> に基づいています。NSAIDsは「湿布は原則可、ロコア・ジクトルは例外」、アセトアミノフェンは「1回400mg目安・最大4g・6〜8時間間隔」まで書き込みました。' },
+    ],
+  },
   {
     v: '1.17.1',
     date: '2026-10-10',
@@ -11647,6 +11748,308 @@ const HELP_SECTIONS = [
         d: '併用注意や休薬基準など、その薬だけの注意点を箇条書きで表示します。' },
     ],
   },
+];
+
+
+// ===== data/guide.js =====
+// =============================================
+// 患者指導ガイド（保存期CKDの食事・生活・薬）
+// ヘッダーの「📖」ボタン / フッターのリンクから表示される読み物。
+// 監査（用量判定）とは独立。
+//
+// 【追記のしかた】
+//  GUIDE_TABS の各タブは {id, icon, title, lead?, blocks:[...]}
+//  blocks の type:
+//    'p'     : 本文段落                { type:'p', text }
+//    'say'   : 患者さんへの説明（吹き出し） { type:'say', text }
+//    'check' : 薬剤師の確認事項         { type:'check', items:[...] }
+//    'list'  : 箇条書き                 { type:'list', title?, items:[...] }
+//    'table' : 表                       { type:'table', head:[...], rows:[[...],...] }
+//    'note'  : 注意・補足               { type:'note', text }
+//    'src'   : 出典                     { type:'src', text }
+//    'h'     : 小見出し                 { type:'h', text }
+//    'sickday-table' : シックデイ表（SICKDAY_ROWS から描画）
+//    'checklist'     : チェックリスト     { type:'checklist', items:[{id,t,d}] }
+//  sickday タブの rows には drugs（該当薬剤の判定ルール）を付けられる。
+// =============================================
+const GUIDE_META = {
+  eyebrow: '患者指導ガイド',
+  title: '保存期CKDの食事・生活・薬',
+  sub: '薬剤師から患者さんに伝えられること（2026年10月版）',
+  sources: [
+    'CKD診療ガイド2024（日本腎臓学会）第6章 生活習慣／第8章 栄養／第12章 薬物療法の注意',
+    '慢性腎臓病（CKD）患者の血圧管理に関するステートメント（日本腎臓学会、2026年6月25日）',
+    'エビデンスに基づくCKD診療ガイドライン2023（日本腎臓学会）',
+    '慢性腎臓病に対する食事療法基準2014年版（日本腎臓学会）',
+    'サルコペニア・フレイルを有するCKD患者のたんぱく質摂取に関する提言（日本腎臓学会、2019）',
+  ],
+  disclaimer: '数値目標は病期・検査値・併存症で変わります。制限量は主治医・管理栄養士の指示を優先し、薬剤師は「自己判断で極端にしない」「指示を守れているか」を支える立場で伝えてください。',
+};
+const GUIDE_TABS = [
+  // ───────────────────────────────────────────
+  {
+    id: 'oneminute',
+    icon: '🗣',
+    title: '1分で説明',
+    lead: '窓口でそのまま読める説明文です。必要な段落だけ使ってください。',
+    blocks: [
+      { type: 'say', text: '腎臓の働きが低下している場合、これ以上悪くならないように食事や生活習慣を整えることが大切です。' },
+      { type: 'say', text: 'まず気をつけていただきたいのは塩分です。1日6g未満を目安に、麺類のスープを残したり、しょうゆを使いすぎないようにしましょう。' },
+      { type: 'say', text: 'お肉やお魚は食べてはいけないわけではありません。腎臓の働きに合わせた適量を食べ、栄養不足にならないことも大切です。' },
+      { type: 'say', text: '果物や野菜に含まれるカリウムについては、血液検査の結果に応じて注意が必要になります。必要以上に制限する必要はありません。' },
+      { type: 'say', text: 'また、脱水に注意して、普段から血圧を測るようにしてください。' },
+      { type: 'say', text: '市販の痛み止めなど、腎臓に負担をかける薬もありますので、薬やサプリメントを新しく使うときは相談してください。' },
+      { type: 'say', text: '発熱や下痢などで食事や水分が取れなくなったときも、普段のお薬を調整する必要がある場合があるため、早めにご連絡ください。' },
+      { type: 'note', text: '最も避けたいのは、CKDというだけでたんぱく質・カリウム・水分を一律に制限することです。腎機能の悪化を防ぐことと、栄養状態・生活の質を保つことを両立させます。' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'diet',
+    icon: '🍚',
+    title: '食事',
+    lead: '優先順位は 食塩 ＞ たんぱく質・エネルギー ＞ カリウム・リン（検査値で個別対応）。',
+    blocks: [
+      { type: 'h', text: '① 食塩：原則1日6g未満' },
+      { type: 'p', text: '優先度：非常に高い。原則すべての病期で共通です。3g未満の極端な制限は推奨されません（食事療法基準2014年版は「3g以上6g未満」。下限は目標値ではなく、過度な制限を避けるための目安です）。' },
+      { type: 'say', text: '塩分の取りすぎは血圧を上げ、腎臓に負担をかけます。麺類のスープを残す、しょうゆをかけすぎないなど、できるところから減塩しましょう。' },
+      { type: 'list', title: '具体的な工夫', items: [
+        'ラーメン・うどんの汁を残す',
+        'みそ汁は具だくさんにして汁を減らす',
+        '漬物・佃煮・梅干し・干物・加工肉の頻度を減らす',
+        'しょうゆ・ソースは「かける」より「つける」',
+        '食品表示の食塩相当量を確認する',
+        '酢・レモン・香辛料・だしで風味を補う',
+      ] },
+      { type: 'check', items: [
+        '減塩塩（やさしお等）の多くは塩化カリウム。高K血症の患者、ARB・ACE阻害薬・MRA服用中の患者には勧めない',
+      ] },
+
+      { type: 'h', text: '② たんぱく質：必要量を確保し、過剰を避ける' },
+      { type: 'table', head: ['ステージ', 'eGFR', 'たんぱく質の基準'], rows: [
+        ['G1・G2', '60以上', '過剰摂取を避ける'],
+        ['G3a', '45〜59', '0.8〜1.0 g/kg/日'],
+        ['G3b', '30〜44', '0.6〜0.8 g/kg/日'],
+        ['G4・G5', '30未満', '0.6〜0.8 g/kg/日'],
+      ] },
+      { type: 'p', text: '標準体重（身長m²×22）あたりの量です。高齢者・フレイル・サルコペニアでは制限を緩める方向で考えます（日本腎臓学会2019年提言）。' },
+      { type: 'say', text: '肉や魚を食べてはいけないわけではありません。腎臓の働きに合わせた適量を食べることが大切です。自己判断で極端に減らさないようにしましょう。' },
+      { type: 'check', items: [
+        'プロテインや高たんぱく食品を常用していないか',
+        '食事量や体重が減っていないか（「肉を抜けば腎臓に良い」と思い込んで痩せていく高齢者は多い）',
+        'サルコペニア・フレイルがないか',
+        '医師・管理栄養士から制限量を指示されているか。G3b以降は栄養指導との連携が望ましい',
+      ] },
+
+      { type: 'h', text: '③ エネルギー：不足させない' },
+      { type: 'p', text: '目安は25〜35 kcal/kg標準体重/日。年齢・活動量・肥満・糖尿病で調整します。' },
+      { type: 'say', text: 'たんぱく質を控えても、食事全体を減らしすぎると筋肉が落ちてしまいます。必要なエネルギーは確保しましょう。' },
+      { type: 'note', text: '高齢者で食欲や体重が落ちている場合は、制限を強めるのではなく栄養状態の評価を優先します。' },
+
+      { type: 'h', text: '④ カリウム：血清K値に応じて' },
+      { type: 'table', head: ['ステージ', '食事療法基準'], rows: [
+        ['G1〜G3a', '原則制限なし'],
+        ['G3b', '2,000 mg/日以下'],
+        ['G4〜G5', '1,500 mg/日以下'],
+      ] },
+      { type: 'p', text: '病期別の基準値ですが、実際は血清K値・薬剤・便秘・アシドーシスを総合して判断します。血清Kが正常な患者に、生野菜や果物を一律に禁止する指導は避けます。' },
+      { type: 'say', text: 'カリウムが高いと不整脈の原因になることがあります。果物や野菜ジュースの取りすぎに気をつけましょう。野菜は茹でて汁を捨てると、カリウムを減らせます。' },
+      { type: 'list', title: '多い食品の例', items: ['バナナ・メロン・ドライフルーツ', 'いも類・豆類', '青汁・野菜ジュース・スムージー', '生野菜（茹でこぼしで減らせる）'] },
+      { type: 'check', items: [
+        'ARB・ACE阻害薬、スピロノラクトン・エプレレノン・フィネレノン、カリウム製剤の有無',
+        '便秘で高K血症が悪化することがある',
+      ] },
+
+      { type: 'h', text: '⑤ リン：加工食品と血清リン値に注意' },
+      { type: 'p', text: '食品添加物のリン酸塩は吸収率が高く、要注意です。肉・魚・乳製品などの天然食品を無条件に禁止しないことも重要です。' },
+      { type: 'say', text: '腎臓の働きがかなり低下すると、リンがたまりやすくなります。リンが高い場合は、加工食品を食べすぎないようにしましょう。' },
+      { type: 'list', title: 'リン酸塩を含みやすい食品', items: ['ハム・ソーセージ・練り物', '加工チーズ・インスタント食品', '一部のスナック菓子・コーラ飲料'] },
+      { type: 'check', items: [
+        'リン吸着薬の服用タイミング（食直前・食直後・食中など製剤ごとに違う）',
+        '抗菌薬（キノロン・テトラサイクリン）などとの相互作用',
+      ] },
+
+      { type: 'h', text: '⑥ 水分：脱水にも飲みすぎにも注意' },
+      { type: 'p', text: '保存期では一律の飲水量は設定しません。「たくさん飲めば腎臓に良い」わけではなく、逆に脱水は腎機能を一気に悪くします。' },
+      { type: 'say', text: '腎臓が悪いからといって、水をたくさん飲めば良くなるわけではありません。脱水を防ぐことは大切ですが、むくみや心不全がある場合は飲みすぎにも注意が必要です。' },
+      { type: 'list', items: [
+        '水分制限の指示がなければ、通常の適切な飲水を維持する',
+        '発汗・発熱・下痢・嘔吐時は脱水に注意する',
+        '浮腫・心不全・尿量低下がある場合は主治医の水分指示に従う',
+        '水分が取れない・尿量が急に減ったときは早めに受診',
+      ] },
+      { type: 'src', text: 'CKD診療ガイド2024 第8章／食事療法基準2014年版／CKD診療ガイドライン2023' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'life',
+    icon: '🚶',
+    title: '生活',
+    lead: '血圧・禁煙・脱水予防が三本柱。運動は「安静一辺倒」ではありません。',
+    blocks: [
+      { type: 'h', text: '血圧の目標（2026年6月 日本腎臓学会ステートメント）' },
+      { type: 'table', head: ['', '目標'], rows: [
+        ['診察室血圧', '130/80 mmHg未満'],
+        ['家庭血圧', '125/75 mmHg未満'],
+      ] },
+      { type: 'p', text: '糖尿病の有無・蛋白尿区分にかかわらず原則この目標です。ただし糖尿病なし・蛋白尿陰性（A1）では慎重に進め、必要に応じて診察室140/90未満を中間目標とします。75歳以上でも年齢で一律に区分せず、腎機能・ADL・フレイル・低血圧症状（めまい・ふらつき）を踏まえて個別化します。' },
+      { type: 'say', text: '血圧が高い状態が続くと腎臓に負担がかかります。朝と晩に血圧を測って記録し、診察のときに見せてください。' },
+
+      { type: 'h', text: '生活習慣' },
+      { type: 'table', head: ['項目', '伝えること'], rows: [
+        ['禁煙', '腎機能悪化と心血管疾患のリスク。最優先で勧める'],
+        ['飲酒', '飲みすぎを避ける。純アルコール20g/日程度が上限の参考。女性・高齢者はさらに少なく'],
+        ['運動', 'ウォーキングや軽い筋トレを無理なく継続。週150分程度の中等度身体活動が国際的な目安（心疾患・年齢で調整）'],
+        ['体重', '体重減少による低栄養、急な体重増加による浮腫の両方に注意'],
+        ['睡眠', '規則正しく十分な睡眠'],
+        ['排便', '便秘を放置しない（高K血症の悪化要因）'],
+        ['口腔ケア', '毎日の歯磨きと定期的な歯科受診'],
+        ['感染予防', 'インフルエンザ・肺炎球菌・新型コロナのワクチン。B型肝炎は透析導入が見込まれる患者で'],
+      ] },
+      { type: 'src', text: 'CKD患者の血圧管理に関するステートメント（2026年6月25日）／CKD診療ガイド2024 第6章／KDIGO 2024' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'otc',
+    icon: '💊',
+    title: '市販薬・サプリ',
+    lead: 'ここが薬剤師の出番。「全部ダメ」ではなく「こちらなら大丈夫」まで示します。',
+    blocks: [
+      { type: 'h', text: '痛み止め・解熱剤' },
+      { type: 'table', head: ['', '扱い'], rows: [
+        ['アセトアミノフェン', 'CKDの解熱鎮痛の第一選択。1回400mgを目安、最大4g/日、間隔6〜8時間。長期連用では慢性腎障害の報告があり「無制限に安全」ではない'],
+        ['NSAIDs内服（ロキソプロフェン・イブプロフェン等）', '常用しない。頓服・短期にとどめる。利尿薬・RAS阻害薬との併用で腎障害リスク上昇'],
+        ['NSAIDs貼付剤（湿布）', '局所投与は一般に腎障害リスクにならない。腰痛などはまず局所療法'],
+        ['ロコアテープ・ジクトルテープ', '貼付剤でも全身曝露型。内服と同じ扱いで高度腎障害は禁忌'],
+        ['NSAIDs坐剤', '内服と同じリスク'],
+        ['低用量アスピリン', '腎機能への悪影響は少ない'],
+      ] },
+      { type: 'say', text: '市販の痛み止めは、ロキソプロフェンやイブプロフェンが入っているものは腎臓に負担がかかります。アセトアミノフェンのものを選ぶか、貼り薬で様子を見てください。' },
+
+      { type: 'h', text: '胃薬・便秘薬' },
+      { type: 'table', head: ['', '扱い'], rows: [
+        ['酸化マグネシウム・Mg含有制酸剤', '高度腎機能低下で高Mg血症。市販の便秘薬・胃薬にも含まれる'],
+        ['H2ブロッカー（ファモチジン等）', '多くは腎排泄型で血中濃度が上昇。用量・間隔の調節が必要。ラフチジンは肝代謝で減量不要'],
+        ['PPI', '低Mg血症のリスク。長期使用時はMgを測る'],
+      ] },
+
+      { type: 'h', text: 'サプリ・健康食品' },
+      { type: 'list', items: [
+        'カリウム・マグネシウムを含むもの',
+        '青汁・野菜ジュース・スムージー（カリウム）',
+        'プロテイン・高たんぱく食品',
+        '甘草（グリチルリチン）を含む漢方・健康食品（偽アルドステロン症）',
+        '成分不明の健康食品',
+      ] },
+      { type: 'say', text: 'サプリメントや健康食品を新しく始めるときは、袋を持ってきてください。腎臓に負担になる成分が入っていることがあります。' },
+      { type: 'src', text: 'CKD診療ガイド2024 第12章 薬物療法の注意' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'sickday',
+    icon: '🤒',
+    title: 'シックデイ',
+    lead: '発熱・嘔吐・下痢・食事がとれないときは、脱水と急性腎障害に注意。薬ごとに対応が違います。',
+    blocks: [
+      { type: 'sickday-table' },
+      { type: 'note', text: 'RAS阻害薬や利尿薬は、休薬が心不全の増悪につながることがあるため、自己判断で一律に中止させないこと。患者ごとに事前に対応方針を決め、シックデイには早めの相談を促します。休薬した薬の再開確認も必要です。' },
+      { type: 'p', text: 'SU薬・インスリンはガイド2024の表にはありません。食事量・血糖に応じた個別対応で、特にインスリンを一律に中止しないこと（糖尿病治療の原則から補足）。' },
+      { type: 'say', text: '熱や下痢などで食事や水分が取れないときは、普段のお薬が体に負担になることがあります。薬によって対応が違うので、早めに病院や薬局へ相談してください。' },
+      { type: 'src', text: 'CKD診療ガイド2024 第12章「CKD患者のシックデイ対策」' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'visit',
+    icon: '🏥',
+    title: '他院受診・受診の目安',
+    lead: 'お薬手帳に腎機能を書いておくだけで、他科の処方事故を減らせます。',
+    blocks: [
+      { type: 'h', text: '他院受診・検査のとき' },
+      { type: 'say', text: '腎臓の働きが低下していることを、ほかの病院や歯科医院でも必ず伝えてください。' },
+      { type: 'list', items: [
+        'お薬手帳に直近のeGFRや「腎機能低下あり」を記載しておく。地域の腎臓病連携シールがあれば貼る',
+        '整形外科・歯科での鎮痛薬処方のとき自分から申告する',
+        '造影CT・造影MRIの前に申告する。ただしCKDだから造影検査ができないわけではなく、必要性・eGFR・AKIの有無から医療機関が判断する',
+        '処方箋に検査値が印字されていれば毎回確認していることを患者さんにも伝える',
+      ] },
+      { type: 'check', items: [
+        '腎機能による投与設計では、検査票のeGFR（mL/分/1.73m²）をそのまま使わず、添付文書のCcr・GFRの指定を確認し、必要なら体表面積補正を外す（個別化GFR）',
+      ] },
+
+      { type: 'h', text: '受診を促す症状' },
+      { type: 'list', items: [
+        '尿量が急に減る',
+        '急なむくみ・体重増加',
+        '息苦しさ・胸痛',
+        '強い脱力感・動悸・失神',
+        '持続する食欲不振・吐き気・倦怠感',
+        '嘔吐・下痢で水分が取れない',
+      ] },
+      { type: 'note', text: '強い呼吸困難・胸痛・失神は救急対応が必要です。' },
+    ],
+  },
+  // ───────────────────────────────────────────
+  {
+    id: 'checklist',
+    icon: '✅',
+    title: 'チェックリスト',
+    lead: '服薬指導の確認項目。チェックはこの端末に保存されます。',
+    blocks: [
+      { type: 'checklist', items: [
+        { id: 'renal',   t: '腎機能', d: 'eGFR・Cr・尿蛋白の情報やCKDステージを確認' },
+        { id: 'salt',    t: '減塩', d: '食塩6g/日未満の目安と具体的な減塩方法を説明' },
+        { id: 'protein', t: 'たんぱく質', d: '食事制限の指示、高たんぱく食品・プロテインの使用を確認' },
+        { id: 'k',       t: 'カリウム', d: '血清K値と高Kリスク薬、減塩塩・健康食品を確認' },
+        { id: 'nutri',   t: '栄養状態', d: '食欲低下、体重減少、低栄養の兆候を確認' },
+        { id: 'water',   t: '水分', d: '脱水・浮腫・心不全の有無、水分制限指示を確認' },
+        { id: 'life',    t: '生活習慣', d: '家庭血圧、喫煙、運動、便秘などを確認' },
+        { id: 'drug',    t: '薬剤', d: 'NSAIDs・Mg製剤・腎排泄型薬の使用を確認' },
+        { id: 'sick',    t: 'シックデイ', d: '体調不良時の相談先、休薬・再開ルールを確認' },
+        { id: 'visit',   t: '他院受診', d: 'お薬手帳・他院への腎機能情報の共有を説明' },
+      ] },
+      { type: 'h', text: '指導の優先順位' },
+      { type: 'table', head: ['優先度', '項目', '理由'], rows: [
+        ['最優先', '減塩・血圧管理', '多くのCKD患者で重要'],
+        ['最優先', 'NSAIDs・市販薬の確認', '薬剤師が直接介入できる'],
+        ['最優先', 'シックデイ・脱水予防', '急性腎障害の予防につながる'],
+        ['高', 'たんぱく質・栄養状態', '進行抑制と低栄養防止の両立'],
+        ['個別', 'カリウム・リン', '病期や検査値で必要性が異なる'],
+        ['継続', '運動・禁煙・体重・睡眠', '長期的な腎・心血管リスク管理'],
+      ] },
+    ],
+  },
+];
+
+// シックデイ対策の表（CKD診療ガイド2024 第12章）
+// match: 比較に入れた薬のうち該当するものを判定する関数
+const SICKDAY_ROWS = [
+  { group: '患者自身が休薬する薬', rows: [
+    { drug: 'NSAIDs', action: '休薬', why: 'アセトアミノフェンなど他の解熱鎮痛薬で代替可能',
+      match: d => (d.cat === 'analgesic_nsaid' && !['acetaminophen', 'pl_granule', 'perex_granule'].includes(d.id))
+               || ['diclofenac_systemic_tape', 'esflurbiprofen_tape'].includes(d.id) },
+    { drug: 'ビグアナイド薬', action: '休薬', why: '乳酸アシドーシスのリスク',
+      match: d => /metformin|buformin|metact|metoana|eqmet|inisync/.test(d.id) },
+    { drug: 'SGLT2阻害薬（糖尿病・CKD治療目的）', action: '休薬', why: 'ケトアシドーシスのリスク',
+      match: d => d.cat === 'diabetes_sglt2' || /sujanu|canalia|tradiance/.test(d.id) },
+    { drug: '活性型ビタミンD薬', action: '一時休薬を考慮', why: '著しい食思不振・脱水時の高Ca血症・AKI予防',
+      match: d => /eldecalcitol|alfacalcidol|calcitriol/.test(d.id) },
+  ] },
+  { group: '医療機関で休薬を判断する薬', rows: [
+    { drug: '利尿薬', action: '医療機関で判断', why: '休薬で心不全増悪やCVDリスクが上がる可能性',
+      match: d => d.cat === 'cv_diuretic' },
+    { drug: 'RA系阻害薬（ARB・ACE阻害薬）', action: '医療機関で判断', why: '同上',
+      match: d => d.cat === 'cv_arb' || d.cat === 'cv_ace' },
+    { drug: 'SGLT2阻害薬（心不全治療目的）', action: '医療機関で判断', why: '病態に応じて',
+      match: () => false },
+  ] },
+  { group: '補足（ガイド2024の表にはない）', rows: [
+    { drug: 'SU薬・インスリン', action: '個別対応', why: '食事量・血糖に応じて。インスリンを一律に中止しない',
+      match: d => d.cat === 'diabetes_su' },
+  ] },
 ];
 
 
@@ -13868,10 +14271,233 @@ function isHelpOpen() {
 }
 
 
+// ===== src/guide.js =====
+// =============================================
+// 患者指導ガイド オーバーレイ（読み物）
+// ヘッダーの「📖」ボタン / フッターのリンクから開く
+// 監査（用量判定）とは独立。比較に入れた薬を「シックデイ」タブで参照するだけ。
+// =============================================
+
+
+
+const GD_CHECK_KEY = 'renal-guide-checklist';
+let gdRoot = null;
+let gdLastFocus = null;
+let gdActive = GUIDE_TABS[0].id;
+
+function gdEsc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+// ---------------------------------------------
+// チェックリスト保存
+// ---------------------------------------------
+function gdLoadChecks() {
+  try { return JSON.parse(localStorage.getItem(GD_CHECK_KEY) || '{}'); } catch { return {}; }
+}
+function gdSaveChecks(obj) {
+  try { localStorage.setItem(GD_CHECK_KEY, JSON.stringify(obj)); } catch { /* 無視 */ }
+}
+
+// ---------------------------------------------
+// ブロック描画
+// ---------------------------------------------
+function gdRenderBlock(b) {
+  switch (b.type) {
+    case 'h':
+      return `<h4 class="guide-h">${gdEsc(b.text)}</h4>`;
+    case 'p':
+      return `<p class="guide-p">${gdEsc(b.text)}</p>`;
+    case 'say':
+      return `<div class="guide-say"><span class="guide-say-mark">患者さんへ</span>${gdEsc(b.text)}</div>`;
+    case 'note':
+      return `<div class="help-tip"><span class="help-tip-mark">注意</span>${gdEsc(b.text)}</div>`;
+    case 'src':
+      return `<div class="guide-src">出典: ${gdEsc(b.text)}</div>`;
+    case 'check':
+      return `<div class="guide-check"><div class="guide-check-t">薬剤師の確認事項</div><ul>${
+        b.items.map(i => `<li>${gdEsc(i)}</li>`).join('')}</ul></div>`;
+    case 'list':
+      return `<div class="guide-list">${b.title ? `<div class="guide-list-t">${gdEsc(b.title)}</div>` : ''}<ul>${
+        b.items.map(i => `<li>${gdEsc(i)}</li>`).join('')}</ul></div>`;
+    case 'table':
+      return `<table class="guide-table"><thead><tr>${
+        b.head.map(h => `<th>${gdEsc(h)}</th>`).join('')}</tr></thead><tbody>${
+        b.rows.map(r => `<tr>${r.map((c, i) => `<td${i === 0 ? ' class="guide-td-key"' : ''}>${gdEsc(c)}</td>`).join('')}</tr>`).join('')
+      }</tbody></table>`;
+    case 'sickday-table':
+      return gdRenderSickday();
+    case 'checklist':
+      return gdRenderChecklist(b.items);
+    default:
+      return '';
+  }
+}
+
+// シックデイ表。比較に入れた薬のうち該当するものを行の下に出す
+function gdRenderSickday() {
+  const { selected } = getState();
+  const sel = DRUGS.filter(d => selected.has(d.id));
+  const groups = SICKDAY_ROWS.map(g => {
+    const rows = g.rows.map(r => {
+      const hits = sel.filter(d => { try { return r.match(d); } catch { return false; } });
+      const hit = hits.length > 0;
+      return `<tr class="${hit ? 'guide-sd-hit' : ''}">
+        <td class="guide-td-key">${gdEsc(r.drug)}${hit ? `<div class="guide-sd-hits">▶ ${hits.map(d => gdEsc(d.name)).join('、')}</div>` : ''}</td>
+        <td><span class="guide-sd-act">${gdEsc(r.action)}</span></td>
+        <td class="guide-sd-why">${gdEsc(r.why)}</td>
+      </tr>`;
+    }).join('');
+    return `<tr class="guide-sd-grp"><td colspan="3">${gdEsc(g.group)}</td></tr>${rows}`;
+  }).join('');
+  const hint = sel.length
+    ? `<div class="guide-sd-hint">比較に入っている ${sel.length} 剤のうち該当する薬を ▶ で示しています。</div>`
+    : `<div class="guide-sd-hint">薬を比較に入れておくと、該当する薬がこの表に ▶ で表示されます。</div>`;
+  return `${hint}<table class="guide-table guide-sd"><thead><tr><th>薬剤</th><th>対応</th><th>理由</th></tr></thead><tbody>${groups}</tbody></table>`;
+}
+
+function gdRenderChecklist(items) {
+  const st = gdLoadChecks();
+  const done = items.filter(i => st[i.id]).length;
+  return `<div class="guide-cl" id="guide-cl">
+    <div class="guide-cl-head">
+      <span class="guide-cl-count" id="guide-cl-count">${done} / ${items.length} 完了</span>
+      <button type="button" class="guide-cl-reset" data-cl-reset>リセット</button>
+    </div>
+    ${items.map(i => `
+      <label class="guide-cl-item${st[i.id] ? ' is-done' : ''}">
+        <input type="checkbox" data-cl="${gdEsc(i.id)}" ${st[i.id] ? 'checked' : ''}>
+        <span class="guide-cl-box" aria-hidden="true"></span>
+        <span class="guide-cl-txt"><b>${gdEsc(i.t)}</b>${gdEsc(i.d)}</span>
+      </label>`).join('')}
+  </div>`;
+}
+
+function gdRenderTab(tab) {
+  return `
+    <section class="guide-tab" data-tab="${gdEsc(tab.id)}" ${tab.id === gdActive ? '' : 'hidden'}>
+      ${tab.lead ? `<p class="help-sec-lead guide-lead">${gdEsc(tab.lead)}</p>` : ''}
+      ${tab.blocks.map(gdRenderBlock).join('')}
+    </section>`;
+}
+
+function gdRenderChips() {
+  return GUIDE_TABS.map(t => `
+    <button class="help-chip guide-chip${t.id === gdActive ? ' is-active' : ''}" type="button" data-tab="${gdEsc(t.id)}">
+      <span aria-hidden="true">${t.icon}</span>${gdEsc(t.title)}
+    </button>`).join('');
+}
+
+function gdRenderBody() {
+  return `
+    ${GUIDE_TABS.map(gdRenderTab).join('')}
+    <div class="help-src">
+      <div class="guide-disclaimer">${gdEsc(GUIDE_META.disclaimer)}</div>
+      参照: ${GUIDE_META.sources.map(gdEsc).join('／')}
+    </div>`;
+}
+
+// ---------------------------------------------
+// オーバーレイ本体
+// ---------------------------------------------
+function gdEnsureRoot() {
+  if (gdRoot) return gdRoot;
+  gdRoot = document.createElement('div');
+  gdRoot.className = 'help-root guide-root';
+  gdRoot.dataset.visible = 'false';
+  gdRoot.innerHTML = `
+    <div class="help-overlay"></div>
+    <div class="help-box guide-box" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <div class="help-head">
+        <div class="help-head-txt">
+          <div class="help-eyebrow">${gdEsc(GUIDE_META.eyebrow)}</div>
+          <div class="help-title" id="guide-title">${gdEsc(GUIDE_META.title)}</div>
+          <div class="guide-sub">${gdEsc(GUIDE_META.sub)}</div>
+        </div>
+        <button class="help-x" type="button" aria-label="閉じる">✕</button>
+      </div>
+      <div class="help-chips" id="guide-chips">${gdRenderChips()}</div>
+      <div class="help-body" id="guide-body">${gdRenderBody()}</div>
+      <div class="help-foot">
+        <button class="help-ok" type="button">閉じる</button>
+      </div>
+    </div>`;
+  document.body.appendChild(gdRoot);
+
+  gdRoot.querySelector('.help-overlay').addEventListener('click', closeGuide);
+  gdRoot.querySelector('.help-x').addEventListener('click', closeGuide);
+  gdRoot.querySelector('.help-ok').addEventListener('click', closeGuide);
+
+  // タブ切替
+  gdRoot.querySelector('#guide-chips').addEventListener('click', e => {
+    const btn = e.target.closest('[data-tab]');
+    if (!btn) return;
+    gdShowTab(btn.dataset.tab);
+  });
+
+  // チェックリスト
+  gdRoot.querySelector('#guide-body').addEventListener('change', e => {
+    const cb = e.target.closest('input[data-cl]');
+    if (!cb) return;
+    const st = gdLoadChecks();
+    if (cb.checked) st[cb.dataset.cl] = true; else delete st[cb.dataset.cl];
+    gdSaveChecks(st);
+    cb.closest('.guide-cl-item').classList.toggle('is-done', cb.checked);
+    const all = gdRoot.querySelectorAll('input[data-cl]');
+    const done = gdRoot.querySelectorAll('input[data-cl]:checked').length;
+    const c = gdRoot.querySelector('#guide-cl-count');
+    if (c) c.textContent = `${done} / ${all.length} 完了`;
+  });
+  gdRoot.querySelector('#guide-body').addEventListener('click', e => {
+    if (!e.target.closest('[data-cl-reset]')) return;
+    gdSaveChecks({});
+    gdRoot.querySelectorAll('input[data-cl]').forEach(cb => { cb.checked = false; cb.closest('.guide-cl-item').classList.remove('is-done'); });
+    const c = gdRoot.querySelector('#guide-cl-count');
+    if (c) c.textContent = `0 / ${gdRoot.querySelectorAll('input[data-cl]').length} 完了`;
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && gdRoot.dataset.visible === 'true') closeGuide();
+  });
+  return gdRoot;
+}
+
+function gdShowTab(id) {
+  gdActive = id;
+  gdRoot.querySelectorAll('.guide-tab').forEach(s => { s.hidden = s.dataset.tab !== id; });
+  gdRoot.querySelectorAll('.guide-chip').forEach(c => c.classList.toggle('is-active', c.dataset.tab === id));
+  const chip = gdRoot.querySelector(`.guide-chip[data-tab="${id}"]`);
+  if (chip && chip.scrollIntoView) chip.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  gdRoot.querySelector('#guide-body').scrollTop = 0;
+}
+function openGuide(tabId) {
+  const root = gdEnsureRoot();
+  // シックデイの該当薬は開くたびに最新の選択で描き直す
+  root.querySelector('#guide-body').innerHTML = gdRenderBody();
+  gdLastFocus = document.activeElement;
+  gdShowTab(tabId && GUIDE_TABS.some(t => t.id === tabId) ? tabId : gdActive);
+  root.dataset.visible = 'true';
+  document.body.style.overflow = 'hidden';
+  root.querySelector('.help-x').focus();
+}
+function closeGuide() {
+  if (!gdRoot) return;
+  gdRoot.dataset.visible = 'false';
+  document.body.style.overflow = '';
+  if (gdLastFocus && gdLastFocus.focus) gdLastFocus.focus();
+}
+function isGuideOpen() {
+  return !!gdRoot && gdRoot.dataset.visible === 'true';
+}
+
+
 // ===== src/main.js =====
 // =============================================
 // メインアプリケーション
 // =============================================
+
 
 
 
@@ -15218,6 +15844,12 @@ function applyVersionInfo() {
   ['help-toggle', 'footer-help'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', openHelp);
+  });
+
+  // 患者指導ガイド（読み物。監査とは独立）
+  ['guide-toggle', 'footer-guide'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', () => openGuide());
   });
 }
 
