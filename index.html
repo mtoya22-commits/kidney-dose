@@ -5020,12 +5020,12 @@ const DRUGS = [
  brand:['ガスター'],
  cls:'H2受容体拮抗薬',metric:'ccr',
  thr:[
-  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'常用量。20mg 1日2回（または40mg就寝前）'},
-  {min:30,max:60,st:'caution',lb:'20mg 1日1回',dose:'白鷺13版: Ccr31〜59は20mg/日'},
-  {min:0,max:30,st:'caution',lb:'10mg/日 or 隔日',dose:'白鷺13版: Ccr30以下は10mg/日または20mgを2〜3日に1回。過量で精神神経症状・顆粒球減少症のリスク'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'①胃潰瘍・十二指腸潰瘍・吻合部潰瘍・上部消化管出血・逆流性食道炎・ZE症候群: 1回20mgを1日2回、朝・夕食後または就寝前（1日1回40mg就寝前も可）②急性胃炎・慢性胃炎急性増悪期: 1回10mgを1日2回（1日1回20mgも可）'},
+  {min:30,max:60,st:'caution',lb:'1日20mgを分1〜2',dose:'1日20mgを分1〜2'},
+  {min:0,max:30,st:'caution',lb:'20mgを2〜3日に1回 or 10mg/日',dose:'1回20mgを2〜3日に1回、又は1日1回10mg'},
  ],
- dial:{st:'caution',lb:'透析後に20mg',dose:'透析後に20mg投与（HDで除去される）。精神神経症状（錯乱）リスク'},
- note:'腎排泄型。CCr<50: 1日1回20mgに減量。CCr<30: 2〜3日に1回または1日1回10mg（eCCr(J)基準）。腎排泄型。CCr<30で蓄積リスク大。腎排泄型。腎機能低下で蓄積→中枢神経系副作用（錯乱・幻覚）。高齢者・腎機能低下患者での使用に注意。'},
+ dial:{st:'caution',lb:'10mg/日 or 20mg週3回HD後',dose:'1日1回10mg、又は1回20mgを週3回、HD後に投与。精神神経症状（錯乱・幻覚）リスク'},
+ note:'腎排泄型。CCr30〜59: 1日20mgを分1〜2。CCr<30: 20mgを2〜3日に1回または10mg/日。HD: 10mg/日または20mg週3回HD後（eCCr(J)基準）。腎機能低下で蓄積→精神神経症状に注意。src:JSNP第39版'},
 
 {id:'cimetidine',cat:'gastro_h2',name:'シメチジン',yomi:'しめちじん',
  brand:['タガメット'],
@@ -7520,13 +7520,13 @@ const DRUGS = [
 
 {id:'lafutidine',cat:'gastro_h2',name:'ラフチジン',yomi:'らふちじん',
  brand:['プロテカジン'],
- cls:'H2受容体拮抗薬',metric:'egfr',
+ cls:'H2受容体拮抗薬',metric:'ccr',
  thr:[
-  {min:30,max:999,st:'ok',lb:'調節不要',dose:'白鷺13版: CKD stage3程度までは減量の必要はないと思われる。10mg 1日2回（朝食後・就寝前）。逆流性食道炎の維持は10mg 1日1回'},
-  {min:0,max:30,st:'caution',lb:'50%程度に減量',dose:'白鷺13版: 透析患者では低用量から慎重に投与し50%程度への減量が必要と思われるとの記載があり、高度腎障害でもこれに準じる。経口剤のFが不明なため適正量は提示されていない'},
+  {min:60,max:999,st:'ok',lb:'通常投与可',dose:'①胃潰瘍・十二指腸潰瘍・吻合部潰瘍・逆流性食道炎: 10mg 1日2回（朝食後・夕食後または就寝前）②急性胃炎・慢性胃炎急性増悪期: 10mg 1日1回（夕食後または就寝前）③麻酔前投薬: 10mgを手術前日就寝前および手術当日麻酔導入2時間前'},
+  {min:0,max:60,st:'caution',lb:'通常量（症状悪化に注意）',dose:'腎機能正常者と同じ（EO）。ただし症状が悪化するおそれがある（添付文書）'},
  ],
- dial:{st:'caution',lb:'低用量から',dose:'白鷺13版: 低用量から慎重に。非透析時の血中濃度が約2倍上昇するため50%程度への減量が必要と推察'},
- note:'H2ブロッカーの中では胆汁排泄の割合が大きく、腎機能低下時の蓄積が比較的少ないとされる。白鷺13版ではCKD stage 3までは減量不要と考えられるが適正量は提示できないとしている。除去率は7〜18%と低い。半減期が約2倍に延長しAUCは約3倍増加する。食事の影響を受けない。他のH2ブロッカーと同様、腎機能低下時の過量では精神神経症状に注意する。src:白鷺13版'},
+ dial:{st:'caution',lb:'5mgを1日1〜2回',dose:'1回5mgを1日1〜2回（EO）。低用量から慎重に投与する（添付文書）。非HD時のAUCが健常者の約3倍になる'},
+ note:'腎機能低下時は腎機能正常者と同量（EO）だが症状が悪化するおそれ（添付文書）。HDは低用量から慎重に、5mgを1日1〜2回（EO）。非HD時AUCは健常者の約3倍。src:JSNP第39版'},
 
 // ---- 筋弛緩薬 ----
 {id:'eperisone',cat:'muscle_relax',name:'エペリゾン',yomi:'えぺりぞん',
@@ -11366,12 +11366,12 @@ const ALT_MAP = {
 // =============================================
 const APP_VERSION = {
   // アプリのコードバージョン (semver)
-  app: '1.19.0',
+  app: '1.19.1',
   // 薬剤データの根拠
   source: 'JSNP第39版',
   sourceYear: 2026,
   // データ最終更新日 (薬剤追加・修正があるたび更新)
-  dataUpdated: '2026-10-20',
+  dataUpdated: '2026-11-21',
   // ソースリポジトリ (任意)
   repo: 'https://github.com/yourname/renal-checker',
 };
@@ -11405,6 +11405,16 @@ const CHANGE_TYPES = {
   fix:  { icon: '🔧', label: '修正' },
 };
 const CHANGELOG = [
+  {
+    v: '1.19.1',
+    date: '2026-11-21',
+    title: 'H2ブロッカー2剤をJSNPに更新・体表面積の表示',
+    items: [
+      { type: 'data', text: '<b>ファモチジン</b>をJSNP第39版の表に合わせました。CCr30〜59は1日20mgを分1〜2、CCr30未満は20mgを2〜3日に1回または10mg/日、HDは10mg/日または20mgを週3回HD後です。' },
+      { type: 'data', text: '<b>ラフチジン</b>をJSNP第39版に合わせました。腎機能低下時は正常者と同量（症状悪化に注意）、HDは5mgを1日1〜2回です。' },
+      { type: 'feat', text: '身長・体重を入力すると、eGFR欄に<b>体表面積（BSA、DuBois式）</b>を表示します。個別化eGFRの計算に使っている値です。' },
+    ],
+  },
   {
     v: '1.19.0',
     date: '2026-10-20',
@@ -12594,6 +12604,7 @@ function calcRenalFunction(input) {
   // 個別化eGFR: 体重実値があるときのみ
   if (tbw != null && height != null && !isNaN(height)) {
     result.indGFR = calcIndividualizedGFR(result.eGFR, height, tbw);
+    result.bsa = Math.round(calcBSA(height, tbw) * 100) / 100;
   }
 
   return result;
@@ -14719,6 +14730,7 @@ function recompute() {
       eGFR: isDial ? null : egfrDirect,
       ccr:  isDial ? null : ccrDirect,
       indGFR: ind,
+      bsa: ind !== null ? Math.round(calcBSA(heightDirect, weightDirect) * 100) / 100 : null,
       isDialysis: isDial,
       dialysisType: dialysis,
       formula: 'direct',
@@ -14930,7 +14942,7 @@ function renderCalcResult(renal) {
       document.getElementById('egfr-val').textContent = renal.indGFR;
       document.getElementById('egfr-unit').textContent = 'mL/min（個別化・判定に使用）';
       document.getElementById('egfr-individualized').innerHTML =
-        `標準化 <strong>${renal.eGFR}</strong> mL/min/1.73m²（ステージ判定用）`;
+        `標準化 <strong>${renal.eGFR}</strong> mL/min/1.73m²（ステージ判定用）<br>BSA <strong>${renal.bsa.toFixed(2)}</strong> m²（DuBois式）`;
     } else {
       document.getElementById('egfr-val').textContent = renal.eGFR;
       document.getElementById('egfr-unit').textContent = 'mL/min/1.73m²（標準化）';
@@ -14991,7 +15003,7 @@ function renderDirectResult(renal) {
       document.getElementById('din-egfr-val').textContent = renal.indGFR;
       document.getElementById('din-egfr-unit').textContent = 'mL/min（個別化・判定に使用）';
       document.getElementById('din-egfr-individualized').innerHTML =
-        `標準化 <strong>${renal.eGFR}</strong> mL/min/1.73m²（ステージ判定用）`;
+        `標準化 <strong>${renal.eGFR}</strong> mL/min/1.73m²（ステージ判定用）<br>BSA <strong>${renal.bsa.toFixed(2)}</strong> m²（DuBois式）`;
     } else {
       document.getElementById('din-egfr-val').textContent = renal.eGFR;
       document.getElementById('din-egfr-unit').textContent = 'mL/min/1.73m²（標準化）';
